@@ -1,6 +1,9 @@
 # Node modules
 node_modules
 
+# Node package
+package-lock.json
+
 # Logd
 logs/
 *.log
