@@ -1,0 +1,9 @@
+services:
+  api:
+    container_name: cinema-api
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
