@@ -1,20 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Lynriescoop - Login</title>
-  <link rel="stylesheet" href="../resources/css/style.css" />
+  <link rel="stylesheet" href="/resources/css/style.css" />
+
+  <script defer src="/resources/javascript/main.js"></script>
+  <script defer src="/resources/javascript/auth.js"></script>
+  <script defer src="/resources/javascript/main.js" type="module"></script>
 </head>
+
 <body>
-  <nav class="navbar">
-    <img src="../resources/images/logo/LynrieScoop2_transparant.png" alt="Lynriescoop Logo" />
-    <ul>
-      <li><a href="../index.html">Home</a></li>
-      <li><a href="movies.html">Movies</a></li>
-      <li><a href="login.html">Login</a></li>
-    </ul>
-  </nav>
+  {% include "navbar.njk" %}
 
   <section class="login-form">
     <form id="loginForm">
@@ -27,9 +26,6 @@
     </form>
     <p>Don't have an account? <a href="#" id="registerLink">Register here</a></p>
   </section>
-
-  <script src="../resources/javascript/main.js"></script>
-  <script src="../resources/javascript/auth.js"></script>
-  <script src="../resources/typescript/main.ts" type="module"></script>
 </body>
+
 </html>

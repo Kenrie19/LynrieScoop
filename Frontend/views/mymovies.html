@@ -1,21 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Lynriescoop - My Movies</title>
-  <link rel="stylesheet" href="../resources/css/style.css" />
+  <link rel="stylesheet" href="/resources/css/style.css" />
+
+  <script defer src="/resources/javascript/main.js"></script>
+  <script defer src="/resources/javascript/mymovies.js"></script>
+  <script defer src="/resources/javascript/main.js" type="module"></script>
 </head>
+
 <body>
-  <nav class="navbar">
-    <img src="../resources/images/logo/LynrieScoop2_transparant.png" alt="Lynriescoop Logo" />
-    <ul>
-      <li><a href="../index.html">Home</a></li>
-      <li><a href="movies.html">Movies</a></li>
-      <li><a href="mymovies.html">My Movies</a></li>
-      <li><a href="login.html">Login</a></li>
-    </ul>
-  </nav>
+  {% include "navbar.njk" %}
+
 
   <section class="upcoming-movies">
     <!-- Upcoming movies will be listed here -->
@@ -24,9 +23,6 @@
   <section class="watched-movies">
     <!-- Watched movies will be listed here -->
   </section>
-
-  <script src="../resources/javascript/main.js"></script>
-  <script src="../resources/javascript/mymovies.js"></script>
-  <script src="../resources/typescript/main.ts" type="module"></script>
 </body>
+
 </html>

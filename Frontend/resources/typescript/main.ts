@@ -15,20 +15,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 🎬 Now Playing movies ophalen
   const grid = document.getElementById('nowPlayingGrid') as HTMLElement;
+  if (!grid) return;
 
-  fetch('http://localhost:3000/movies') // Vervang met jouw backend endpoint
+  fetch('http://localhost:8000/movies') // Backend endpoint poort en url aanpassen
     .then(response => {
       if (!response.ok) throw new Error('Network response was not ok');
       return response.json();
     })
     .then(data => {
-      const movies: Movie[] = data.results;
+      // Controleer of data een array is of object met results property
+      let movies: Movie[] = [];
+
+      if (Array.isArray(data)) {
+        movies = data; // backend geeft direct een array terug
+      } else if (Array.isArray(data.results)) {
+        movies = data.results; // backend geeft object met results array
+      } else {
+        console.error('Unexpected movies data format:', data);
+        return;
+      }
+
       movies.forEach(movie => {
         const card = document.createElement('div');
         card.classList.add('movie-card');
 
         const img = document.createElement('img');
-        img.src = `https://image.tmdb.org/t/p/w500${movie.poster_path}`;
+        img.src = movie.poster_path.startsWith('http')
+          ? movie.poster_path
+          : `https://image.tmdb.org/t/p/w500${movie.poster_path}`;
         img.alt = movie.title;
 
         const title = document.createElement('h3');

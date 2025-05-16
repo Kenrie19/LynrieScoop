@@ -118,6 +118,41 @@ a:hover {
   text-align: center;
 }
 
+/* Filter bar */
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1rem 2rem;
+  justify-content: center;
+  background-color: #1f1f1f;
+  margin-bottom: 2rem;
+  border-radius: 8px;
+}
+
+.filter-bar button {
+  background-color: var(--red-accent);
+  color: white;
+  border: none;
+  padding: 0.5rem 1.2rem;
+  border-radius: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.filter-bar button:hover {
+  background-color: #a61b1b;
+}
+
+.filter-bar button.active {
+  background-color: var(--aqua-accent);
+  color: var(--black-base);
+  font-weight: 900;
+  box-shadow: 0 0 10px var(--aqua-accent);
+}
+
+
 /* Buttons */
 button {
   background-color: var(--red-accent);

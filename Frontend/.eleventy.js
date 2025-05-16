@@ -5,7 +5,7 @@ export default function(eleventyConfig) {
     "resources/Css": "resources/css",
     "resources/Images": "resources/images",
     "resources/Javascript": "resources/javascript",
-    "resources/videos": "resources/videos"
+    "resources/videos": "resources/videos",
   });
 
   // Optioneel: kopieer ook alles uit resources als fallback
