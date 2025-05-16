@@ -11,3 +11,4 @@ asyncpg
 httpx
 tmdbsimple
 paho-mqtt
+python-dotenv==1.1.0
