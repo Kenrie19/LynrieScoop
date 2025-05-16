@@ -1,0 +1,40 @@
+name: Frontend Linting
+
+on:
+  push:
+    paths:
+      - "frontend/**"
+      - ".github/workflows/frontend-lint.yml"
+  pull_request:
+    paths:
+      - "frontend/**"
+      - ".github/workflows/frontend-lint.yml"
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install root dependencies
+        run: npm install --no-cache
+
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: npm install --no-cache
+
+      - name: Run ESLint
+        working-directory: ./frontend
+        run: npx eslint "**/*.{js,ts}" --max-warnings=0
+
+      - name: Type-check TypeScript
+        working-directory: ./frontend
+        run: npx tsc --noEmit
