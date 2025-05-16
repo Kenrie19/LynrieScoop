@@ -46,5 +46,25 @@ router.get('/movies/:id', async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch movie details' });
     }
 });
+// Get list of upcoming movies
+router.get('/movies/upcoming', async (req, res) => {
+    try {
+        const url = `${BASE_URL}/movie/upcoming?language=en-US&page=1`;
+        const options = {
+            method: 'GET',
+            headers: {
+                accept: 'application/json',
+                Authorization: `Bearer ${API_KEY}`,
+            },
+        };
+        const response = await fetch(url, options);
+        const data = await response.json();
+        console.log('Upcoming movies:', data);
+        res.json(data);
+    } catch (error) {
+        console.error('Error fetching upcoming movies:', error);
+        res.status(500).json({ error: 'Failed to fetch upcoming movies' });
+    }
+});
 
 module.exports = router;
