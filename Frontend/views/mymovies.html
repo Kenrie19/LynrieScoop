@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Lynriescoop - My Movies</title>
   <link rel="stylesheet" href="/resources/css/style.css" />
-
-  <script defer src="/resources/javascript/main.js"></script>
+  <link rel="stylesheet" href="/resources/css/mymovies.css" />
   <script defer src="/resources/javascript/mymovies.js"></script>
-  <script defer src="/resources/javascript/main.js" type="module"></script>
 </head>
-
 <body>
   {% include "navbar.njk" %}
 
-
   <section class="upcoming-movies">
-    <!-- Upcoming movies will be listed here -->
+    <h2>Booked movies</h2>
+    <div class="movie-list" id="upcoming-list">
+      <!-- Dynamisch geladen via JS -->
+    </div>
   </section>
 
   <section class="watched-movies">
-    <!-- Watched movies will be listed here -->
+    <h2>Previous movies</h2>
+    <div class="movie-list" id="watched-list">
+      <!-- Dynamisch geladen via JS -->
+    </div>
   </section>
 </body>
-
 </html>
