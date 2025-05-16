@@ -1,0 +1,170 @@
+:root {
+  --red-accent: #C62828;
+  --black-base: #121212;
+  --aqua-accent: #30D5C8;
+  --light-grey: #E0E0E0;
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--black-base);
+  color: var(--light-grey);
+}
+
+a {
+  color: var(--light-grey);
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+a:hover {
+  color: var(--aqua-accent);
+}
+
+/* Navbar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #1f1f1f;
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.navbar img {
+  height: 50px;
+}
+
+.navbar ul {
+  list-style: none;
+  display: flex;
+  gap: 2rem;
+}
+
+.navbar li a {
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+/* Hero section */
+.hero {
+    position: relative;
+    width: 100%;
+    height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--light-grey);
+    text-shadow: 0 0 10px #000;
+    font-size: 2rem;
+    font-weight: bold;
+    overflow: hidden;
+}
+
+
+.hero-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(18, 18, 18, 0.5); /* donkere overlay voor leesbaarheid */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--light-grey);
+  text-shadow: 0 0 10px black;
+  text-align: center;
+}
+
+
+/* Movies grid */
+.movies-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 2rem;
+  padding: 2rem;
+}
+
+.movie-card {
+  background-color: #1e1e1e;
+  color: var(--light-grey);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.movie-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0 15px var(--aqua-accent);
+}
+
+.movie-card img {
+  width: 100%;
+  display: block;
+}
+
+.movie-card h3 {
+  padding: 0.5rem;
+  font-size: 1.1rem;
+  text-align: center;
+}
+
+/* Filter bar */
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1rem 2rem;
+  justify-content: center;
+  background-color: #1f1f1f;
+  margin-bottom: 2rem;
+  border-radius: 8px;
+}
+
+.filter-bar button {
+  background-color: var(--red-accent);
+  color: white;
+  border: none;
+  padding: 0.5rem 1.2rem;
+  border-radius: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.filter-bar button:hover {
+  background-color: #a61b1b;
+}
+
+.filter-bar button.active {
+  background-color: var(--aqua-accent);
+  color: var(--black-base);
+  font-weight: 900;
+  box-shadow: 0 0 10px var(--aqua-accent);
+}
+
+
+/* Buttons */
+button {
+  background-color: var(--red-accent);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #a61b1b;
+}
