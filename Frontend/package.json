@@ -1,0 +1,22 @@
+{
+  "name": "lynriescope-frontend",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "npx @11ty/eleventy --serve"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kenrie19/LynrieScoop.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Kenrie19/LynrieScoop/issues"
+  },
+  "homepage": "https://github.com/Kenrie19/LynrieScoop#readme",
+  "description": "",
+  "dependencies": {
+    "@11ty/eleventy": "^3.1.0"
+  }
+}
