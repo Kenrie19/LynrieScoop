@@ -1,9 +1,13 @@
 {
   "scripts": {
-    "prepare": "husky"
+    "prepare": "husky",
+    "format:backend": "cd backend && python -m black .",
+    "lint:backend": "cd backend && python -m flake8 && python -m isort --check .",
+    "type:backend": "cd backend && python -m mypy ."
   },
   "lint-staged": {
-    "**/*": "prettier --write --ignore-unknown"
+    "{frontend,Frontend}/**/*.{js,ts,jsx,tsx,json,css,html}": "prettier --write",
+    "{backend,Backend}/**/*.py": "python -m black"
   },
   "devDependencies": {
     "typescript": "^5.8.3",
