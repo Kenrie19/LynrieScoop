@@ -1,5 +1,18 @@
 {
+  "scripts": {
+    "prepare": "husky",
+    "format:backend": "cd backend && python -m black .",
+    "lint:backend": "cd backend && python -m flake8 && python -m isort --check .",
+    "type:backend": "cd backend && python -m mypy ."
+  },
+  "lint-staged": {
+    "{frontend,Frontend}/**/*.{js,ts,jsx,tsx,json,css,html}": "prettier --write",
+    "{backend,Backend}/**/*.py": "python -m black"
+  },
   "devDependencies": {
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.0.0",
+    "prettier": "^3.5.3"
   }
 }

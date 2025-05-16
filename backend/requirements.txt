@@ -12,3 +12,9 @@ httpx
 tmdbsimple
 paho-mqtt
 python-dotenv==1.1.0
+
+# Linting and Formatting
+black==24.3.0
+isort==5.13.2
+flake8==7.0.0
+mypy==1.8.0
