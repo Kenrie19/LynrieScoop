@@ -3,7 +3,13 @@ services:
     container_name: cinema-api
     build:
       context: ./backend
-      dockerfile: Dockerfile
+      dockerfile: dockerfile
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "8000:8000"
+    environment:
+      - PYTHONPATH=/app
+      - PYTHONDONTWRITEBYTECODE=1
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./backend:/app
