@@ -1,15 +1,41 @@
 services:
-  api:
-    container_name: cinema-api
-    build:
-      context: ./backend
-      dockerfile: dockerfile
+  database:
+    container_name: postgresDB
+    image: postgres:17.4
     restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: cinema
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  mqtt-broker:
+    container_name: mqtt-broker
+    image: eclipse-mosquitto:2.0
+    restart: unless-stopped
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+
+  backend:
+    container_name: backend-api
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - database
+      - mqtt-broker
     ports:
       - "8000:8000"
     environment:
-      - PYTHONPATH=/app
-      - PYTHONDONTWRITEBYTECODE=1
-      - PYTHONUNBUFFERED=1
-    volumes:
-      - ./backend:/app
+      DATABASE_URL: "postgresql://postgres:postgres@db:5432/cinema"
+      MQTT_BROKER: "mqtt-broker"
+      MQTT_PORT: 1883
+
+volumes:
+  db_data:
+
