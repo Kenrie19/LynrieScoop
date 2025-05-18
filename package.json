@@ -3,7 +3,19 @@
     "prepare": "husky",
     "format:backend": "cd backend && python -m black .",
     "lint:backend": "cd backend && python -m flake8 && python -m isort --check .",
-    "type:backend": "cd backend && python -m mypy ."
+    "type:backend": "cd backend && python -m mypy .",
+    "format:frontend": "cd frontend && npm run format",
+    "lint:frontend": "cd frontend && npm run lint",
+    "type:frontend": "cd frontend && npm run type-check",
+    "format": "npm run format:backend && npm run format:frontend",
+    "lint": "npm run lint:backend && npm run lint:frontend",
+    "type-check": "npm run type:backend && npm run type:frontend",
+    "check:frontend": "cd frontend && npm run lint && npm run format:check && npm run type-check",
+    "check:backend": "cd backend && python -m black --check . && python -m flake8 && python -m isort --check . && python -m mypy .",
+    "check": "npm run check:frontend && npm run check:backend",
+    "fix:frontend": "cd frontend && npm run format && npm run lint:fix",
+    "fix:backend": "cd backend && python -m black . && python -m isort .",
+    "fix": "npm run fix:frontend && npm run fix:backend"
   },
   "lint-staged": {
     "{frontend,Frontend}/**/*.{js,ts,jsx,tsx,json,css,html}": "prettier --write",
