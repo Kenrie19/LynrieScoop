@@ -11,8 +11,10 @@ asyncpg
 httpx
 tmdbsimple
 paho-mqtt
-types-python-jose
 python-dotenv==1.1.0
+types-python-jose
+types-passlib
+types-requests
 
 # Linting and Formatting
 black==24.3.0
