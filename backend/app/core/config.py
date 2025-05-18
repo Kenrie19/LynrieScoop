@@ -2,14 +2,9 @@ import os
 import secrets
 from typing import List, Optional, Union
 
-from pydantic import (
-    EmailStr,
-    Field,
-    PostgresDsn,
-    field_validator,
-)
-from pydantic_settings import BaseSettings
 from dotenv import load_dotenv
+from pydantic import EmailStr, Field, PostgresDsn, field_validator
+from pydantic_settings import BaseSettings
 
 load_dotenv()
 
@@ -73,11 +68,11 @@ class Settings(BaseSettings):
 
 
 settings = Settings(
-    DATABASE_URL=os.getenv("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/cinema"),  # type: ignore
+    DATABASE_URL=os.getenv(
+        "DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/cinema"  # type: ignore
+    ),
     JWT_SECRET=os.getenv("JWT_SECRET", "NOT_A_SECRET"),
     TMDB_API_KEY=os.getenv("TMDB_API_KEY", "NOT_A_SECRET"),
 )
 
-print(
-    "Settings loaded:", settings.TMDB_API_KEY
-)  # Debugging line to check loaded settings
+print("Settings loaded:", settings.TMDB_API_KEY)  # Debugging line to check loaded settings

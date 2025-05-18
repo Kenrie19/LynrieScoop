@@ -1,7 +1,8 @@
-from typing import Optional
-from pydantic import BaseModel, EmailStr, Field
 from datetime import datetime
+from typing import Optional
 from uuid import UUID
+
+from pydantic import BaseModel, EmailStr, Field
 
 
 class UserBase(BaseModel):
@@ -33,6 +34,7 @@ class UserInDBBase(UserBase):
 
 class User(UserInDBBase):
     """User data returned to clients"""
+
 
 class UserInDB(UserInDBBase):
     """User data stored in DB"""

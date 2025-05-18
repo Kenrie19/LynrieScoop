@@ -1,17 +1,23 @@
-from sqlalchemy.ext.asyncio import AsyncSession
 import logging
+
 from sqlalchemy.sql import text
 
-from app.db.session import AsyncSessionLocal, engine, Base
-
-# Import all models at once to ensure proper initialization order
-from app.models import *
 from app.db.seed_data import create_sample_data
+from app.db.session import AsyncSessionLocal, Base, engine
+
+# from app.models import (
+#     Booking,
+#     Movie,
+#     Room,
+#     SeatReservation,
+#     Showing,
+#     User,
+# )
 
 logger = logging.getLogger(__name__)
 
 
-async def create_tables():
+async def create_tables() -> None:
     """Create database tables from SQLAlchemy models."""
     logger.info("Creating database tables...")
     async with engine.begin() as conn:
@@ -22,7 +28,7 @@ async def create_tables():
     logger.info("Database tables created successfully!")
 
 
-async def check_connection():
+async def check_connection() -> bool:
     """Test database connection."""
     logger.info("Testing database connection...")
     try:
@@ -35,7 +41,7 @@ async def check_connection():
         return False
 
 
-async def init_db():
+async def init_db() -> None:
     """Initialize database."""
     connection_ok = await check_connection()
     if connection_ok:

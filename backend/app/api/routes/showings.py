@@ -1,21 +1,20 @@
-from typing import Any, List, Optional
-from uuid import UUID
 from datetime import datetime
+from typing import Any, List
+from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status, Body
+import tmdbsimple as tmdb
+from fastapi import APIRouter, Body, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.orm import joinedload
 
+from app.core.config import settings
 from app.core.security import get_current_user
 from app.db.session import get_db
-from app.models.showing import Showing
-from app.models.room import Room
 from app.models.movie import Movie
+from app.models.room import Room
+from app.models.showing import Showing
 from app.models.user import User
-from app.core.config import settings
-
-import tmdbsimple as tmdb
 
 tmdb.API_KEY = settings.TMDB_API_KEY
 
@@ -51,13 +50,11 @@ async def get_showing(
             try:
                 collection = tmdb.Movies(showing.movie.tmdb_id)
                 movie_details = collection.info()
-            except Exception as e:
+            except Exception:
                 # If TMDB API fails, continue with local data
                 pass
 
-        available_tickets = (
-            showing.room.capacity - showing.bookings_count if showing.room else 0
-        )
+        available_tickets = showing.room.capacity - showing.bookings_count if showing.room else 0
 
         screenings_list.append(
             {
@@ -127,18 +124,18 @@ async def get_showing_seats(
     for row in rows:
         for number in range(1, seats_per_row + 1):
             is_accessible = row == "H" and number in [1, 2]
-            status = "available"
+            seat_status = "available"
 
             # Mock some booked/reserved seats for demonstration
             if (row == "D" and number in [6, 7]) or (row == "E" and number in [6, 7]):
-                status = "booked"
+                seat_status = "booked"
 
             seats.append(
                 {
                     "id": f"{row}{number}",
                     "row": row,
                     "number": number,
-                    "status": status,
+                    "status": seat_status,
                     "isAccessible": is_accessible,
                     "price": (
                         15.0 if is_accessible else 12.0
@@ -171,17 +168,13 @@ async def create_showing(
     movie_result = await db.execute(select(Movie).filter(Movie.tmdb_id == movie_id))
     movie = movie_result.scalars().first()
     if not movie:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Movie not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Movie not found")
 
     # Verify that the room exists
     room_result = await db.execute(select(Room).filter(Room.id == room_id))
     room = room_result.scalars().first()
     if not room:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Room not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Room not found")
 
     # Check for time conflicts in the same room
     conflict_query = (

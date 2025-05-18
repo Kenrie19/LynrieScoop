@@ -1,7 +1,8 @@
-from typing import List, Optional
-from pydantic import BaseModel
 from datetime import datetime
+from typing import List, Optional
 from uuid import UUID
+
+from pydantic import BaseModel
 
 
 class MovieBase(BaseModel):
@@ -21,7 +22,6 @@ class MovieCreate(MovieBase):
 
 
 class MovieUpdate(MovieBase):
-    title: Optional[str] = None
     tmdb_id: Optional[int] = None
 
 

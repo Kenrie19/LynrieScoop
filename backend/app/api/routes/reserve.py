@@ -1,27 +1,25 @@
+# from app.core.mqtt_client import publish_screening_update
+import uuid
 from typing import Any, Dict
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, status, Body
+from fastapi import APIRouter, Body, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.orm import joinedload
 
 from app.core.security import get_current_user
 from app.db.session import get_db
+from app.models.booking import Booking
 from app.models.showing import Showing
 from app.models.user import User
-from app.models.booking import Booking
-# from app.core.mqtt_client import publish_screening_update
-import uuid
 
 router = APIRouter(tags=["reserve"])
 
 
 @router.post("/reserve", status_code=status.HTTP_201_CREATED, response_model=Dict)
 async def reserve_ticket(
-    screening_id: UUID = Body(
-        ..., description="The ID of the screening to reserve a ticket for"
-    ),
+    screening_id: UUID = Body(..., description="The ID of the screening to reserve a ticket for"),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> Any:
@@ -32,16 +30,12 @@ async def reserve_ticket(
     """
     # Get the screening
     result = await db.execute(
-        select(Showing)
-        .options(joinedload(Showing.room))
-        .filter(Showing.id == screening_id)
+        select(Showing).options(joinedload(Showing.room)).filter(Showing.id == screening_id)
     )
     screening = result.scalars().first()
 
     if not screening:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Screening not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Screening not found")
 
     # Check if there are available tickets
     if screening.bookings_count >= screening.room.capacity:
@@ -68,7 +62,7 @@ async def reserve_ticket(
     await db.commit()
 
     # Publish update to all clients via MQTT
-    remaining_tickets = screening.room.capacity - screening.bookings_count
+    # remaining_tickets = screening.room.capacity - screening.bookings_count
     # await publish_screening_update(
     #     str(screening_id),
     #     {

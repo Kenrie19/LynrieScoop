@@ -1,31 +1,29 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lynriescoop - Login</title>
+    <link rel="stylesheet" href="/resources/css/style.css" />
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Lynriescoop - Login</title>
-  <link rel="stylesheet" href="/resources/css/style.css" />
+    <script defer src="/resources/javascript/main.js"></script>
+    <script defer src="/resources/javascript/auth.js"></script>
+    <script defer src="/resources/javascript/main.js" type="module"></script>
+  </head>
 
-  <script defer src="/resources/javascript/main.js"></script>
-  <script defer src="/resources/javascript/auth.js"></script>
-  <script defer src="/resources/javascript/main.js" type="module"></script>
-</head>
+  <body>
+    {% include "navbar.njk" %}
 
-<body>
-  {% include "navbar.njk" %}
-
-  <section class="login-form">
-    <form id="loginForm">
-      <h2>Login</h2>
-      <label for="email">Email:</label>
-      <input type="email" id="email" required />
-      <label for="password">Password:</label>
-      <input type="password" id="password" required />
-      <button type="submit">Login</button>
-    </form>
-    <p>Don't have an account? <a href="#" id="registerLink">Register here</a></p>
-  </section>
-</body>
-
+    <section class="login-form">
+      <form id="loginForm">
+        <h2>Login</h2>
+        <label for="email">Email:</label>
+        <input type="email" id="email" required />
+        <label for="password">Password:</label>
+        <input type="password" id="password" required />
+        <button type="submit">Login</button>
+      </form>
+      <p>Don't have an account? <a href="#" id="registerLink">Register here</a></p>
+    </section>
+  </body>
 </html>

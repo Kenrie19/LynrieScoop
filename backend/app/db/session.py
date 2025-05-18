@@ -1,6 +1,8 @@
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
 import logging
+from typing import AsyncGenerator
+
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.ext.declarative import declarative_base
 
 from app.core.config import settings
 
@@ -13,7 +15,7 @@ async_postgres_url = postgres_url.replace("postgresql://", "postgresql+asyncpg:/
 
 logger.info(
     "Configuring database connection to %s",
-    postgres_url.split('@')[1] if '@' in postgres_url else 'database'
+    postgres_url.split("@")[1] if "@" in postgres_url else "database",
 )
 
 # Create async engine
@@ -35,7 +37,7 @@ Base = declarative_base()
 
 
 # Dependency for FastAPI endpoints
-async def get_db():
+async def get_db() -> AsyncGenerator[AsyncSession, None]:
     """
     Get database session dependency
     """

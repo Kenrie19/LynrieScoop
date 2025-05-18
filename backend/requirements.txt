@@ -11,6 +11,7 @@ asyncpg
 httpx
 tmdbsimple
 paho-mqtt
+types-python-jose
 python-dotenv==1.1.0
 
 # Linting and Formatting

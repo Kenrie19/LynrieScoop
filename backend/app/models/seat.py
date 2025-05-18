@@ -1,16 +1,9 @@
-from sqlalchemy import (
-    Column,
-    ForeignKey,
-    String,
-    Integer,
-    Boolean,
-    DateTime,
-    UniqueConstraint,
-)
+import uuid
+from datetime import datetime
+
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
-from datetime import datetime
-import uuid
 
 from app.db.session import Base
 
@@ -23,9 +16,7 @@ class Seat(Base):
     __tablename__ = "seats"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    room_id = Column(
-        UUID(as_uuid=True), ForeignKey("rooms.id", ondelete="CASCADE"), nullable=False
-    )
+    room_id = Column(UUID(as_uuid=True), ForeignKey("rooms.id", ondelete="CASCADE"), nullable=False)
     row = Column(String(5), nullable=False)  # e.g., "A", "B", "C", etc.
     number = Column(Integer, nullable=False)  # e.g., 1, 2, 3, etc.
     seat_type = Column(
@@ -47,5 +38,5 @@ class Seat(Base):
     class Config:
         from_attributes = True
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Seat(id={self.id}, room_id={self.room_id}, row={self.row}, number={self.number})"

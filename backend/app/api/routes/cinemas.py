@@ -5,10 +5,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from app.core.security import get_current_user, get_current_manager_user
 from app.db.session import get_db
 from app.models.room import Room
-from app.models.user import User
 
 router = APIRouter(prefix="/cinema", tags=["cinema"])
 
@@ -39,10 +37,7 @@ async def get_rooms(db: AsyncSession = Depends(get_db)) -> Any:
     result = await db.execute(query)
     rooms = result.scalars().all()
 
-    return [
-        {"id": str(room.id), "name": room.name, "capacity": room.capacity}
-        for room in rooms
-    ]
+    return [{"id": str(room.id), "name": room.name, "capacity": room.capacity} for room in rooms]
 
 
 @router.get("/rooms/{room_id}", response_model=dict)
@@ -55,9 +50,7 @@ async def get_room(room_id: UUID, db: AsyncSession = Depends(get_db)) -> Any:
     room = result.scalars().first()
 
     if not room:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Room not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Room not found")
 
     return {
         "id": str(room.id),

@@ -1,20 +1,18 @@
-from typing import Any, List
-from uuid import UUID
 from datetime import datetime
+from typing import Any, List
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from app.core.security import get_current_user
 from app.db.session import get_db
 from app.models.booking import Booking
-from app.models.seat_reservation import SeatReservation
-from app.models.user import User
-from app.models.showing import Showing
 from app.models.movie import Movie
 from app.models.room import Room
-from app.core.mqtt_client import get_mqtt_client
+from app.models.seat_reservation import SeatReservation
+from app.models.showing import Showing
+from app.models.user import User
 
 router = APIRouter(prefix="/bookings", tags=["bookings"])
 
@@ -51,9 +49,7 @@ async def get_my_bookings(
         booking = booking_row[0]  # The Booking object
 
         # Get seat reservations for this booking
-        seats_query = select(SeatReservation).filter(
-            SeatReservation.booking_id == booking.id
-        )
+        seats_query = select(SeatReservation).filter(SeatReservation.booking_id == booking.id)
         seats_result = await db.execute(seats_query)
         seat_reservations = seats_result.scalars().all()
         seat_info = [f"{sr.row}{sr.number}" for sr in seat_reservations]
@@ -105,7 +101,7 @@ async def reserve_seats(
     Reserve seats for a showing
     """
     # Get MQTT client to publish seat updates
-    mqtt_client = get_mqtt_client()
+    # mqtt_client = get_mqtt_client()
 
     # Placeholder implementation - would need proper implementation
     # This would typically publish seat status changes via MQTT

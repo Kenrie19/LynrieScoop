@@ -1,23 +1,22 @@
-from sqlalchemy.ext.asyncio import AsyncSession
-import logging
-from sqlalchemy.sql import text
 import asyncio
+import logging
 from datetime import datetime, timedelta
-import random
 
+from sqlalchemy.sql import text
+
+from app.core.security import get_password_hash
 from app.db.session import AsyncSessionLocal
-from app.models.user import User
 from app.models.cinema import Cinema
+from app.models.movie import Movie
 from app.models.room import Room
 from app.models.seat import Seat
-from app.models.movie import Movie
 from app.models.showing import Showing
-from app.core.security import get_password_hash
+from app.models.user import User
 
 logger = logging.getLogger(__name__)
 
 
-async def create_sample_data():
+async def create_sample_data() -> None:
     """Create sample data for development and testing."""
     logger.info("Creating sample data...")
 
@@ -26,7 +25,7 @@ async def create_sample_data():
         result = await session.execute(text("SELECT COUNT(*) FROM users"))
         user_count = result.scalar()
 
-        if user_count > 0:
+        if user_count is not None and user_count > 0:
             logger.info("Sample data already exists, skipping...")
             return
 
@@ -100,11 +99,14 @@ async def create_sample_data():
 
         movie2 = Movie(
             title="The Shawshank Redemption",
-            description="Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.",
+            description=(
+                "Two imprisoned men bond over a number of years, "
+                + "finding solace and eventual redemption through acts of common decency."
+            ),
             duration=142,
             rating=9.3,
-            poster_url="https://image.tmdb.org/t/p/w500/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg",
-            backdrop_url="https://image.tmdb.org/t/p/original/kXfqcdQKsToO0OUXHcrrNCHDBzO.jpg",
+            poster_url=("https://image.tmdb.org/t/p/w500/" "q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg"),
+            backdrop_url=("https://image.tmdb.org/t/p/original/" "kXfqcdQKsToO0OUXHcrrNCHDBzO.jpg"),
             tmdb_id=278,
         )
         session.add(movie2)
