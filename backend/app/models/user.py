@@ -15,7 +15,7 @@ class User(Base):
     name = Column(String, nullable=False)
     hashed_password = Column(String, nullable=False)
     role = Column(
-        Enum("user", "manager", name="user_role"), default="user", nullable=False
+        Enum("user", "manager", "admin", name="user_role"), default="user", nullable=False
     )
     is_active = Column(Boolean, default=True)
     avatar = Column(String, nullable=True)
