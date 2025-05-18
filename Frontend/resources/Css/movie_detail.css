@@ -1,0 +1,79 @@
+/* Movie Details Page Styles */
+.movie-detail-container {
+  max-width: 900px;
+  margin: 40px auto;
+  background: #181c24;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #f5f6fa;
+  font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+}
+
+.movie-detail-card {
+  display: flex;
+  flex-direction: row;
+  gap: 32px;
+  width: 100%;
+  align-items: flex-start;
+}
+
+.movie-detail-poster {
+  width: 320px;
+  height: 480px;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  background: #23272f;
+}
+
+.movie-detail-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.movie-detail-info h1 {
+  font-size: 2.5rem;
+  margin-bottom: 8px;
+  color: #ffb347;
+  letter-spacing: 1px;
+}
+
+.movie-detail-info p {
+  font-size: 1.1rem;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.movie-detail-info strong {
+  color: #ffb347;
+}
+
+@media (max-width: 900px) {
+  .movie-detail-card {
+    flex-direction: column;
+    align-items: center;
+  }
+  .movie-detail-poster {
+    width: 90vw;
+    height: auto;
+    max-width: 350px;
+  }
+}
+
+/* Add a subtle fade-in animation */
+.movie-detail-card {
+  opacity: 0;
+  animation: fadeIn 0.8s ease-in-out 0.1s forwards;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
