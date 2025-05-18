@@ -86,6 +86,20 @@ a:hover {
 }
 
 
+/* Movies section */
+.movies-section {
+  width: 100%;
+}
+
+.movies-title {
+  padding: 2rem 2rem 0 2rem;
+  margin: 0;
+  color: var(--light-grey);
+  font-size: 2rem;
+  font-weight: bold;
+  text-align: left;
+}
+
 /* Movies grid */
 .movies-grid {
   display: grid;
@@ -116,6 +130,26 @@ a:hover {
   padding: 0.5rem;
   font-size: 1.1rem;
   text-align: center;
+}
+
+.movie-overview {
+  font-size: 0.95rem;
+  color: #bdbdbd;
+  margin: 0 0 0.5rem 0;
+  padding: 0 0.5rem;
+  text-align: center;
+  min-height: 48px;
+}
+
+.movie-rating {
+  text-align: center;
+  font-size: 1.2rem;
+  color: gold;
+  margin-bottom: 0.5rem;
+}
+
+.movie-rating span {
+  margin: 0 1px;
 }
 
 /* Filter bar */

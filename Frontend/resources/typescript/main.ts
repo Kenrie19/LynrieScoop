@@ -2,6 +2,8 @@ interface Movie {
   id: number;
   title: string;
   poster_path: string;
+  overview?: string;
+  vote_average?: number;
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -17,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const grid = document.getElementById('nowPlayingGrid') as HTMLElement;
   if (!grid) return;
 
-  fetch('http://localhost:8000/movies') // Backend endpoint poort en url aanpassen
+  fetch('http://localhost:8000/movies/movies/now_playing') // Backend endpoint poort en url aanpassen
     .then(response => {
       if (!response.ok) throw new Error('Network response was not ok');
       return response.json();
@@ -25,6 +27,8 @@ document.addEventListener('DOMContentLoaded', () => {
     .then(data => {
       // Controleer of data een array is of object met results property
       let movies: Movie[] = [];
+      // Log de data om te zien wat er terugkomt
+      console.log('Movies data:', data);
 
       if (Array.isArray(data)) {
         movies = data; // backend geeft direct een array terug
@@ -48,8 +52,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const title = document.createElement('h3');
         title.textContent = movie.title;
 
+        // Sterren (vote_average)
+        const rating = document.createElement('div');
+        rating.className = 'movie-rating';
+        const stars = Math.round((movie.vote_average || 0) / 2); // 0-10 schaal naar 0-5 sterren
+        for (let i = 1; i <= 5; i++) {
+          const star = document.createElement('span');
+          star.textContent = i <= stars ? '★' : '☆';
+          rating.appendChild(star);
+        }
+
         card.appendChild(img);
         card.appendChild(title);
+        card.appendChild(rating);
 
         card.addEventListener('click', () => {
           window.location.href = `movie.html?id=${movie.id}`;
