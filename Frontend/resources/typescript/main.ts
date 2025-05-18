@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
         card.appendChild(rating);
 
         card.addEventListener('click', () => {
-          window.location.href = `movie.html?id=${movie.id}`;
+          window.location.href = `views/movie_details/index.html?id=${movie.id}`; // Link naar movie details pagina (output static site)
         });
 
         grid.appendChild(card);
