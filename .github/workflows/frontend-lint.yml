@@ -31,10 +31,5 @@ jobs:
         working-directory: ./frontend
         run: npm install --no-cache
 
-      - name: Run ESLint
-        working-directory: ./frontend
-        run: npx eslint "**/*.{js,ts}" --max-warnings=0
-
-      - name: Type-check TypeScript
-        working-directory: ./frontend
-        run: npx tsc --noEmit
+      - name: Run all frontend checks
+        run: npm run check:frontend
