@@ -72,7 +72,7 @@ class Settings(BaseSettings):
 settings = Settings(
     DATABASE_URL=os.getenv("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/cinema"),  # type: ignore
     JWT_SECRET=os.getenv("JWT_SECRET", "NOT_A_SECRET"),
-    TMDB_API_KEY="995ebcf9d5249c3ccdbd4b689c4b5a3f",
+    TMDB_API_KEY=os.getenv("TMDB_API_KEY"),
 )
 
 print("Settings loaded:", settings.TMDB_API_KEY)  # Debugging line to check loaded settings

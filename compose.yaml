@@ -16,7 +16,8 @@ services:
     restart: unless-stopped
     ports:
       - "1883:1883"
-      - "9001:9001"
+    volumes:
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
 
   backend:
     container_name: backend-api
@@ -27,12 +28,12 @@ services:
     env_file:
       - ./backend/.env
     depends_on:
-      - database
       - mqtt-broker
+      - database
     ports:
       - "8000:8000"
     environment:
-      DATABASE_URL: "postgresql://postgres:postgres@db:5432/cinema"
+      DATABASE_URL: "postgresql://postgres:postgres@database:5432/cinema"
       MQTT_BROKER: "mqtt-broker"
       MQTT_PORT: 1883
 
