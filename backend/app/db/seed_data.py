@@ -89,22 +89,22 @@ async def create_sample_data():
         # Create sample movies
         movie1 = Movie(
             title="Inception",
-            description="A thief who enters the dreams of others to steal their secrets.",
-            duration=148,
-            rating=8.8,
-            poster_url="https://image.tmdb.org/t/p/w500/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg",
-            backdrop_url="https://image.tmdb.org/t/p/original/s3TBrRGB1iav7gFOCNx3H31MoES.jpg",
+            overview="A thief who enters the dreams of others to steal their secrets.",
+            runtime=148,
+            vote_average=8.8,
+            poster_path ="https://image.tmdb.org/t/p/w500/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg",
+            backdrop_path ="https://image.tmdb.org/t/p/original/s3TBrRGB1iav7gFOCNx3H31MoES.jpg",
             tmdb_id=27205,
         )
         session.add(movie1)
 
         movie2 = Movie(
             title="The Shawshank Redemption",
-            description="Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.",
-            duration=142,
-            rating=9.3,
-            poster_url="https://image.tmdb.org/t/p/w500/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg",
-            backdrop_url="https://image.tmdb.org/t/p/original/kXfqcdQKsToO0OUXHcrrNCHDBzO.jpg",
+            overview="Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.",
+            runtime=142,
+            vote_average=9.3,
+            poster_path ="https://image.tmdb.org/t/p/w500/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg",
+            backdrop_path ="https://image.tmdb.org/t/p/original/kXfqcdQKsToO0OUXHcrrNCHDBzO.jpg",
             tmdb_id=278,
         )
         session.add(movie2)
@@ -124,6 +124,7 @@ async def create_sample_data():
                     movie_id=movie1.id,
                     room_id=room1.id,
                     start_time=showing_date.replace(hour=hour, minute=0),
+                    end_time=showing_date.replace(hour=hour, minute=0) + timedelta(minutes=movie1.runtime),
                     price=10.99,
                 )
                 session.add(showing)
@@ -134,6 +135,7 @@ async def create_sample_data():
                     movie_id=movie2.id,
                     room_id=room2.id,
                     start_time=showing_date.replace(hour=hour, minute=0),
+                    end_time=showing_date.replace(hour=hour, minute=0) + timedelta(minutes=movie1.runtime),
                     price=11.99,
                 )
                 session.add(showing)
