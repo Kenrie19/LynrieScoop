@@ -30,11 +30,15 @@ async def get_screenings(
     Get all planned screenings
     """
     result = await db.execute(
-        select(Showing)
-        .options(joinedload(Showing.movie), joinedload(Showing.room))
-        .order_by(Showing.start_time)
+    select(Showing)
+    .options(
+        joinedload(Showing.movie),
+        joinedload(Showing.room),
+        joinedload(Showing.bookings),
     )
-    showings = result.scalars().all()
+    .order_by(Showing.start_time)
+)
+    showings = result.unique().scalars().all()
 
     screenings_list = []
     for showing in showings:
@@ -49,7 +53,7 @@ async def get_screenings(
                 pass
 
         available_tickets = (
-            showing.room.capacity - showing.bookings_count if showing.room else 0
+            showing.room.capacity - len(showing.bookings) if showing.room else 0
         )
 
         screenings_list.append(
