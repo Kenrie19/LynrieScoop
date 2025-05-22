@@ -1,8 +1,9 @@
-from sqlalchemy import Column, String, Integer, Boolean, DateTime, Text, ForeignKey
-from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import relationship
 import uuid
 from datetime import datetime
+
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
 
 from app.db.session import Base
 
@@ -24,7 +25,5 @@ class Room(Base):
 
     # Relationships
     cinema = relationship("Cinema", back_populates="rooms")
-    showings = relationship(
-        "Showing", back_populates="room", cascade="all, delete-orphan"
-    )
+    showings = relationship("Showing", back_populates="room", cascade="all, delete-orphan")
     seats = relationship("Seat", back_populates="room", cascade="all, delete-orphan")

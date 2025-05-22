@@ -1,11 +1,11 @@
+from typing import Dict
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
-import asyncio
-from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.openapi.utils import get_openapi
 
-from app.api.routes import auth, movies, reserve, screenings, users
+from app.api.routes import auth_router, movies_router, reserve, screenings, users_router
 from app.core.config import settings
 from app.core.mqtt_client import setup_mqtt_for_app
 from app.db.init_db import init_db
@@ -37,27 +37,27 @@ setup_mqtt_for_app(app)
 
 # Add startup event to initialize database
 @app.on_event("startup")
-async def startup_db_client():
+async def startup_db_client() -> None:
     await init_db()
 
 
 # Include API routers
-app.include_router(auth.router, prefix="/auth", tags=["auth"])
-app.include_router(movies.router, prefix="/movies", tags=["movies"])
+app.include_router(auth_router, prefix="/auth", tags=["auth"])
+app.include_router(movies_router, prefix="/movies", tags=["movies"])
 app.include_router(screenings.router, prefix="/screenings", tags=["screenings"])
 app.include_router(reserve.router, prefix="", tags=["reserve"])
-app.include_router(users.router, prefix="/users", tags=["users"])
+app.include_router(users_router, prefix="/users", tags=["users"])
 
 
 @app.get("/")
-async def root():
+async def root() -> Dict[str, str]:
     """Health check endpoint"""
     return {"status": "healthy", "service": "Project Cinema API"}
 
 
 # Add a custom handler for the OpenAPI schema to include JWT auth
 @app.get("/api-schema", include_in_schema=False)
-def get_open_api_schema():
+def get_open_api_schema() -> Dict:
     return get_openapi(
         title=app.title,
         version=app.version,

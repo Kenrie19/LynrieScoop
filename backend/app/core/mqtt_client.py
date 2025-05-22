@@ -1,37 +1,37 @@
 import json
 import logging
-from typing import Callable, Dict, Any, Optional
 from functools import wraps
+from typing import Any, Callable, Dict
 
 import paho.mqtt.client as mqtt
-from paho.mqtt.client import MQTTMessage
 from fastapi import FastAPI
+from paho.mqtt.client import MQTTMessage
 
 from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
 # MQTT client singleton
-_mqtt_client = None
+_mqtt_client: mqtt.Client | None = None
 
 # Topic handlers
-_topic_handlers = {}
+_topic_handlers: dict[str, Callable[[mqtt.Client, str, Dict[str, Any]], None]] = {}
 
 
-def get_mqtt_client():
+def get_mqtt_client() -> mqtt.Client:
     """Get the MQTT client singleton"""
     global _mqtt_client
     if _mqtt_client is None:
-        init_mqtt_client()
+        return init_mqtt_client()
     return _mqtt_client
 
 
-def init_mqtt_client():
+def init_mqtt_client() -> mqtt.Client:
     """Initialize the MQTT client"""
     global _mqtt_client
 
     if _mqtt_client is not None:
-        return
+        return _mqtt_client
 
     broker_host = settings.MQTT_BROKER
     broker_port = settings.MQTT_PORT
@@ -52,8 +52,10 @@ def init_mqtt_client():
         logger.error(f"Failed to connect to MQTT broker: {e}")
         raise
 
+    return _mqtt_client
 
-def on_connect(client, userdata, flags, rc):
+
+def on_connect(client: mqtt.Client, userdata: Any, flags: dict, rc: int) -> None:
     """Callback for when the client connects to the broker"""
     if rc == 0:
         logger.info("Connected to MQTT broker")
@@ -66,7 +68,7 @@ def on_connect(client, userdata, flags, rc):
         logger.error(f"Failed to connect to MQTT broker with code {rc}")
 
 
-def on_message(client, userdata, msg: MQTTMessage):
+def on_message(client: mqtt.Client, userdata: Any, msg: MQTTMessage) -> None:
     """Callback for when a message is received from the broker"""
     topic = msg.topic
     try:
@@ -86,7 +88,7 @@ def on_message(client, userdata, msg: MQTTMessage):
         logger.exception(f"Error handling message for topic {topic}: {e}")
 
 
-def on_disconnect(client, userdata, rc):
+def on_disconnect(client: mqtt.Client, userdata: Any, rc: int) -> None:
     """Callback for when the client disconnects from the broker"""
     if rc != 0:
         logger.warning(f"Unexpected disconnection from MQTT broker with code {rc}")
@@ -94,14 +96,16 @@ def on_disconnect(client, userdata, rc):
         logger.info("Disconnected from MQTT broker")
 
 
-def handle_topic(topic_pattern: str):
+def handle_topic(topic_pattern: str) -> Callable:
     """Decorator to register a handler for a specific MQTT topic pattern"""
 
-    def decorator(func: Callable[[mqtt.Client, str, Dict[str, Any]], None]):
+    def decorator(
+        func: Callable[[mqtt.Client, str, Dict[str, Any]], None],
+    ) -> Callable[[mqtt.Client, str, Dict[str, Any]], None]:
         _topic_handlers[topic_pattern] = func
 
         @wraps(func)
-        def wrapper(*args, **kwargs):
+        def wrapper(*args: Any, **kwargs: Any) -> None:
             return func(*args, **kwargs)
 
         return wrapper
@@ -111,7 +115,7 @@ def handle_topic(topic_pattern: str):
 
 def publish_message(
     topic: str, payload: Dict[str, Any], qos: int = 0, retain: bool = False
-):
+) -> bool:
     """Publish a message to the MQTT broker"""
     client = get_mqtt_client()
     if client is None:
@@ -122,9 +126,7 @@ def publish_message(
         message = json.dumps(payload)
         result = client.publish(topic, message, qos=qos, retain=retain)
         if result.rc != mqtt.MQTT_ERR_SUCCESS:
-            logger.error(
-                f"Failed to publish message to {topic}: {mqtt.error_string(result.rc)}"
-            )
+            logger.error(f"Failed to publish message to {topic}: {mqtt.error_string(result.rc)}")
             return False
         logger.debug(f"Published message to {topic}: {message}")
         return True
@@ -133,17 +135,17 @@ def publish_message(
         return False
 
 
-def setup_mqtt_for_app(app: FastAPI):
+def setup_mqtt_for_app(app: FastAPI) -> None:
     """Set up MQTT client for the FastAPI application lifecycle"""
 
     @app.on_event("startup")
-    def startup_mqtt_client():
+    def startup_mqtt_client() -> None:
         """Initialize MQTT client on application startup"""
         logger.info("Initializing MQTT client on application startup")
         init_mqtt_client()
 
     @app.on_event("shutdown")
-    def shutdown_mqtt_client():
+    def shutdown_mqtt_client() -> None:
         """Stop MQTT client on application shutdown"""
         logger.info("Stopping MQTT client on application shutdown")
         client = get_mqtt_client()
@@ -155,7 +157,7 @@ def setup_mqtt_for_app(app: FastAPI):
 
 # Topic handlers for specific MQTT topics
 @handle_topic("booking/request")
-def handle_booking_request(client, topic, payload):
+def handle_booking_request(client: mqtt.Client, topic: str, payload: dict) -> None:
     """Handle booking requests from clients"""
     user_id = payload.get("userId")
     showing_id = payload.get("showingId")
@@ -218,7 +220,7 @@ def handle_booking_request(client, topic, payload):
 
 
 @handle_topic("seats/status/#")
-def handle_seat_status(client, topic, payload):
+def handle_seat_status(client: mqtt.Client, topic: str, payload: dict) -> None:
     """Handle seat status updates from admin/system"""
     showing_id = topic.split("/")[2] if len(topic.split("/")) > 2 else None
 

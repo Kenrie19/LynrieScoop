@@ -1,8 +1,10 @@
-from sqlalchemy import Column, ForeignKey, DateTime, Float, String, Integer, Enum
-from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import relationship
 import uuid
 from datetime import datetime
+from typing import Literal
+
+from sqlalchemy import Column, DateTime, Enum, Float, ForeignKey, Integer, String
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
 
 from app.db.session import Base
 
@@ -17,7 +19,7 @@ class SeatReservation(Base):
     row = Column(String, nullable=False)  # Row identifier (A, B, C, etc.)
     number = Column(Integer, nullable=False)  # Seat number in the row
     price = Column(Float, nullable=False)
-    status = Column(
+    status: Column[Literal["available", "selected", "reserved", "booked"]] = Column(
         Enum("available", "selected", "reserved", "booked", name="seat_status"),
         default="available",
         nullable=False,

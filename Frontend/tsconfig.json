@@ -5,7 +5,11 @@
     "outDir": "_site/resources/javascript",
     "rootDir": "resources/typescript",
     "strict": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true
   },
   "include": ["resources/typescript/**/*.ts"]
 }

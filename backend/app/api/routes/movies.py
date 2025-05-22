@@ -1,22 +1,19 @@
 from typing import Any, List, Optional
-from uuid import UUID
 
+import tmdbsimple as tmdb
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from sqlalchemy import or_, join
 
-from app.core.security import get_current_user, get_current_manager_user
+from app.core.config import settings
+from app.core.security import get_current_manager_user
 from app.db.session import get_db
 from app.models.movie import Movie
-from app.models.user import User
-from app.models.showing import Showing
 from app.models.room import Room
-from app.schemas.movie import Movie as MovieSchema, MovieCreate, MovieDetail, TMDBMovie
-from app.core.config import settings
-
-
-import tmdbsimple as tmdb
+from app.models.showing import Showing
+from app.models.user import User
+from app.schemas.movie import Movie as MovieSchema
+from app.schemas.movie import MovieCreate, MovieDetail, TMDBMovie
 
 tmdb.API_KEY = settings.TMDB_API_KEY
 
@@ -48,9 +45,7 @@ async def get_movies(
 @router.get("/now_playing", response_model=List[TMDBMovie])
 async def get_now_playing_movies(
     page: int = Query(1, ge=1, le=1000),
-    sort_by: str = Query(
-        "popularity.desc", description="Sort results by specified criteria"
-    ),
+    sort_by: str = Query("popularity.desc", description="Sort results by specified criteria"),
 ) -> Any:
     """
     Get movies currently in theaters from TMDB
@@ -63,9 +58,7 @@ async def get_now_playing_movies(
 @router.get("/upcoming", response_model=List[TMDBMovie])
 async def get_upcoming_movies(
     page: int = Query(1, ge=1, le=1000),
-    sort_by: str = Query(
-        "popularity.desc", description="Sort results by specified criteria"
-    ),
+    sort_by: str = Query("popularity.desc", description="Sort results by specified criteria"),
 ) -> Any:
     """
     Get upcoming movies from TMDB
@@ -78,9 +71,7 @@ async def get_upcoming_movies(
 @router.get("/popular", response_model=List[TMDBMovie])
 async def get_popular_movies(
     page: int = Query(1, ge=1, le=1000),
-    sort_by: str = Query(
-        "popularity.desc", description="Sort results by specified criteria"
-    ),
+    sort_by: str = Query("popularity.desc", description="Sort results by specified criteria"),
 ) -> Any:
     """
     Get popular movies from TMDB
@@ -93,9 +84,7 @@ async def get_popular_movies(
 @router.get("/top_rated", response_model=List[TMDBMovie])
 async def get_top_rated_movies(
     page: int = Query(1, ge=1, le=1000),
-    sort_by: str = Query(
-        "popularity.desc", description="Sort results by specified criteria"
-    ),
+    sort_by: str = Query("popularity.desc", description="Sort results by specified criteria"),
 ) -> Any:
     """
     Get top rated movies from TMDB
@@ -109,9 +98,7 @@ async def get_top_rated_movies(
 async def search_movies(
     query: str = Query(..., min_length=1),
     page: int = Query(1, ge=1, le=1000),
-    sort_by: str = Query(
-        "popularity.desc", description="Sort results by specified criteria"
-    ),
+    sort_by: str = Query("popularity.desc", description="Sort results by specified criteria"),
 ) -> Any:
     """
     Search for movies in TMDB

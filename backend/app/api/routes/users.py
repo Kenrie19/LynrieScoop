@@ -1,14 +1,13 @@
-from typing import Any, List
-from uuid import UUID
+from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.future import select
 
-from app.core.security import get_current_user, get_current_manager_user
+from app.core.security import get_current_user
 from app.db.session import get_db
 from app.models.user import User
-from app.schemas.user import User as UserSchema, UserUpdate
+from app.schemas.user import User as UserSchema
+from app.schemas.user import UserUpdate
 
 router = APIRouter(prefix="/users", tags=["users"])
 
@@ -30,10 +29,11 @@ async def update_current_user(
     """
     Update current user information
     """
-    # Placeholder implementation - would need proper implementation
-    # This would update user information based on the provided data
-    current_user.name = user_update.name or current_user.name
-    current_user.email = user_update.email or current_user.email
+    # Update user fields directly
+    if user_update.name is not None:
+        setattr(current_user, "name", user_update.name)
+    if user_update.email is not None:
+        setattr(current_user, "email", user_update.email)
 
     await db.commit()
     await db.refresh(current_user)

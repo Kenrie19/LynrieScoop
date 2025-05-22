@@ -13,6 +13,9 @@ tmdbsimple
 paho-mqtt
 python-dotenv==1.1.0
 psycopg2-binary
+types-python-jose
+types-passlib
+types-requests
 
 # Linting and Formatting
 black==24.3.0

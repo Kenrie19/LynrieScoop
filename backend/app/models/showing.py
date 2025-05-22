@@ -1,17 +1,10 @@
-from sqlalchemy import (
-    Column,
-    ForeignKey,
-    DateTime,
-    Float,
-    String,
-    Integer,
-    Enum,
-    Boolean,
-)
-from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import relationship
 import uuid
 from datetime import datetime
+from typing import Literal
+
+from sqlalchemy import Boolean, Column, DateTime, Enum, Float, ForeignKey
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
 
 from app.db.session import Base
 
@@ -28,7 +21,7 @@ class Showing(Base):
     is_imax = Column(Boolean, default=False)
     is_dolby = Column(Boolean, default=False)
     price = Column(Float, nullable=False)
-    status = Column(
+    status: Column[Literal["scheduled", "cancelled", "completed"]] = Column(
         Enum("scheduled", "cancelled", "completed", name="showing_status"),
         default="scheduled",
         nullable=False,
@@ -41,9 +34,7 @@ class Showing(Base):
     # Relationships
     movie = relationship("Movie", back_populates="showings")
     room = relationship("Room", back_populates="showings")
-    bookings = relationship(
-        "Booking", back_populates="showing", cascade="all, delete-orphan"
-    )
+    bookings = relationship("Booking", back_populates="showing", cascade="all, delete-orphan")
     seat_reservations = relationship(
         "SeatReservation", back_populates="showing", cascade="all, delete-orphan"
     )

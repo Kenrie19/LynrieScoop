@@ -1,11 +1,11 @@
 // Change to ESM export for Eleventy config
-export default function(eleventyConfig) {
+export default function (eleventyConfig) {
   // Pas de passthrough copy aan zodat stylesheets en andere resources gekopieerd worden
   eleventyConfig.addPassthroughCopy({
-    "resources/Css": "resources/css",
-    "resources/Images": "resources/images",
-    "resources/Javascript": "resources/javascript",
-    "resources/videos": "resources/videos",
+    'resources/Css': 'resources/css',
+    'resources/Images': 'resources/images',
+    'resources/Javascript': 'resources/javascript',
+    'resources/videos': 'resources/videos',
   });
 
   // Optioneel: kopieer ook alles uit resources als fallback
@@ -13,8 +13,8 @@ export default function(eleventyConfig) {
 
   return {
     dir: {
-      input: ".",
-      output: "_site"
-    }
+      input: '.',
+      output: '_site',
+    },
   };
-};
+}

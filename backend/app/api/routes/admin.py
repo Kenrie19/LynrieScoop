@@ -1,19 +1,21 @@
+from datetime import datetime, timedelta
 from typing import Any, List
 from uuid import UUID
-from datetime import datetime, timedelta
 
+import requests
 from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy import desc
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from sqlalchemy import desc
 
+from app.core.config import settings
 from app.core.security import get_current_manager_user
 from app.db.session import get_db
-from app.models.user import User
-from app.models.movie import Movie
-from app.models.showing import Showing
-from app.models.room import Room
 from app.models.booking import Booking
+from app.models.movie import Movie
+from app.models.room import Room
+from app.models.showing import Showing
+from app.models.user import User
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 
@@ -176,9 +178,7 @@ async def get_recent_bookings(
                 "id": str(booking.id),
                 "booking_number": booking.booking_number,
                 "user": (
-                    {"id": str(user.id), "name": user.name, "email": user.email}
-                    if user
-                    else None
+                    {"id": str(user.id), "name": user.name, "email": user.email} if user else None
                 ),
                 "showing": (
                     {
@@ -218,9 +218,7 @@ async def get_dashboard_stats(
     total_bookings = len(bookings)
 
     # Calculate total revenue
-    total_revenue = sum(
-        booking.total_price for booking in bookings if booking.total_price
-    )
+    total_revenue = sum(booking.total_price for booking in bookings if booking.total_price)
 
     # Get total movies count
     movies_query = select(Movie)
@@ -244,9 +242,6 @@ async def get_dashboard_stats(
     rooms_query = select(Room)
     rooms_result = await db.execute(rooms_query)
     total_rooms = len(rooms_result.scalars().all())
-
-    # Get recent bookings (last 7 days)
-    from datetime import timedelta
 
     week_ago = now - timedelta(days=7)
     recent_bookings_query = select(Booking).where(Booking.created_at > week_ago)
@@ -290,9 +285,7 @@ async def get_admin_movies(
     # Apply search filter if query parameter is provided
     if q:
         # Case-insensitive search on title or overview
-        query = query.filter(
-            (Movie.title.ilike(f"%{q}%")) | (Movie.overview.ilike(f"%{q}%"))
-        )
+        query = query.filter((Movie.title.ilike(f"%{q}%")) | (Movie.overview.ilike(f"%{q}%")))
 
     # Apply pagination
     query = query.offset(skip).limit(limit)
@@ -309,9 +302,7 @@ async def get_admin_movies(
             "overview": movie.overview,
             "poster_path": movie.poster_path,
             "backdrop_path": movie.backdrop_path,
-            "release_date": (
-                movie.release_date.isoformat() if movie.release_date else None
-            ),
+            "release_date": (movie.release_date.isoformat() if movie.release_date else None),
             "runtime": movie.runtime,
             "status": movie.status,
             "vote_average": movie.vote_average,
@@ -341,9 +332,7 @@ async def delete_movie(
     movie = result.scalar_one_or_none()
 
     if not movie:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Movie not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Movie not found")
 
     # Check if movie is used in any showings
     showing_query = select(Showing).where(Showing.movie_id == movie_id)
@@ -378,11 +367,8 @@ async def search_tmdb_movies(
     Search for movies in TMDB API
     """
     try:
-        import requests
-        from app.core.config import settings
-
         # TMDB API endpoint
-        url = f"https://api.themoviedb.org/3/search/movie"
+        url = "https://api.themoviedb.org/3/search/movie"
 
         # Parameters
         params = {
@@ -415,9 +401,11 @@ async def import_movie_from_tmdb(
     Import a movie from TMDB API by its ID
     """
     try:
-        import requests
-        from app.core.config import settings
         from datetime import datetime
+
+        import requests
+
+        from app.core.config import settings
 
         # Check if movie already exists with this TMDB ID
         query = select(Movie).where(Movie.tmdb_id == tmdb_id)
@@ -450,9 +438,7 @@ async def import_movie_from_tmdb(
         director = ""
         if "credits" in movie_data and "crew" in movie_data["credits"]:
             directors = [
-                crew
-                for crew in movie_data["credits"]["crew"]
-                if crew["job"] == "Director"
+                crew for crew in movie_data["credits"]["crew"] if crew["job"] == "Director"
             ]
             if directors:
                 director = directors[0]["name"]
@@ -484,10 +470,8 @@ async def import_movie_from_tmdb(
         release_date = None
         if movie_data.get("release_date"):
             try:
-                release_date = datetime.strptime(
-                    movie_data["release_date"], "%Y-%m-%d"
-                ).date()
-            except:
+                release_date = datetime.strptime(movie_data["release_date"], "%Y-%m-%d").date()
+            except Exception:
                 pass
 
         # Create new movie object

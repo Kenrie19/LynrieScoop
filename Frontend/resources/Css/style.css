@@ -1,8 +1,8 @@
 :root {
-  --red-accent: #C62828;
+  --red-accent: #c62828;
   --black-base: #121212;
-  --aqua-accent: #30D5C8;
-  --light-grey: #E0E0E0;
+  --aqua-accent: #30d5c8;
+  --light-grey: #e0e0e0;
 }
 
 body {
@@ -49,19 +49,18 @@ a:hover {
 
 /* Hero section */
 .hero {
-    position: relative;
-    width: 100%;
-    height: 400px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--light-grey);
-    text-shadow: 0 0 10px #000;
-    font-size: 2rem;
-    font-weight: bold;
-    overflow: hidden;
+  position: relative;
+  width: 100%;
+  height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--light-grey);
+  text-shadow: 0 0 10px #000;
+  font-size: 2rem;
+  font-weight: bold;
+  overflow: hidden;
 }
-
 
 .hero-video {
   width: 100%;
@@ -84,7 +83,6 @@ a:hover {
   text-shadow: 0 0 10px black;
   text-align: center;
 }
-
 
 /* Movies section */
 .movies-section {
@@ -113,7 +111,9 @@ a:hover {
   color: var(--light-grey);
   border-radius: 8px;
   overflow: hidden;
-  transition: transform 0.3s, box-shadow 0.3s;
+  transition:
+    transform 0.3s,
+    box-shadow 0.3s;
 }
 
 .movie-card:hover {
@@ -185,7 +185,6 @@ a:hover {
   font-weight: 900;
   box-shadow: 0 0 10px var(--aqua-accent);
 }
-
 
 /* Buttons */
 button {

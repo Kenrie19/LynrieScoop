@@ -24,6 +24,11 @@ jobs:
           python-version: "3.12"
           cache: "pip"
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
       - name: Install dependencies
         working-directory: ./backend
         run: |
@@ -31,18 +36,5 @@ jobs:
           pip install -r requirements.txt
           pip install black flake8 isort mypy
 
-      - name: Run Black formatter check
-        working-directory: ./backend
-        run: python -m black --check .
-
-      - name: Run flake8
-        working-directory: ./backend
-        run: python -m flake8
-
-      - name: Run isort check
-        working-directory: ./backend
-        run: python -m isort --check .
-
-      - name: Run mypy type checker
-        working-directory: ./backend
-        run: python -m mypy .
+      - name: Run all backend checks
+        run: npm run check:backend

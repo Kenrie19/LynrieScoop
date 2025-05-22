@@ -1,32 +1,33 @@
 <!doctype html>
+<!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Lynriescoop - Home</title>
-        <link rel="stylesheet" href="/resources/css/style.css" />
-        <!-- <script src="/resources/javascript/movies.js"></script> -->
-        <script src="/resources/javascript/main.js" type="module"></script>
-    </head>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lynriescoop - Home</title>
+    <link rel="stylesheet" href="/resources/css/style.css" />
+    <!-- <script src="/resources/javascript/movies.js"></script> -->
+    <script src="/resources/javascript/main.js" type="module"></script>
+  </head>
 
-    <body>
-        {% include "navbar.njk" %}
+  <body>
+    {% include "navbar.njk" %}
 
-        <section class="hero">
-            <video autoplay muted loop class="hero-video">
-                <source src="/resources/videos/mov_bbb.mp4" type="video/mp4" />
-                Your browser does not support the video tag.
-            </video>
-            <div class="hero-overlay">
-                <h1>Welcome to Lynriescoop</h1>
-                <p>Experience movies like never before</p>
-            </div>
-        </section>
-        <div class="movies-section">
-            <h2 class="movies-title">Now Playing</h2>
-            <section class="movies-grid" id="nowPlayingGrid">
-                <!-- Movie cards will be injected here -->
-            </section>
-        </div>
-    </body>
+    <section class="hero">
+      <video autoplay muted loop class="hero-video">
+        <source src="/resources/videos/mov_bbb.mp4" type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+      <div class="hero-overlay">
+        <h1>Welcome to Lynriescoop</h1>
+        <p>Experience movies like never before</p>
+      </div>
+    </section>
+    <div class="movies-section">
+      <h2 class="movies-title">Now Playing</h2>
+      <section class="movies-grid" id="nowPlayingGrid">
+        <!-- Movie cards will be injected here -->
+      </section>
+    </div>
+  </body>
 </html>

@@ -1,8 +1,9 @@
-# filepath: c:\Data\ProjectCinema\backend\app\models\user.py
-from sqlalchemy import Boolean, Column, String, DateTime, Enum
-from sqlalchemy.dialects.postgresql import UUID
 import uuid
 from datetime import datetime
+from typing import Literal
+
+from sqlalchemy import Boolean, Column, DateTime, Enum, String
+from sqlalchemy.dialects.postgresql import UUID
 
 from app.db.session import Base
 
@@ -14,7 +15,7 @@ class User(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     name = Column(String, nullable=False)
     hashed_password = Column(String, nullable=False)
-    role = Column(
+    role: Column[Literal["user", "manager", "admin"]] = Column(
         Enum("user", "manager", "admin", name="user_role"), default="user", nullable=False
     )
     is_active = Column(Boolean, default=True)

@@ -1,8 +1,10 @@
-from sqlalchemy import Column, ForeignKey, DateTime, Float, String, Integer, Enum
-from sqlalchemy.dialects.postgresql import UUID, ARRAY
-from sqlalchemy.orm import relationship
 import uuid
 from datetime import datetime
+from typing import Literal
+
+from sqlalchemy import Column, DateTime, Enum, Float, ForeignKey, String
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
 
 from app.db.session import Base
 
@@ -15,7 +17,7 @@ class Booking(Base):
     showing_id = Column(UUID(as_uuid=True), ForeignKey("showings.id"), nullable=False)
     booking_number = Column(String, unique=True, nullable=False, index=True)
     total_price = Column(Float, nullable=False)
-    status = Column(
+    status: Column[Literal["pending", "confirmed", "cancelled", "completed"]] = Column(
         Enum("pending", "confirmed", "cancelled", "completed", name="booking_status"),
         default="pending",
         nullable=False,

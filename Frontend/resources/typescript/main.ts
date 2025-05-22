@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const authOnlyLinks = document.querySelectorAll('.auth-only');
   const isLoggedIn = localStorage.getItem('loggedIn');
 
-  authOnlyLinks.forEach(link => {
+  authOnlyLinks.forEach((link) => {
     (link as HTMLElement).style.display = isLoggedIn ? 'inline' : 'none';
   });
 
@@ -20,11 +20,11 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!grid) return;
 
   fetch('http://localhost:8000/movies/movies/now_playing') // Backend endpoint poort en url aanpassen
-    .then(response => {
+    .then((response) => {
       if (!response.ok) throw new Error('Network response was not ok');
       return response.json();
     })
-    .then(data => {
+    .then((data) => {
       // Controleer of data een array is of object met results property
       let movies: Movie[] = [];
       // Log de data om te zien wat er terugkomt
@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      movies.forEach(movie => {
+      movies.forEach((movie) => {
         const card = document.createElement('div');
         card.classList.add('movie-card');
 
@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
         grid.appendChild(card);
       });
     })
-    .catch(error => {
+    .catch((error) => {
       console.error('Error loading movies:', error);
     });
 });

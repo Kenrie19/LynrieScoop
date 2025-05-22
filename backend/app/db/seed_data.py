@@ -1,23 +1,22 @@
-from sqlalchemy.ext.asyncio import AsyncSession
-import logging
-from sqlalchemy.sql import text
 import asyncio
+import logging
 from datetime import datetime, timedelta
-import random
 
+from sqlalchemy.sql import text
+
+from app.core.security import get_password_hash
 from app.db.session import AsyncSessionLocal
-from app.models.user import User
 from app.models.cinema import Cinema
+from app.models.movie import Movie
 from app.models.room import Room
 from app.models.seat import Seat
-from app.models.movie import Movie
 from app.models.showing import Showing
-from app.core.security import get_password_hash
+from app.models.user import User
 
 logger = logging.getLogger(__name__)
 
 
-async def create_sample_data():
+async def create_sample_data() -> None:
     """Create sample data for development and testing."""
     logger.info("Creating sample data...")
 
@@ -26,7 +25,7 @@ async def create_sample_data():
         result = await session.execute(text("SELECT COUNT(*) FROM users"))
         user_count = result.scalar()
 
-        if user_count > 0:
+        if user_count is not None and user_count > 0:
             logger.info("Sample data already exists, skipping...")
             return
 
@@ -92,8 +91,8 @@ async def create_sample_data():
             overview="A thief who enters the dreams of others to steal their secrets.",
             runtime=148,
             vote_average=8.8,
-            poster_path ="https://image.tmdb.org/t/p/w500/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg",
-            backdrop_path ="https://image.tmdb.org/t/p/original/s3TBrRGB1iav7gFOCNx3H31MoES.jpg",
+            poster_path="https://image.tmdb.org/t/p/w500/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg",
+            backdrop_path="https://image.tmdb.org/t/p/original/s3TBrRGB1iav7gFOCNx3H31MoES.jpg",
             tmdb_id=27205,
         )
         session.add(movie1)
@@ -103,8 +102,8 @@ async def create_sample_data():
             overview="Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.",
             runtime=142,
             vote_average=9.3,
-            poster_path ="https://image.tmdb.org/t/p/w500/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg",
-            backdrop_path ="https://image.tmdb.org/t/p/original/kXfqcdQKsToO0OUXHcrrNCHDBzO.jpg",
+            poster_path="https://image.tmdb.org/t/p/w500/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg",
+            backdrop_path="https://image.tmdb.org/t/p/original/kXfqcdQKsToO0OUXHcrrNCHDBzO.jpg",
             tmdb_id=278,
         )
         session.add(movie2)
@@ -124,7 +123,8 @@ async def create_sample_data():
                     movie_id=movie1.id,
                     room_id=room1.id,
                     start_time=showing_date.replace(hour=hour, minute=0),
-                    end_time=showing_date.replace(hour=hour, minute=0) + timedelta(minutes=movie1.runtime),
+                    end_time=showing_date.replace(hour=hour, minute=0)
+                    + timedelta(minutes=movie1.runtime),
                     price=10.99,
                 )
                 session.add(showing)
@@ -135,7 +135,8 @@ async def create_sample_data():
                     movie_id=movie2.id,
                     room_id=room2.id,
                     start_time=showing_date.replace(hour=hour, minute=0),
-                    end_time=showing_date.replace(hour=hour, minute=0) + timedelta(minutes=movie1.runtime),
+                    end_time=showing_date.replace(hour=hour, minute=0)
+                    + timedelta(minutes=movie1.runtime),
                     price=11.99,
                 )
                 session.add(showing)
