@@ -1,0 +1,66 @@
+name: Code Linting
+
+on:
+  push:
+    paths:
+      - "frontend/**"
+      - "backend/**"
+      - ".github/workflows/lint.yml"
+  pull_request:
+    paths:
+      - "frontend/**"
+      - "backend/**"
+      - ".github/workflows/lint.yml"
+
+jobs:
+  frontend-lint:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'pull_request' || contains(github.event.head_commit.message, 'frontend') || contains(github.event.before, 'frontend') }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install root dependencies
+        run: npm install --no-cache
+
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: npm install --no-cache
+
+      - name: Run frontend checks
+        run: npm run check:frontend
+
+  backend-lint:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'pull_request' || contains(github.event.head_commit.message, 'backend') || contains(github.event.before, 'backend') }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install backend dependencies
+        working-directory: ./backend
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install black flake8 isort mypy
+
+      - name: Run backend checks
+        run: npm run check:backend
