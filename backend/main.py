@@ -5,7 +5,7 @@ import asyncio
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.openapi.utils import get_openapi
 
-from app.api.routes import auth, movies, reserve, screenings, users
+from app.api.routes import admin, auth, bookings, cinemas, movies, reserve, screenings, users
 from app.core.config import settings
 from app.core.mqtt_client import setup_mqtt_for_app
 from app.db.init_db import init_db
@@ -47,6 +47,9 @@ app.include_router(movies.router, prefix="/movies", tags=["movies"])
 app.include_router(screenings.router, prefix="/screenings", tags=["screenings"])
 app.include_router(reserve.router, prefix="", tags=["reserve"])
 app.include_router(users.router, prefix="/users", tags=["users"])
+app.include_router(admin.router, prefix="/admin", tags=["admin"])
+app.include_router(cinemas.router, prefix="/cinemas", tags=["cinemas"])
+app.include_router(bookings.router, prefix="/bookings", tags=["bookings"])
 
 
 @app.get("/")

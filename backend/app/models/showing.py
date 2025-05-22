@@ -33,6 +33,8 @@ class Showing(Base):
         default="scheduled",
         nullable=False,
     )
+    bookings_count = Column(Integer, default=0, nullable=False)
+
 
     # Timestamps
     created_at = Column(DateTime, default=datetime.utcnow)

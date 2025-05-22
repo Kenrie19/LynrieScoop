@@ -34,7 +34,7 @@ async def create_sample_data():
         admin_user = User(
             email="admin@cinema.com",
             hashed_password=get_password_hash("admin"),
-            role="admin",
+            role="manager",
             name="Admin User",
         )
         session.add(admin_user)

@@ -28,22 +28,33 @@ router = APIRouter(prefix="/movies", tags=["movies"])
 async def get_movies(
     skip: int = 0,
     limit: int = 100,
-    search: Optional[str] = None,
-    sort_by: str = "popularity.desc",
-    page: int = 1,
+    db: AsyncSession = Depends(get_db)
 ) -> Any:
     """
-    Get list of movies from TMDB API
+    Get list of movies from local database
     """
-    collection = tmdb.Movies()
-    movies = collection.popular(page=page, sort_by=sort_by)
-    if not movies["results"]:
+    result = await db.execute(select(Movie).offset(skip).limit(limit))
+    movies = result.scalars().all()
+    return movies
+
+@router.get("/by_id/{tmdb_id}", response_model=MovieDetail)   
+async def get_movie(
+    tmdb_id: int,
+    db: AsyncSession = Depends(get_db),
+) -> Any:
+    """
+    Get a movie by its TMDB ID from the local database
+    """
+    result = await db.execute(select(Movie).filter(Movie.tmdb_id == tmdb_id))
+    movie = result.scalars().first()
+
+    if not movie:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="No movies found",
+            detail="Movie not found",
         )
-    return movies["results"]
 
+    return movie
 
 @router.get("/now_playing", response_model=List[TMDBMovie])
 async def get_now_playing_movies(
@@ -109,39 +120,26 @@ async def get_top_rated_movies(
 async def search_movies(
     query: str = Query(..., min_length=1),
     page: int = Query(1, ge=1, le=1000),
-    sort_by: str = Query(
-        "popularity.desc", description="Sort results by specified criteria"
-    ),
 ) -> Any:
     """
     Search for movies in TMDB
     """
-    collection = tmdb.Search()
-    search_results = collection.movie(query=query, page=page, sort_by=sort_by)
-    if not search_results["results"]:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="No movies found",
-        )
-    return search_results["results"]
+    try:
+        collection = tmdb.Search()
+        search_results = collection.movie(query=query, page=page)
 
+        if not search_results.get("results"):
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="No movies found",
+            )
+        return search_results["results"]
 
-@router.get("/{movie_id}", response_model=MovieDetail)
-async def get_movie(
-    movie_id: int,
-    db: AsyncSession = Depends(get_db),
-) -> Any:
-    """
-    Get details for a specific movie
-    """
-    collection = tmdb.Movies(movie_id)
-    movie = collection.info()
-    if not movie:
+    except Exception as e:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Movie not found",
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail=f"TMDB API error: {str(e)}"
         )
-    return movie
 
 
 @router.get("/tmdb/{tmdb_id}", response_model=TMDBMovie)
@@ -161,83 +159,86 @@ async def get_movie_from_tmdb(
     return movie
 
 
-@router.post("/", response_model=MovieSchema, status_code=status.HTTP_201_CREATED)
-async def create_movie(
-    movie_data: MovieCreate,
-    db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_manager_user),
-) -> Any:
-    """
-    Create a new movie (admin only)
-    """
-    # Check if movie with this TMDB ID already exists
-    result = await db.execute(select(Movie).filter(Movie.tmdb_id == movie_data.tmdb_id))
-    if result.scalars().first():
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Movie with this TMDB ID already exists",
-        )
+# @router.post("/", response_model=MovieSchema, status_code=status.HTTP_201_CREATED)
+# async def create_movie(
+#     movie_data: MovieCreate,
+#     db: AsyncSession = Depends(get_db),
+#     current_user: User = Depends(get_current_manager_user),
+# ) -> Any:
+#     """
+#     Create a new movie (admin only)
+#     """
+#     # Check if movie with this TMDB ID already exists
+#     result = await db.execute(select(Movie).filter(Movie.tmdb_id == movie_data.tmdb_id))
+#     if result.scalars().first():
+#         raise HTTPException(
+#             status_code=status.HTTP_400_BAD_REQUEST,
+#             detail="Movie with this TMDB ID already exists",
+#         )
 
-    # Create new movie
-    movie = Movie(**movie_data.dict())
-    db.add(movie)
-    await db.commit()
-    await db.refresh(movie)
+#     # Create new movie
+#     movie = Movie(**movie_data.dict())
+#     db.add(movie)
+#     await db.commit()
+#     await db.refresh(movie)
 
-    return movie
+#     return movie
 
 
-@router.get("/showings", response_model=List[dict])
-async def get_movie_showings(
-    movie_id: int = Query(..., description="TMDB ID of the movie"),
-    db: AsyncSession = Depends(get_db),
-) -> Any:
-    """
-    Get all showings for a specific movie
-    """
-    # First get the movie from our database
-    result = await db.execute(select(Movie).filter(Movie.tmdb_id == movie_id))
-    movie = result.scalars().first()
 
-    if not movie:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Movie not found in the database",
-        )
 
-    # Query showings with joined information about rooms
-    query = (
-        select(
-            Showing.id,
-            Showing.movie_id,
-            Showing.start_time,
-            Showing.end_time,
-            Showing.price,
-            Showing.status,
-            Room.id.label("room_id"),
-            Room.name.label("room_name"),
-        )
-        .select_from(Showing)
-        .join(Room, Showing.room_id == Room.id)
-        .filter(Showing.movie_id == movie.id)
-        .filter(Showing.status == "scheduled")
-    )
+### zelfde als get screenings 
+# @router.get("/showings", response_model=List[dict])
+# async def get_movie_showings(
+#     movie_id: int = Query(..., description="TMDB ID of the movie"),
+#     db: AsyncSession = Depends(get_db),
+# ) -> Any:
+#     """
+#     Get all showings for a specific movie
+#     """
+#     # First get the movie from our database
+#     result = await db.execute(select(Movie).filter(Movie.tmdb_id == movie_id))
+#     movie = result.scalars().first()
 
-    result = await db.execute(query)
-    showings = result.all()
+#     if not movie:
+#         raise HTTPException(
+#             status_code=status.HTTP_404_NOT_FOUND,
+#             detail="Movie not found in the database",
+#         )
 
-    # Convert to list of dictionaries
-    showings_list = [
-        {
-            "id": str(showing.id),
-            "movie_id": int(movie_id),  # Use TMDB ID for frontend consistency
-            "room_id": str(showing.room_id),
-            "room_name": showing.room_name,
-            "start_time": showing.start_time.isoformat(),
-            "end_time": showing.end_time.isoformat(),
-            "price": float(showing.price),
-        }
-        for showing in showings
-    ]
+#     # Query showings with joined information about rooms
+#     query = (
+#         select(
+#             Showing.id,
+#             Showing.movie_id,
+#             Showing.start_time,
+#             Showing.end_time,
+#             Showing.price,
+#             Showing.status,
+#             Room.id.label("room_id"),
+#             Room.name.label("room_name"),
+#         )
+#         .select_from(Showing)
+#         .join(Room, Showing.room_id == Room.id)
+#         .filter(Showing.movie_id == movie.id)
+#         .filter(Showing.status == "scheduled")
+#     )
 
-    return showings_list
+#     result = await db.execute(query)
+#     showings = result.all()
+
+#     # Convert to list of dictionaries
+#     showings_list = [
+#         {
+#             "id": str(showing.id),
+#             "movie_id": int(movie_id),  # Use TMDB ID for frontend consistency
+#             "room_id": str(showing.room_id),
+#             "room_name": showing.room_name,
+#             "start_time": showing.start_time.isoformat(),
+#             "end_time": showing.end_time.isoformat(),
+#             "price": float(showing.price),
+#         }
+#         for showing in showings
+#     ]
+
+#     return showings_list

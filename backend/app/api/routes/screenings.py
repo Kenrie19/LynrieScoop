@@ -24,54 +24,56 @@ router = APIRouter(prefix="/screenings", tags=["screenings"])
 
 @router.get("/", response_model=List[Dict])
 async def get_screenings(
+    movie_id: int = Query(..., description="TMDB ID of the movie"),
     db: AsyncSession = Depends(get_db),
 ) -> Any:
     """
     Get all planned screenings
     """
-    result = await db.execute(
-    select(Showing)
-    .options(
-        joinedload(Showing.movie),
-        joinedload(Showing.room),
-        joinedload(Showing.bookings),
+    # First get the movie from our database
+    result = await db.execute(select(Movie).filter(Movie.tmdb_id == movie_id))
+    movie = result.scalars().first()
+
+    if not movie:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Movie not found in the database",
+        )
+    
+    # Query showings with joined information about rooms
+    query = (
+        select(
+            Showing.id,
+            Showing.movie_id,
+            Showing.start_time,
+            Showing.end_time,
+            Showing.price,
+            Showing.status,
+            Room.id.label("room_id"),
+            Room.name.label("room_name"),
+        )
+        .select_from(Showing)
+        .join(Room, Showing.room_id == Room.id)
+        .filter(Showing.movie_id == movie.id)
+        .filter(Showing.status == "scheduled")
     )
-    .order_by(Showing.start_time)
-)
-    showings = result.unique().scalars().all()
 
-    screenings_list = []
-    for showing in showings:
-        # Get the movie details from TMDB if available
-        movie_details = None
-        if showing.movie and showing.movie.tmdb_id:
-            try:
-                collection = tmdb.Movies(showing.movie.tmdb_id)
-                movie_details = collection.info()
-            except Exception as e:
-                # If TMDB API fails, continue with local data
-                pass
+    result = await db.execute(query)
+    showings = result.all()
 
-        available_tickets = (
-            showing.room.capacity - len(showing.bookings) if showing.room else 0
-        )
-
-        screenings_list.append(
-            {
-                "id": str(showing.id),
-                "movie_id": showing.movie.tmdb_id if showing.movie else None,
-                "movie_title": (
-                    showing.movie.title
-                    if showing.movie
-                    else (movie_details.get("title") if movie_details else "Unknown")
-                ),
-                "start_time": showing.start_time.isoformat(),
-                "end_time": showing.end_time.isoformat() if showing.end_time else None,
-                "room": showing.room.name if showing.room else "Unknown",
-                "available_tickets": available_tickets,
-                "price": showing.price,
-            }
-        )
+    # Convert to list of dictionaries
+    screenings_list = [
+        {
+            "id": str(showing.id),
+            "movie_id": int(movie_id),  # Use TMDB ID for frontend consistency
+            "room_id": str(showing.room_id),
+            "room_name": showing.room_name,
+            "start_time": showing.start_time.isoformat(),
+            "end_time": showing.end_time.isoformat(),
+            "price": float(showing.price),
+        }
+        for showing in showings
+    ]
 
     return screenings_list
 
@@ -90,13 +92,9 @@ async def get_screening_tickets(
     showing = result.scalars().first()
 
     if not showing:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Screening not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Screening not found")
 
-    available_tickets = (
-        showing.room.capacity - showing.bookings_count if showing.room else 0
-    )
+    available_tickets = showing.room.capacity - showing.bookings_count if showing.room else 0
 
     return {
         "screening_id": str(showing.id),
@@ -122,17 +120,17 @@ async def create_screening(
     """
     # Check if user is a manager
     if current_user.role != "manager":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail="Not enough permissions"
-        )
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not enough permissions")
 
     # Verify that the movie exists using tmdb_id
     movie_result = await db.execute(select(Movie).filter(Movie.tmdb_id == movie_id))
     movie = movie_result.scalars().first()
+    print(f"DEBUG: Searching movie with tmdb_id={movie_id}")
 
     # If movie doesn't exist in our database, create it using TMDB data
     if not movie:
         try:
+            print("DEBUG: Movie not found locally, trying TMDB...")
             collection = tmdb.Movies(movie_id)
             tmdb_movie = collection.info()
 
@@ -154,9 +152,7 @@ async def create_screening(
     room_result = await db.execute(select(Room).filter(Room.id == room_id))
     room = room_result.scalars().first()
     if not room:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Room not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Room not found")
 
     # Check for time conflicts in the same room
     conflict_query = (
@@ -210,9 +206,7 @@ async def create_screening(
 async def update_screening(
     id: UUID,
     room_id: Optional[UUID] = Body(None, description="Room ID"),
-    start_time: Optional[datetime] = Body(
-        None, description="Start time of the screening"
-    ),
+    start_time: Optional[datetime] = Body(None, description="Start time of the screening"),
     end_time: Optional[datetime] = Body(None, description="End time of the screening"),
     price: Optional[float] = Body(None, description="Ticket price"),
     status: Optional[str] = Body(None, description="Status of the screening"),
@@ -225,18 +219,14 @@ async def update_screening(
     """
     # Check if user is a manager
     if current_user.role != "manager":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail="Not enough permissions"
-        )
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not enough permissions")
 
     # Verify that the screening exists
     result = await db.execute(select(Showing).filter(Showing.id == id))
     screening = result.scalars().first()
 
     if not screening:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Screening not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Screening not found")
 
     # Update fields if provided
     if room_id is not None:
@@ -244,9 +234,7 @@ async def update_screening(
         room_result = await db.execute(select(Room).filter(Room.id == room_id))
         room = room_result.scalars().first()
         if not room:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Room not found"
-            )
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Room not found")
         screening.room_id = room_id
 
     if start_time is not None:
@@ -274,15 +262,9 @@ async def update_screening(
             .filter(Showing.id != id)  # Exclude the current screening
             .filter(
                 # Check for overlapping times
-                (
-                    (Showing.start_time <= actual_start)
-                    & (Showing.end_time > actual_start)
-                )
+                ((Showing.start_time <= actual_start) & (Showing.end_time > actual_start))
                 | ((Showing.start_time < actual_end) & (Showing.end_time >= actual_end))
-                | (
-                    (Showing.start_time >= actual_start)
-                    & (Showing.end_time <= actual_end)
-                )
+                | ((Showing.start_time >= actual_start) & (Showing.end_time <= actual_end))
             )
         )
 
@@ -299,9 +281,7 @@ async def update_screening(
     await db.refresh(screening)
 
     # Get movie details for response
-    movie_result = await db.execute(
-        select(Movie).filter(Movie.id == screening.movie_id)
-    )
+    movie_result = await db.execute(select(Movie).filter(Movie.id == screening.movie_id))
     movie = movie_result.scalars().first()
     movie_id = movie.tmdb_id if movie else None
 
@@ -328,21 +308,17 @@ async def delete_screening(
     """
     # Check if user is a manager
     if current_user.role != "manager":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail="Not enough permissions"
-        )
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not enough permissions")
 
     # Verify that the screening exists
     result = await db.execute(select(Showing).filter(Showing.id == id))
     screening = result.scalars().first()
 
     if not screening:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Screening not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Screening not found")
 
     # Delete the screening
     await db.delete(screening)
     await db.commit()
-    
+
     # For a 204 response, don't return anything
