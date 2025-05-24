@@ -29,7 +29,21 @@ async def get_showing(
     db: AsyncSession = Depends(get_db),
 ) -> Any:
     """
-    Get all showings for a specific movie by its TMDB ID
+    Retrieve all showings for a specific movie by its TMDB ID.
+
+    This endpoint returns details about all scheduled showings for a particular movie,
+    identified by its TMDB ID. The response includes showing times, room information,
+    and ticket availability.
+
+    Args:
+        movie_id: TMDB ID of the movie to get showings for
+        db: Database session dependency
+
+    Returns:
+        List[dict]: List of showing objects with details including times, room, and availability
+
+    Raises:
+        HTTPException: If there's an error retrieving the showings
     """
     # First get the movie from our database using the TMDB ID
     """
@@ -81,7 +95,21 @@ async def get_showing_seats(
     db: AsyncSession = Depends(get_db),
 ) -> Any:
     """
-    Get all seats and their status for a specific showing
+    Retrieve all seats and their availability status for a specific showing.
+
+    This endpoint returns details about each seat in the room for a particular showing,
+    including seat position (row/number), accessibility features, and current booking status
+    (available, reserved, or booked). This is used for the seat selection UI.
+
+    Args:
+        showing_id: UUID of the showing to get seats for
+        db: Database session dependency
+
+    Returns:
+        List[dict]: List of seat objects with position and status information
+
+    Raises:
+        HTTPException: If the showing or room information is not found
     """
     # First, verify the showing exists
     result = await db.execute(select(Showing).filter(Showing.id == showing_id))
@@ -158,8 +186,27 @@ async def create_showing(
     db: AsyncSession = Depends(get_db),
 ) -> Any:
     """
-    Create a new showing for a movie
-    Only administrators can create showings
+    Create a new movie showing/screening.
+
+    This endpoint allows cinema administrators to create a new showing by specifying
+    the movie (via TMDB ID), room, timing, pricing, and initial status. The system
+    verifies that there are no scheduling conflicts before creating the showing.
+
+    Args:
+        movie_id: TMDB ID of the movie to show
+        room_id: UUID of the room where the showing will take place
+        start_time: Date and time when the showing starts
+        end_time: Date and time when the showing ends
+        price: Ticket price for this showing
+        showing_status: Initial status of the showing (default: "scheduled")
+        current_user: The authenticated user (injected by the dependency)
+        db: Database session dependency
+
+    Returns:
+        Dict: The created showing details
+
+    Raises:
+        HTTPException: If movie or room not found, or there's a scheduling conflict
     """
     # Check if user is an admin
     # TODO: validate_admin(current_user)

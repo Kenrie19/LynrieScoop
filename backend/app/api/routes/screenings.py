@@ -1,3 +1,10 @@
+"""
+Screenings API routes for the LynrieScoop cinema application.
+
+This module defines the REST API endpoints for managing movie screenings/showings,
+including creating, retrieving, updating, and deleting scheduled screenings.
+"""
+
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 from uuid import UUID
@@ -26,7 +33,20 @@ async def get_screenings(
     db: AsyncSession = Depends(get_db),
 ) -> Any:
     """
-    Get all planned screenings
+    Retrieve a list of all planned movie screenings.
+
+    This endpoint returns information about all scheduled movie screenings,
+    including movie details, room information, timing, and pricing. This
+    is used for displaying the screening schedule to customers.
+
+    Args:
+        db: Database session dependency
+
+    Returns:
+        List[Dict]: List of screening objects with associated movie and room details
+
+    Raises:
+        HTTPException: If there's an error retrieving the screenings
     """
     result = await db.execute(
         select(Showing)
@@ -109,6 +129,29 @@ async def create_screening(
     current_user: User = Depends(get_current_manager_user),
     db: AsyncSession = Depends(get_db),
 ) -> Any:
+    """
+    Create a new movie screening.
+
+    This endpoint allows cinema managers to schedule a new movie screening
+    by specifying the movie, room, timing, and pricing details. If the movie
+    doesn't exist in the local database, it will be fetched from TMDB and added.
+
+    Args:
+        movie_id: TMDB ID of the movie to screen
+        room_id: UUID of the room where the screening will take place
+        start_time: Date and time when the screening starts
+        end_time: Date and time when the screening ends
+        price: Ticket price for this screening
+        current_user: The authenticated manager user (injected by the dependency)
+        db: Database session dependency
+
+    Returns:
+        Dict: The created screening details
+
+    Raises:
+        HTTPException: If the movie not found in TMDB, room doesn't exist,
+                      or there's a scheduling conflict
+    """
     """
     Create a new screening for a movie
     Only managers can create screenings
@@ -207,8 +250,28 @@ async def update_screening(
     db: AsyncSession = Depends(get_db),
 ) -> Any:
     """
-    Update a screening
-    Only managers can update screenings
+    Update an existing movie screening.
+
+    This endpoint allows cinema managers to modify the details of an existing
+    screening, such as changing the room, timing, pricing, or status.
+    Only users with manager role can update screenings.
+
+    Args:
+        id: UUID of the screening to update
+        room_id: Optional new room ID for the screening
+        start_time: Optional new start time for the screening
+        end_time: Optional new end time for the screening
+        price: Optional new ticket price
+        status: Optional new status (e.g., "scheduled", "cancelled")
+        current_user: The authenticated user (injected by the dependency)
+        db: Database session dependency
+
+    Returns:
+        Dict: The updated screening details
+
+    Raises:
+        HTTPException: If screening not found, user lacks permission,
+                      room doesn't exist, or there's a scheduling conflict
     """
     # Check if user is a manager
     if str(current_user.role) != "manager":
@@ -295,8 +358,23 @@ async def delete_screening(
     db: AsyncSession = Depends(get_db),
 ) -> None:
     """
-    Delete a screening
-    Only managers can delete screenings
+    Delete a movie screening.
+
+    This endpoint allows cinema managers to remove a scheduled screening
+    from the system. Any existing bookings for this screening may also
+    be affected (canceled or refunded depending on business rules).
+    Only users with manager role can delete screenings.
+
+    Args:
+        id: UUID of the screening to delete
+        current_user: The authenticated user (injected by the dependency)
+        db: Database session dependency
+
+    Returns:
+        None: No content is returned (HTTP 204)
+
+    Raises:
+        HTTPException: If screening not found or user lacks permission
     """
     # Check if user is a manager
     if current_user.role != "manager":

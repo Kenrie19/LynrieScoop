@@ -14,7 +14,17 @@ router = APIRouter(prefix="/cinema", tags=["cinema"])
 @router.get("/", response_model=dict)
 async def get_cinema_info(db: AsyncSession = Depends(get_db)) -> Any:
     """
-    Get information about the cinema
+    Retrieve general information about the cinema.
+
+    This endpoint returns basic details about the cinema including name,
+    location, contact information, and a short description. This information
+    is used throughout the application for display purposes.
+
+    Args:
+        db: Database session dependency (not used in this implementation)
+
+    Returns:
+        dict: Cinema information including name, address, and contact details
     """
     # Return static information about the single cinema
     return {
@@ -30,7 +40,17 @@ async def get_cinema_info(db: AsyncSession = Depends(get_db)) -> Any:
 @router.get("/rooms", response_model=List[dict])
 async def get_rooms(db: AsyncSession = Depends(get_db)) -> Any:
     """
-    Get all rooms in the cinema
+    Retrieve a list of all rooms in the cinema.
+
+    This endpoint returns information about all available rooms in the cinema,
+    including room identifiers, names, and seating capacities. This is used
+    for displaying room options when browsing showings or creating screenings.
+
+    Args:
+        db: Database session dependency
+
+    Returns:
+        List[dict]: List of room objects with basic information
     """
     # Get rooms
     query = select(Room)
@@ -43,7 +63,21 @@ async def get_rooms(db: AsyncSession = Depends(get_db)) -> Any:
 @router.get("/rooms/{room_id}", response_model=dict)
 async def get_room(room_id: UUID, db: AsyncSession = Depends(get_db)) -> Any:
     """
-    Get details for a specific room
+    Retrieve detailed information about a specific cinema room.
+
+    This endpoint returns comprehensive details about a particular room in the cinema,
+    including its name, seating capacity, and special features such as 3D or IMAX
+    capabilities. This is used for displaying room details on booking pages.
+
+    Args:
+        room_id: UUID of the room to retrieve
+        db: Database session dependency
+
+    Returns:
+        dict: Room information with complete details
+
+    Raises:
+        HTTPException: If the room with the given ID is not found
     """
     # Get room
     result = await db.execute(select(Room).filter(Room.id == room_id))

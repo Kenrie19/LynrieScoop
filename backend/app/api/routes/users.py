@@ -1,3 +1,10 @@
+"""
+User API routes for the LynrieScoop cinema application.
+
+This module defines the REST API endpoints for user profile management,
+allowing users to view and update their information.
+"""
+
 from typing import Any
 
 from fastapi import APIRouter, Depends
@@ -15,7 +22,20 @@ router = APIRouter(prefix="/users", tags=["users"])
 @router.get("/me", response_model=UserSchema)
 async def get_current_user_info(current_user: User = Depends(get_current_user)) -> Any:
     """
-    Get current user information
+    Retrieve detailed profile information for the currently authenticated user.
+
+    This endpoint returns the full user profile information for display in the
+    user profile section of the application. It uses the authentication token
+    to identify the user.
+
+    Args:
+        current_user: The authenticated user (injected by the dependency)
+
+    Returns:
+        UserSchema: Complete user profile information
+
+    Raises:
+        HTTPException: If authentication fails (handled by dependency)
     """
     return current_user
 
@@ -27,7 +47,21 @@ async def update_current_user(
     current_user: User = Depends(get_current_user),
 ) -> Any:
     """
-    Update current user information
+    Update the profile information for the currently authenticated user.
+
+    This endpoint allows users to modify their profile details such as name,
+    email, or avatar. Password changes are handled through a separate endpoint.
+
+    Args:
+        user_update: Updated user information
+        db: Database session dependency
+        current_user: The authenticated user (injected by the dependency)
+
+    Returns:
+        UserSchema: The updated user profile information
+
+    Raises:
+        HTTPException: If authentication fails or validation errors occur
     """
     # Update user fields directly
     if user_update.name is not None:

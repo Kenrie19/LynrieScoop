@@ -1,3 +1,10 @@
+"""
+Seat data model for the LynrieScoop cinema application.
+
+This module defines the ORM model for individual seats within cinema rooms,
+allowing for detailed seat management and reservations.
+"""
+
 import uuid
 from datetime import datetime
 
@@ -10,7 +17,26 @@ from app.db.session import Base
 
 class Seat(Base):
     """
-    Represents a seat in a cinema room
+    SQLAlchemy ORM model representing an individual seat in a cinema room.
+
+    This model stores detailed information about each seat, including its
+    position, type, accessibility features, and status. Each seat belongs
+    to a specific room and can be reserved for showings.
+
+    Attributes:
+        id (UUID): Primary key, unique identifier for the seat
+        room_id (UUID): Foreign key to the room this seat belongs to
+        row (str): Row identifier (e.g., "A", "B", "C")
+        number (int): Seat number within the row
+        seat_type (str): Type of seat ("standard", "premium", "VIP", etc.)
+        is_accessible (bool): Whether this seat is wheelchair accessible
+        is_active (bool): Whether the seat is currently available for booking
+        created_at (datetime): When the seat record was created
+        updated_at (datetime): When the seat record was last updated
+
+    Relationships:
+        room: The room this seat belongs to
+        seat_reservations: History of reservations for this seat
     """
 
     __tablename__ = "seats"

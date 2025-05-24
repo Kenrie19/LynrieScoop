@@ -1,3 +1,10 @@
+"""
+Configuration settings for the LynrieScoop cinema application.
+
+This module defines application settings using Pydantic BaseSettings,
+which allows for environment variable validation, typing, and defaults.
+"""
+
 import os
 import secrets
 from typing import List, Optional, Union
@@ -6,10 +13,30 @@ from dotenv import load_dotenv
 from pydantic import EmailStr, Field, PostgresDsn, field_validator
 from pydantic_settings import BaseSettings
 
+# Load environment variables from .env file
 load_dotenv()
 
 
 class Settings(BaseSettings):
+    """
+    Application settings with environment variable loading and validation.
+
+    This class defines all configuration parameters for the application,
+    with defaults that can be overridden by environment variables.
+
+    Attributes:
+        API_V1_STR: API version prefix for URL paths
+        SECRET_KEY: Secret key for JWT token signing
+        ACCESS_TOKEN_EXPIRE_MINUTES: JWT token expiration time
+        CORS_ORIGINS: List of allowed origins for CORS
+        ALLOWED_HOSTS: List of allowed hosts for trusted host middleware
+        DATABASE_URL: PostgreSQL database connection string
+        MQTT_BROKER: Hostname or IP of the MQTT broker
+        MQTT_PORT: Port for the MQTT broker connection
+        TMDB_API_KEY: API key for The Movie Database API
+        TMDB_API_BASE_URL: Base URL for TMDB API requests
+    """
+
     # API configuration
     API_V1_STR: str = "/api/v1"
     SECRET_KEY: str = secrets.token_urlsafe(32)

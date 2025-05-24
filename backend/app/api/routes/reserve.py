@@ -24,9 +24,22 @@ async def reserve_ticket(
     db: AsyncSession = Depends(get_db),
 ) -> Any:
     """
-    Reserve a ticket for a screening.
-    Only authenticated users can reserve tickets.
-    Users can only reserve one ticket per request.
+    Reserve a ticket for a specific movie screening.
+
+    This endpoint allows authenticated users to reserve a single ticket for a
+    movie screening. The system verifies ticket availability before creating the
+    booking and updates the screening's remaining ticket count.
+
+    Args:
+        screening_id: UUID of the screening to reserve a ticket for
+        current_user: The authenticated user (injected by the dependency)
+        db: Database session dependency
+
+    Returns:
+        Dict: Booking confirmation with details including booking ID and status
+
+    Raises:
+        HTTPException: If screening not found or no tickets are available
     """
     # Get the screening
     result = await db.execute(

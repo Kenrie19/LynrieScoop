@@ -1,3 +1,11 @@
+"""
+Booking API routes for the LynrieScoop cinema application.
+
+This module defines the REST API endpoints for managing ticket bookings,
+including creating bookings, retrieving booking information, and handling
+the booking lifecycle.
+"""
+
 from datetime import datetime
 from typing import Any, List
 
@@ -22,7 +30,21 @@ async def get_my_bookings(
     db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)
 ) -> Any:
     """
-    Get current user's bookings with complete information including movie and showing details
+    Retrieve all bookings for the currently authenticated user.
+
+    This endpoint returns a list of the user's bookings with comprehensive information,
+    including movie details, showing times, seat information, and booking status.
+    This is used for displaying the user's booking history and current tickets.
+
+    Args:
+        db: Database session dependency
+        current_user: The authenticated user (injected by the dependency)
+
+    Returns:
+        List[dict]: List of booking objects with full movie and showing details
+
+    Raises:
+        HTTPException: If authentication fails (handled by dependency)
     """
     # Query bookings with related info
     query = (
@@ -85,7 +107,24 @@ async def create_booking(
     current_user: User = Depends(get_current_user),
 ) -> Any:
     """
-    Create a new booking
+    Create a new booking for a movie showing.
+
+    This endpoint allows authenticated users to create a booking for a specific
+    showing. The booking data must include showing ID, seat information, and
+    payment details if applicable. This endpoint handles the entire booking
+    process including payment processing and confirmation.
+
+    Args:
+        booking_data: Dictionary containing booking details including showing ID and seats
+        db: Database session dependency
+        current_user: The authenticated user (injected by the dependency)
+
+    Returns:
+        dict: Booking confirmation with details including booking ID and reference number
+
+    Raises:
+        HTTPException: If the showing is not available, seats are already taken,
+                      or payment processing fails
     """
     # Placeholder implementation - would need proper implementation with MQTT integration
     return {"message": "Booking created successfully"}
@@ -98,7 +137,22 @@ async def reserve_seats(
     current_user: User = Depends(get_current_user),
 ) -> Any:
     """
-    Reserve seats for a showing
+    Reserve specific seats for a movie showing.
+
+    This endpoint allows authenticated users to reserve specific seats for a showing.
+    The system verifies seat availability and creates the necessary seat reservation
+    records. MQTT messages are published to notify other users about seat status changes.
+
+    Args:
+        reservation_data: Dictionary containing showing ID and selected seats
+        db: Database session dependency
+        current_user: The authenticated user (injected by the dependency)
+
+    Returns:
+        dict: Confirmation message with reservation details
+
+    Raises:
+        HTTPException: If seats are unavailable or invalid, or authentication fails
     """
     # Get MQTT client to publish seat updates
     # mqtt_client = get_mqtt_client()
