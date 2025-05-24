@@ -1,0 +1,31 @@
+# Multi-stage build: Use Python as the builder
+FROM python:3.12-slim AS builder
+
+WORKDIR /app
+
+RUN pip install \
+    sphinx \
+    sphinx-rtd-theme
+
+COPY requirements.txt .
+
+RUN pip install -r requirements.txt
+
+# Copy documentation files first (before the app code)
+COPY ./docs /app/docs
+
+# Then copy the application code
+COPY ./app /app/app
+COPY ./main.py /app/
+
+# Use the existing docs directory with our pre-created files
+WORKDIR /app/docs
+
+# Build the documentation
+RUN sphinx-build -b html . _build/html
+
+FROM nginx:alpine
+
+COPY --from=builder /app/docs/_build/html /usr/share/nginx/html
+
+EXPOSE 80

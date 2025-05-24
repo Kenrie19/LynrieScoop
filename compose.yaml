@@ -32,9 +32,18 @@ services:
       - "8081:80"
     restart: unless-stopped
 
+  backend-docs:
+    container_name: backend-docs
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.docs
+    ports:
+      - "8082:80"
+    restart: unless-stopped
+
   backend:
     container_name: backend-api
-    build: 
+    build:
       context: ./backend
       dockerfile: Dockerfile
     restart: unless-stopped
