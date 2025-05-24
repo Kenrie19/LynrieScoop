@@ -1,0 +1,22 @@
+# Multi-stage build: Use the current image as the builder
+FROM node:21-alpine AS builder
+
+WORKDIR /app
+
+COPY package*.json .
+
+RUN npm install
+
+COPY . .
+
+# Generate documentation using TypeDoc instead (better TypeScript support)
+RUN npx typedoc --out docs resources/typescript/*.ts --name "LynrieScoop Documentation"
+
+# Second stage: use Nginx to serve static files
+FROM nginx:alpine
+
+# Copy the generated docs from the builder stage
+COPY --from=builder /app/docs /usr/share/nginx/html
+
+# Expose port 80 for Nginx
+EXPOSE 80

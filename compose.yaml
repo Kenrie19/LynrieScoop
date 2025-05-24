@@ -9,6 +9,11 @@ services:
       POSTGRES_DB: cinema
     volumes:
       - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   mqtt-broker:
     container_name: mqtt-broker
@@ -18,6 +23,14 @@ services:
       - "1883:1883"
     volumes:
       - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+  jsdoc:
+    container_name: frontend-docs
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.docs
+    ports:
+      - "8081:80"
+    restart: unless-stopped
 
   backend:
     container_name: backend-api
@@ -27,16 +40,17 @@ services:
     restart: unless-stopped
     env_file:
       - ./backend/.env
-    depends_on:
-      - mqtt-broker
-      - database
     ports:
       - "8000:8000"
     environment:
       DATABASE_URL: "postgresql://postgres:postgres@database:5432/cinema"
       MQTT_BROKER: "mqtt-broker"
       MQTT_PORT: 1883
+    depends_on:
+      database:
+        condition: service_healthy
+      mqtt-broker:
+        condition: service_started
 
 volumes:
   db_data:
-
