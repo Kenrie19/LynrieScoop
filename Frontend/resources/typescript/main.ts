@@ -1,24 +1,45 @@
+/**
+ * Represents a movie with its basic information.
+ * @interface
+ */
 interface Movie {
+  /** Unique identifier for the movie */
   id: number;
+  /** Title of the movie */
   title: string;
+  /** URL or path to the movie poster image */
   poster_path: string;
+  /** Plot summary of the movie (optional) */
   overview?: string;
+  /** Average rating of the movie on a scale of 0-10 (optional) */
   vote_average?: number;
 }
 
+/**
+ * Initializes the page content when the DOM is fully loaded.
+ * Handles authentication-dependent UI elements and fetches now playing movies.
+ */
 document.addEventListener('DOMContentLoaded', () => {
   // 🔐 Auth-only links zichtbaar maken bij login
   const authOnlyLinks = document.querySelectorAll('.auth-only');
   const isLoggedIn = localStorage.getItem('loggedIn');
 
+  /**
+   * Shows or hides authentication-dependent elements based on login status
+   */
   authOnlyLinks.forEach((link) => {
     (link as HTMLElement).style.display = isLoggedIn ? 'inline' : 'none';
   });
-
+  /**
+   * Retrieves and displays the currently playing movies
+   */
   // 🎬 Now Playing movies ophalen
   const grid = document.getElementById('nowPlayingGrid') as HTMLElement;
   if (!grid) return;
 
+  /**
+   * Fetches now playing movies from the API
+   */
   fetch('http://localhost:8000/movies/movies/now_playing') // Backend endpoint poort en url aanpassen
     .then((response) => {
       if (!response.ok) throw new Error('Network response was not ok');

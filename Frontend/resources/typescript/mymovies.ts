@@ -1,15 +1,30 @@
+/**
+ * Represents a movie ticket with booking details.
+ * @interface
+ */
 interface MovieTicket {
+  /** The title of the movie */
   title: string;
+  /** URL to the movie poster image */
   posterUrl: string;
+  /** Date of the screening in YYYY-MM-DD format */
   date: string;
+  /** Time of the screening in HH:MM format */
   time: string;
+  /** Room or theater where the screening takes place */
   room: string;
+  /** Comma-separated list of seat numbers */
   seats: string;
+  /** Whether this is an upcoming screening (true) or a past screening (false) */
   isUpcoming: boolean;
 }
 
+/** Default path to the movie poster image used for mockup tickets */
 const posterPath = '/resources/images/movie_mockup.jpg';
 
+/**
+ * Sample movie tickets for demonstration purposes
+ */
 const movieTickets: MovieTicket[] = [
   {
     title: 'Dune: Part Two',
@@ -67,6 +82,11 @@ const movieTickets: MovieTicket[] = [
   },
 ];
 
+/**
+ * Creates an HTML element representing a movie ticket card
+ * @param {MovieTicket} ticket - The ticket data to display
+ * @returns {HTMLElement} A div element containing the formatted ticket information
+ */
 function createMovieTicketCard(ticket: MovieTicket): HTMLElement {
   const card = document.createElement('div');
   card.classList.add('movie-ticket');
@@ -86,6 +106,9 @@ function createMovieTicketCard(ticket: MovieTicket): HTMLElement {
   return card;
 }
 
+/**
+ * Renders all movie tickets, separating them into upcoming and watched sections
+ */
 function renderMovieTickets() {
   const upcomingContainer = document.querySelector('.upcoming-movies') as HTMLElement;
   const watchedContainer = document.querySelector('.watched-movies') as HTMLElement;
@@ -112,4 +135,7 @@ function renderMovieTickets() {
   watchedContainer.appendChild(watchedList);
 }
 
+/**
+ * Initialize the page content when the DOM is fully loaded
+ */
 document.addEventListener('DOMContentLoaded', renderMovieTickets);

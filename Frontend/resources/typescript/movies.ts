@@ -1,34 +1,68 @@
+/**
+ * Represents a movie screening event with details about time, location, and availability.
+ * @interface
+ */
 interface Screening {
+  /** Unique identifier for the screening */
   id: string;
+  /** Identifier of the movie being screened */
   movie_id: number;
+  /** Title of the movie being screened */
   movie_title: string;
+  /** Start time of the screening in ISO format */
   start_time: string; // ISO string
+  /** End time of the screening in ISO format */
   end_time: string;
+  /** Room or theater where the screening takes place */
   room: string;
+  /** Number of tickets still available for purchase */
   available_tickets: number;
+  /** Price per ticket in the local currency */
   price: number;
 }
 
+/** Array to store all fetched screenings */
 let screenings: Screening[] = [];
 
+/**
+ * Fetches movie screenings from the API.
+ * @returns {Promise<Screening[]>} A promise that resolves to an array of screening objects
+ * @throws {Error} When the network request fails
+ */
 async function fetchScreenings(): Promise<Screening[]> {
   const response = await fetch('http://localhost:8000/screenings/screenings');
   if (!response.ok) throw new Error('Failed to fetch screenings');
   return await response.json();
 }
 
+/** Reference to the filter bar element for date selection */
 const filterBar = document.getElementById('filter-bar') as HTMLElement;
+/** Reference to the container element for movie listings */
 const moviesList = document.getElementById('movies-list') as HTMLElement;
 
+/** Current date used for filtering screenings */
 const today = new Date();
 
+/**
+ * Formats a Date object to YYYY-MM-DD string format
+ * @param {Date} date - The date object to format
+ * @returns {string} Date in YYYY-MM-DD format
+ */
 function formatDate(date: Date): string {
   return date.toISOString().split('T')[0];
 }
 
-type DayOption = { label: string; value: string };
+/**
+ * Represents a day option for the filter bar
+ * @typedef {Object} DayOption
+ * @property {string} label - Display label for the day option
+ * @property {string} value - Value used for filtering screenings
+ */
 type DayOption = { label: string; value: string };
 
+/**
+ * Available day filter options for movie screenings
+ */
 const dayOptions: DayOption[] = [
   { label: 'Today', value: 'today' },
   { label: 'Tomorrow', value: 'tomorrow' },
@@ -40,9 +74,15 @@ const dayOptions: DayOption[] = [
   { label: 'Coming Soon', value: 'coming_soon' },
 ];
 
-let selectedDay = 'today';
+/** Currently selected day filter value */
 let selectedDay = 'today';
 
+/**
+ * Renders the day filter buttons in the filter bar
+ */
+/**
+ * Renders the day filter buttons in the filter bar
+ */
 function renderFilterButtons(): void {
   filterBar.innerHTML = '';
   dayOptions.forEach((opt) => {
@@ -59,12 +99,19 @@ function renderFilterButtons(): void {
   });
 }
 
+/**
+ * Updates the active state of filter buttons based on the selected day
+ */
 function updateActiveButton(): void {
   [...filterBar.children].forEach((btn) => {
     btn.classList.toggle('active', btn instanceof HTMLElement && btn.dataset.value === selectedDay);
   });
 }
 
+/**
+ * Filters screenings based on the selected day option
+ * @returns {Screening[]} Array of screenings filtered by the selected day
+ */
 function filterScreeningsBySelectedDay(): Screening[] {
   if (selectedDay === 'coming_soon') {
     // Coming soon: after the last day in dayOptions
@@ -83,6 +130,11 @@ function filterScreeningsBySelectedDay(): Screening[] {
   return screenings.filter((s) => s.start_time.split('T')[0] === targetDate);
 }
 
+/**
+ * Renders the list of movies based on the filtered screenings
+ * Fetches screenings if needed and groups them by movie and room
+ * @returns {Promise<void>}
+ */
 async function renderMovies(): Promise<void> {
   moviesList.innerHTML = '';
   try {
