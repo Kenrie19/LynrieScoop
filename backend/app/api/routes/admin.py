@@ -269,54 +269,6 @@ async def get_dashboard_stats(
     }
 
 
-@router.get("/movies", response_model=List[dict])
-async def get_admin_movies(
-    db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_manager_user),
-    q: str = "",
-    skip: int = 0,
-    limit: int = 100,
-) -> Any:
-    """
-    Get all movies with optional filtering (admin only)
-    """
-    query = select(Movie)
-
-    # Apply search filter if query parameter is provided
-    if q:
-        # Case-insensitive search on title or overview
-        query = query.filter((Movie.title.ilike(f"%{q}%")) | (Movie.overview.ilike(f"%{q}%")))
-
-    # Apply pagination
-    query = query.offset(skip).limit(limit)
-
-    # Execute query
-    result = await db.execute(query)
-    movies = result.scalars().all()
-
-    return [
-        {
-            "id": str(movie.id),
-            "tmdb_id": movie.tmdb_id,
-            "title": movie.title,
-            "overview": movie.overview,
-            "poster_path": movie.poster_path,
-            "backdrop_path": movie.backdrop_path,
-            "release_date": (movie.release_date.isoformat() if movie.release_date else None),
-            "runtime": movie.runtime,
-            "status": movie.status,
-            "vote_average": movie.vote_average,
-            "genres": movie.genres or [],
-            "director": movie.director or "",
-            "cast": movie.cast or [],
-            "trailer_url": movie.trailer_url,
-            "created_at": movie.created_at.isoformat() if movie.created_at else None,
-            "updated_at": movie.updated_at.isoformat() if movie.updated_at else None,
-        }
-        for movie in movies
-    ]
-
-
 @router.delete("/movies/{movie_id}", response_model=dict)
 async def delete_movie(
     movie_id: UUID,
@@ -345,65 +297,11 @@ async def delete_movie(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Cannot delete movie that has showings scheduled",
         )
-
-        # Option 2 (alternative): Cascade delete all showings
-        # for showing in showings:
-        #     await db.delete(showing)
-
     # Delete the movie
     await db.delete(movie)
     await db.commit()
 
     return {"message": "Movie deleted successfully"}
-
-
-@router.get("/tmdb/search", response_model=dict)
-async def search_tmdb_movies(
-    query: str,
-    db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_manager_user),
-) -> Any:
-    """
-    Search for movies in The Movie Database (TMDB) API.
-
-    This endpoint allows managers to search for movies in the TMDB API by title or keywords.
-    Results can then be imported into the local database for creating showings.
-    Only users with manager role can perform TMDB searches.
-
-    Args:
-        query: Search term for finding movies
-        db: Database session dependency
-        current_user: The authenticated manager user (injected by the dependency)
-
-    Returns:
-        dict: TMDB API response containing search results
-
-    Raises:
-        HTTPException: If the TMDB API request fails or authentication fails
-    """
-    try:
-        # TMDB API endpoint
-        url = "https://api.themoviedb.org/3/search/movie"
-
-        # Parameters
-        params = {
-            "api_key": settings.TMDB_API_KEY,
-            "query": query,
-            "language": "en-US",
-            "page": 1,
-            "include_adult": "false",
-        }
-
-        # Make request to TMDB
-        response = requests.get(url, params=params)
-        response.raise_for_status()  # Raise exception for non-200 status codes
-
-        return response.json()
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error searching TMDB: {str(e)}",
-        )
 
 
 @router.post("/tmdb/import/{tmdb_id}", response_model=dict)

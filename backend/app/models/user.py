@@ -40,8 +40,8 @@ class User(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     name = Column(String, nullable=False)
     hashed_password = Column(String, nullable=False)
-    role: Column[Literal["user", "manager", "admin"]] = Column(
-        Enum("user", "manager", "admin", name="user_role"), default="user", nullable=False
+    role: Column[Literal["user", "manager"]] = Column(
+        Enum("user", "manager", name="user_role"), default="user", nullable=False
     )
     is_active = Column(Boolean, default=True)
     avatar = Column(String, nullable=True)

@@ -29,12 +29,19 @@ router = APIRouter(prefix="/movies", tags=["movies"])
 
 
 @router.get("/", response_model=List[MovieSchema])
-async def get_movies(
-    skip: int = 0,
-    limit: int = 100,
-    search: Optional[str] = None,
-    sort_by: str = "popularity.desc",
-    page: int = 1,
+async def get_movies(skip: int = 0, limit: int = 100, db: AsyncSession = Depends(get_db)) -> Any:
+    """
+    Get list of movies from local database
+    """
+    result = await db.execute(select(Movie).offset(skip).limit(limit))
+    movies = result.scalars().all()
+    return movies
+
+
+@router.get("/by_id/{tmdb_id}", response_model=MovieDetail)
+async def get_movie(
+    tmdb_id: int,
+    db: AsyncSession = Depends(get_db),
 ) -> Any:
     """
     Retrieve a list of movies with optional filtering and pagination.
@@ -55,17 +62,17 @@ async def get_movies(
     Raises:
         HTTPException: If there's an issue retrieving the movies
     """
-    """
-    Get list of movies from TMDB API
-    """
-    collection = tmdb.Movies()
-    movies = collection.popular(page=page, sort_by=sort_by)
-    if not movies["results"]:
+
+    result = await db.execute(select(Movie).filter(Movie.tmdb_id == tmdb_id))
+    movie = result.scalars().first()
+
+    if not movie:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="No movies found",
+            detail="Movie not found",
         )
-    return movies["results"]
+
+    return movie
 
 
 @router.get("/now_playing", response_model=List[TMDBMovie])
@@ -180,67 +187,25 @@ async def get_top_rated_movies(
 async def search_movies(
     query: str = Query(..., min_length=1),
     page: int = Query(1, ge=1, le=1000),
-    sort_by: str = Query("popularity.desc", description="Sort results by specified criteria"),
 ) -> Any:
     """
-    Search for movies in TMDB by title or keywords.
-
-    This endpoint allows users to search for movies in the TMDB database
-    by providing a search query. This can match movie titles, actors,
-    directors, or keywords. Results can be paginated and sorted.
-
-    Args:
-        query: Search term to look for in movie titles and metadata
-        page: Page number for pagination (1-1000)
-        sort_by: Sorting criteria (e.g., "popularity.desc", "release_date.asc")
-
-    Returns:
-        List[TMDBMovie]: List of movie objects matching the search criteria
-
-    Raises:
-        HTTPException: If no results found or there's an error fetching data
+    Search for movies in TMDB
     """
-    collection = tmdb.Search()
-    search_results = collection.movie(query=query, page=page, sort_by=sort_by)
-    if not search_results["results"]:
+    try:
+        collection = tmdb.Search()
+        search_results = collection.movie(query=query, page=page)
+
+        if not search_results.get("results"):
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="No movies found",
+            )
+        return search_results["results"]
+
+    except Exception as e:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="No movies found",
+            status_code=status.HTTP_502_BAD_GATEWAY, detail=f"TMDB API error: {str(e)}"
         )
-    return search_results["results"]
-
-
-@router.get("/{movie_id}", response_model=MovieDetail)
-async def get_movie(
-    movie_id: int,
-    db: AsyncSession = Depends(get_db),
-) -> Any:
-    """
-    Retrieve detailed information about a specific movie by ID.
-
-    This endpoint fetches comprehensive details about a movie from TMDB,
-    including its full description, cast and crew information, production
-    details, release information, ratings, and more. This is used for
-    the movie detail page in the application.
-
-    Args:
-        movie_id: TMDB ID of the movie to retrieve
-        db: Database session dependency (not used in this implementation)
-
-    Returns:
-        MovieDetail: Comprehensive movie information object
-
-    Raises:
-        HTTPException: If the movie with the given ID is not found
-    """
-    collection = tmdb.Movies(movie_id)
-    movie = collection.info()
-    if not movie:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Movie not found",
-        )
-    return movie
 
 
 @router.get("/tmdb/{tmdb_id}", response_model=TMDBMovie)
@@ -258,102 +223,3 @@ async def get_movie_from_tmdb(
             detail="Movie not found",
         )
     return movie
-
-
-@router.post("/", response_model=MovieSchema, status_code=status.HTTP_201_CREATED)
-async def create_movie(
-    movie_data: MovieCreate,
-    db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_manager_user),
-) -> Any:
-    """
-    Create a new movie in the local database.
-
-    This endpoint allows manager users to manually add a movie to the local database.
-    This is typically used when a movie is not available in TMDB or when custom
-    movie information needs to be stored. Only users with manager role can
-    create movies.
-
-    Args:
-        movie_data: Movie information to create
-        db: Database session dependency
-        current_user: The authenticated manager user (injected by the dependency)
-
-    Returns:
-        MovieSchema: The created movie information
-
-    Raises:
-        HTTPException: If a movie with the same TMDB ID already exists or
-                      authentication fails
-    """
-    # Check if movie with this TMDB ID already exists
-    result = await db.execute(select(Movie).filter(Movie.tmdb_id == movie_data.tmdb_id))
-    if result.scalars().first():
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Movie with this TMDB ID already exists",
-        )
-
-    # Create new movie
-    movie = Movie(**movie_data.dict())
-    db.add(movie)
-    await db.commit()
-    await db.refresh(movie)
-
-    return movie
-
-
-@router.get("/showings", response_model=List[dict])
-async def get_movie_showings(
-    movie_id: int = Query(..., description="TMDB ID of the movie"),
-    db: AsyncSession = Depends(get_db),
-) -> Any:
-    """
-    Get all showings for a specific movie
-    """
-    # First get the movie from our database
-    result = await db.execute(select(Movie).filter(Movie.tmdb_id == movie_id))
-    movie = result.scalars().first()
-
-    if not movie:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Movie not found in the database",
-        )
-
-    # Query showings with joined information about rooms
-    query = (
-        select(
-            Showing.id,
-            Showing.movie_id,
-            Showing.start_time,
-            Showing.end_time,
-            Showing.price,
-            Showing.status,
-            Room.id.label("room_id"),
-            Room.name.label("room_name"),
-        )
-        .select_from(Showing)
-        .join(Room, Showing.room_id == Room.id)
-        .filter(Showing.movie_id == movie.id)
-        .filter(Showing.status == "scheduled")
-    )
-
-    result = await db.execute(query)
-    showings = result.all()
-
-    # Convert to list of dictionaries
-    showings_list = [
-        {
-            "id": str(showing.id),
-            "movie_id": int(movie_id),  # Use TMDB ID for frontend consistency
-            "room_id": str(showing.room_id),
-            "room_name": showing.room_name,
-            "start_time": showing.start_time.isoformat(),
-            "end_time": showing.end_time.isoformat(),
-            "price": float(showing.price),
-        }
-        for showing in showings
-    ]
-
-    return showings_list

@@ -5,7 +5,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.openapi.utils import get_openapi
 
-from app.api.routes import auth_router, movies_router, reserve, screenings, users_router
+from app.api.routes import (
+    auth_router,
+    movies_router,
+    bookings_router,
+    showings_router,
+    users_router,
+)
 from app.core.config import settings
 from app.core.mqtt_client import setup_mqtt_for_app
 from app.db.init_db import init_db
@@ -44,8 +50,8 @@ async def startup_db_client() -> None:
 # Include API routers
 app.include_router(auth_router, prefix="/auth", tags=["auth"])
 app.include_router(movies_router, prefix="/movies", tags=["movies"])
-app.include_router(screenings.router, prefix="/screenings", tags=["screenings"])
-app.include_router(reserve.router, prefix="", tags=["reserve"])
+app.include_router(showings_router, prefix="/showings", tags=["showings"])
+app.include_router(bookings_router, prefix="/bookings", tags=["bookings"])
 app.include_router(users_router, prefix="/users", tags=["users"])
 
 
