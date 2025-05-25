@@ -29,23 +29,23 @@ async def get_showings(
 
     result = await db.execute(
         select(Showing)
-        .join(Room)
+        .options(joinedload(Showing.room))
         .filter(Showing.movie_id == movie.id)
         .filter(Showing.status == "scheduled")
     )
-    showings = result.all()
+    showings = result.scalars().all()
 
     return [
         {
             "id": str(s.id),
             "movie_id": movie_id,
-            "room_id": str(r.id),
-            "room_name": r.name,
+            "room_id": str(s.room.id) if s.room else None,
+            "room_name": s.room.name if s.room else None,
             "start_time": s.start_time.isoformat(),
             "end_time": s.end_time.isoformat() if s.end_time else None,
             "price": s.price,
         }
-        for s, r in showings
+        for s in showings
     ]
 
 
