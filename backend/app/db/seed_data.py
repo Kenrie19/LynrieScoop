@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import random
 from datetime import datetime, timedelta
 
 from sqlalchemy.sql import text
@@ -99,7 +100,10 @@ async def create_sample_data() -> None:
 
         movie2 = Movie(
             title="The Shawshank Redemption",
-            overview="Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.",
+            overview=(
+                "Two imprisoned men bond over a number of years, finding solace and eventual "
+                + "redemption through acts of common decency."
+            ),
             runtime=142,
             vote_average=9.3,
             poster_path="https://image.tmdb.org/t/p/w500/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg",
@@ -124,8 +128,8 @@ async def create_sample_data() -> None:
                     room_id=room1.id,
                     start_time=showing_date.replace(hour=hour, minute=0),
                     end_time=showing_date.replace(hour=hour, minute=0)
-                    + timedelta(minutes=movie1.runtime),
-                    price=10.99,
+                    + timedelta(minutes=random.randint(130, 160)),
+                    price=random.uniform(8.99, 12.99),
                 )
                 session.add(showing)
 
@@ -136,8 +140,8 @@ async def create_sample_data() -> None:
                     room_id=room2.id,
                     start_time=showing_date.replace(hour=hour, minute=0),
                     end_time=showing_date.replace(hour=hour, minute=0)
-                    + timedelta(minutes=movie1.runtime),
-                    price=11.99,
+                    + timedelta(minutes=random.randint(130, 160)),
+                    price=random.uniform(8.99, 12.99),
                 )
                 session.add(showing)
 

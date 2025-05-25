@@ -4,10 +4,10 @@
   "type": "module",
   "scripts": {
     "dev": "concurrently \"npx tsc --watch\" \"npx @11ty/eleventy --serve\"",
-    "lint": "eslint \"**/*.{js,ts}\" --max-warnings=0",
-    "lint:fix": "eslint \"resources/**/*.{js,ts}\" --fix",
-    "format": "prettier --write \"**/*.{js,ts,json,css,html}\"",
-    "format:check": "prettier --check \"**/*.{js,ts,json,css,html}\"",
+    "lint": "eslint \"**/*.{js,ts}\" --ignore-pattern \"_site/**\" --max-warnings=0",
+    "lint:fix": "eslint \"**/*.{js,ts}\" --ignore-pattern \"_site/**\" --fix",
+    "format": "prettier --write \"**/*.{js,ts,json,css,html}\" --ignore-path .prettierignore",
+    "format:check": "prettier --check \"**/*.{js,ts,json,css,html}\" --ignore-path .prettierignore",
     "type-check": "tsc --noEmit"
   },
   "repository": {
