@@ -1,3 +1,10 @@
+"""
+Booking data model for the LynrieScoop cinema application.
+
+This module defines the ORM model for customer bookings, representing
+ticket reservations for movie showings with payment and status tracking.
+"""
+
 import uuid
 from datetime import datetime
 from typing import Literal
@@ -10,6 +17,35 @@ from app.db.session import Base
 
 
 class Booking(Base):
+    """
+    SQLAlchemy ORM model representing a customer booking in the cinema system.
+
+    This model stores comprehensive information about customer ticket bookings,
+    including references to the customer, showing, payment details, and
+    the current status of the booking in its lifecycle.
+
+    Attributes:
+        id (UUID): Primary key, unique identifier for the booking
+        user_id (UUID): Foreign key to the users table
+        showing_id (UUID): Foreign key to the showings table
+        booking_number (str): Unique booking reference number for customers
+        total_price (float): Total price of the booking
+        status (str): Current status of the booking:
+            - "pending": Initial state when booking is created
+            - "confirmed": Booking confirmed after payment
+            - "cancelled": Booking cancelled by customer or system
+            - "completed": Booking completed after movie showing
+        payment_method (str): Method of payment (e.g., "credit_card", "paypal")
+        payment_id (str): External payment reference ID
+        created_at (datetime): When the booking was created
+        updated_at (datetime): When the booking was last updated
+
+    Relationships:
+        seat_reservations: Associated seat reservations for this booking
+        user: The user who made this booking
+        showing: The movie showing this booking is for
+    """
+
     __tablename__ = "bookings"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)

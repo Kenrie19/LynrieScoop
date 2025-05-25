@@ -1,3 +1,10 @@
+"""
+Authentication API routes for the LynrieScoop cinema application.
+
+This module defines REST API endpoints for user authentication,
+including login, registration, and token management.
+"""
+
 from datetime import timedelta
 from typing import Any, Dict
 
@@ -25,7 +32,20 @@ async def login(
     db: AsyncSession = Depends(get_db),
 ) -> Any:
     """
-    JWT token login, get an access token for future requests
+    Authenticate a user and return a JWT token.
+
+    This endpoint validates user credentials and issues a JWT access token
+    for authenticated API access.
+
+    Args:
+        login_data: Email and password credentials
+        db: Database session dependency
+
+    Returns:
+        Token: Object containing access token and token type
+
+    Raises:
+        HTTPException: If credentials are invalid or user not found
     """
     # Find the user by email
     result = await db.execute(select(User).filter(User.email == login_data.email))
@@ -57,7 +77,21 @@ async def register(
     db: AsyncSession = Depends(get_db),
 ) -> Any:
     """
-    Register a new user
+    Register a new user account and return a JWT token.
+
+    This endpoint creates a new user account with the provided information,
+    hashes the password for secure storage, and returns an access token
+    for immediate authentication after registration.
+
+    Args:
+        register_data: User registration information including name, email and password
+        db: Database session dependency
+
+    Returns:
+        Token: Object containing access token and token type for the new user
+
+    Raises:
+        HTTPException: If a user with the provided email already exists
     """
     # Check if user with this email already exists
     result = await db.execute(select(User).filter(User.email == register_data.email))
@@ -97,7 +131,20 @@ async def get_current_user_info(
     current_user: User = Depends(get_current_user),
 ) -> Any:
     """
-    Get current user information
+    Retrieve information about the currently authenticated user.
+
+    This endpoint returns basic profile information about the authenticated user
+    based on their JWT token. This is used for profile displays and
+    authorization checks in the frontend.
+
+    Args:
+        current_user: The authenticated user (injected by the dependency)
+
+    Returns:
+        Dict: Object containing user ID, email, name, and role
+
+    Raises:
+        HTTPException: If no valid token is provided (handled by dependency)
     """
     return {
         "id": str(current_user.id),

@@ -1,3 +1,10 @@
+"""
+Database session configuration for the LynrieScoop cinema application.
+
+This module sets up the SQLAlchemy async database engine, session factory,
+and provides dependency injection functions for database sessions.
+"""
+
 import logging
 from typing import AsyncGenerator
 

@@ -364,7 +364,22 @@ async def search_tmdb_movies(
     current_user: User = Depends(get_current_manager_user),
 ) -> Any:
     """
-    Search for movies in TMDB API
+    Search for movies in The Movie Database (TMDB) API.
+
+    This endpoint allows managers to search for movies in the TMDB API by title or keywords.
+    Results can then be imported into the local database for creating showings.
+    Only users with manager role can perform TMDB searches.
+
+    Args:
+        query: Search term for finding movies
+        db: Database session dependency
+        current_user: The authenticated manager user (injected by the dependency)
+
+    Returns:
+        dict: TMDB API response containing search results
+
+    Raises:
+        HTTPException: If the TMDB API request fails or authentication fails
     """
     try:
         # TMDB API endpoint
@@ -512,7 +527,23 @@ async def get_admin_settings(
     current_user: User = Depends(get_current_manager_user),
 ) -> Any:
     """
-    Get system settings (admin only)
+    Retrieve all system settings for the admin dashboard.
+
+    This endpoint returns the configuration settings for the cinema application,
+    including general settings, booking rules, payment configuration, notification
+    preferences, and UI appearance settings. Only users with manager role can
+    access these settings.
+
+    Args:
+        db: Database session dependency
+        current_user: The authenticated manager user (injected by the dependency)
+
+    Returns:
+        dict: Object containing all system settings categorized by group
+
+    Raises:
+        HTTPException: If authentication fails or user lacks permission
+                      (handled by dependency)
     """
     # In a real application, these would be stored in a database table
     # For this implementation, we'll return hardcoded default settings
@@ -560,7 +591,23 @@ async def update_admin_settings(
     current_user: User = Depends(get_current_manager_user),
 ) -> Any:
     """
-    Update system settings (admin only)
+    Update system settings for the cinema application.
+
+    This endpoint allows cinema managers to modify configuration settings including
+    general settings, booking rules, payment options, notification preferences,
+    and UI appearance. The system validates that all required setting categories
+    are present before applying changes.
+
+    Args:
+        settings_data: Dictionary of settings categorized by group
+        db: Database session dependency
+        current_user: The authenticated manager user (injected by the dependency)
+
+    Returns:
+        dict: Confirmation message with update timestamp
+
+    Raises:
+        HTTPException: If required setting categories are missing or authentication fails
     """
     # In a real application, these settings would be saved to a database
     # For this implementation, we'll just return success message

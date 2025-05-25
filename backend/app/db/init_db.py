@@ -1,3 +1,11 @@
+"""
+Database initialization module for the LynrieScoop cinema application.
+
+This module provides functions to initialize and configure the database,
+create tables from SQLAlchemy models, check the database connection,
+and populate the database with seed data if needed.
+"""
+
 import logging
 
 from sqlalchemy.sql import text
@@ -18,7 +26,19 @@ logger = logging.getLogger(__name__)
 
 
 async def create_tables() -> None:
-    """Create database tables from SQLAlchemy models."""
+    """
+    Create database tables from SQLAlchemy models.
+
+    This function creates all database tables defined by SQLAlchemy models
+    in the application. It uses the engine from the session module to
+    establish a connection and execute DDL statements.
+
+    Returns:
+        None
+
+    Raises:
+        SQLAlchemyError: If there's an issue creating the tables
+    """
     logger.info("Creating database tables...")
     async with engine.begin() as conn:
         # Drop all tables if they exist

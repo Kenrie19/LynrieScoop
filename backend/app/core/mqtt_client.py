@@ -1,3 +1,11 @@
+"""
+MQTT client integration for the LynrieScoop cinema application.
+
+This module provides MQTT client functionality for real-time messaging,
+including client initialization, connection management, message publishing,
+and topic subscription with handler registration.
+"""
+
 import json
 import logging
 from functools import wraps
@@ -19,7 +27,15 @@ _topic_handlers: dict[str, Callable[[mqtt.Client, str, Dict[str, Any]], None]] =
 
 
 def get_mqtt_client() -> mqtt.Client:
-    """Get the MQTT client singleton"""
+    """
+    Get the MQTT client singleton instance.
+
+    Returns:
+        mqtt.Client: The initialized MQTT client instance
+
+    Note:
+        Initializes the client if it doesn't already exist
+    """
     global _mqtt_client
     if _mqtt_client is None:
         return init_mqtt_client()
@@ -27,7 +43,15 @@ def get_mqtt_client() -> mqtt.Client:
 
 
 def init_mqtt_client() -> mqtt.Client:
-    """Initialize the MQTT client"""
+    """
+    Initialize and configure the MQTT client.
+
+    Returns:
+        mqtt.Client: The newly initialized MQTT client
+
+    Note:
+        Sets up connection callbacks and MQTT broker configuration
+    """
     global _mqtt_client
 
     if _mqtt_client is not None:

@@ -1,3 +1,10 @@
+"""
+Security and authentication utilities for the LynrieScoop cinema application.
+
+This module provides functionality for password hashing, JWT token generation
+and validation, and user authentication middleware for protecting API endpoints.
+"""
+
 from datetime import datetime, timedelta
 from typing import Any, Dict, Optional
 
@@ -20,12 +27,29 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """Verify a password against a hash."""
+    """
+    Verify a password against a hash using bcrypt.
+
+    Args:
+        plain_password: The plaintext password to verify
+        hashed_password: The stored hashed password to compare against
+
+    Returns:
+        bool: True if password matches, False otherwise
+    """
     return pwd_context.verify(plain_password, hashed_password)
 
 
 def get_password_hash(password: str) -> str:
-    """Hash a password for storing."""
+    """
+    Hash a password for secure storage using bcrypt.
+
+    Args:
+        password: The plaintext password to hash
+
+    Returns:
+        str: The hashed password for database storage
+    """
     return pwd_context.hash(password)
 
 
