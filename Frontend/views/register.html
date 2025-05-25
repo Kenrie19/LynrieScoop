@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lynriescoop - Register</title>
+    <link rel="stylesheet" href="/resources/css/style.css" />
+    <link rel="stylesheet" href="/resources/css/login.css" />
+    <script defer src="/resources/javascript/auth.js" type="module"></script>
+  </head>
+
+  <body>
+    {% include "navbar.njk" %}
+
+    <section class="login-container">
+      <form id="registerForm" class="login-box">
+        <h2>Register</h2>
+
+        <div class="input-group">
+          <label for="name">Name</label>
+          <input type="text" id="name" placeholder="Your full name" required />
+        </div>
+
+        <div class="input-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" placeholder="you@example.com" required />
+        </div>
+
+        <div class="input-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="Create a password" required />
+        </div>
+
+        <button type="submit">Register</button>
+
+        <p id="error" class="error-message" style="display: none"></p>
+
+        <div class="register-link">
+          <p>Already have an account? <a href="/views/login">Login here</a></p>
+        </div>
+      </form>
+    </section>
+  </body>
+</html>
