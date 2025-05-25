@@ -19,4 +19,4 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 # Run the application with Uvicorn
-CMD ["sh", "-c", "python wait_for_db.py && uvicorn main:app --host 0.0.0.0 --port 8000 --reload"]
+CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port 8000 --reload"]
