@@ -1,8 +1,6 @@
 from typing import Any, List, Optional, Dict
 from uuid import UUID
 from datetime import datetime
-from typing import Any, List
-from uuid import UUID
 
 from fastapi import APIRouter, Body, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
