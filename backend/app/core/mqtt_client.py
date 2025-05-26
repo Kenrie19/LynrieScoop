@@ -6,24 +6,23 @@ including client initialization, connection management, message publishing,
 and topic subscription with handler registration.
 """
 
+import asyncio
 import json
 import logging
+import uuid
 from functools import wraps
 from typing import Any, Callable, Dict
-import asyncio
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
-from sqlalchemy import select
-from sqlalchemy.orm import joinedload
-
-from app.models import Showing, Booking
-
-import uuid
 from uuid import UUID
 
 import paho.mqtt.client as mqtt
 from fastapi import FastAPI
 from paho.mqtt.client import MQTTMessage
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.orm import joinedload
+
 from app.core.config import settings
+from app.models import Booking, Showing
 
 logger = logging.getLogger(__name__)
 # Convert PostgresDsn to string and use asyncpg driver

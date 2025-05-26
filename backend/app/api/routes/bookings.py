@@ -6,6 +6,7 @@ including creating bookings, retrieving booking information, and handling
 the booking lifecycle.
 """
 
+import uuid
 from datetime import datetime
 from typing import Any, List
 from uuid import UUID
@@ -15,6 +16,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.orm import joinedload
 
+from app.core.mqtt_client import get_mqtt_client
 from app.core.security import get_current_user
 from app.db.session import get_db
 from app.models.booking import Booking
@@ -23,9 +25,6 @@ from app.models.room import Room
 from app.models.seat_reservation import SeatReservation
 from app.models.showing import Showing
 from app.models.user import User
-from app.core.mqtt_client import get_mqtt_client
-
-import uuid
 
 router = APIRouter(prefix="/bookings", tags=["bookings"])
 

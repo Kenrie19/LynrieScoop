@@ -6,12 +6,12 @@ from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.openapi.utils import get_openapi
 
 from app.api.routes import (
+    admin_router,
     auth_router,
-    movies_router,
     bookings_router,
+    movies_router,
     showings_router,
     users_router,
-    admin_router,
 )
 from app.core.config import settings
 from app.core.mqtt_client import setup_mqtt_for_app
