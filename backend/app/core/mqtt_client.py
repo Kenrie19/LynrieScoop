@@ -10,14 +10,27 @@ import json
 import logging
 from functools import wraps
 from typing import Any, Callable, Dict
+import asyncio
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
+from sqlalchemy import select
+from sqlalchemy.orm import joinedload
+
+from app.models import Showing, Booking
+
+import uuid
+from uuid import UUID
 
 import paho.mqtt.client as mqtt
 from fastapi import FastAPI
 from paho.mqtt.client import MQTTMessage
-
 from app.core.config import settings
 
 logger = logging.getLogger(__name__)
+# Convert PostgresDsn to string and use asyncpg driver
+postgres_url = str(settings.DATABASE_URL)
+async_postgres_url = postgres_url.replace("postgresql://", "postgresql+asyncpg://")
+engine = create_async_engine(async_postgres_url)
+async_session = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
 
 # MQTT client singleton
 _mqtt_client: mqtt.Client | None = None
@@ -183,76 +196,87 @@ def setup_mqtt_for_app(app: FastAPI) -> None:
 @handle_topic("booking/request")
 def handle_booking_request(client: mqtt.Client, topic: str, payload: dict) -> None:
     """Handle booking requests from clients"""
-    user_id = payload.get("userId")
-    showing_id = payload.get("showingId")
-    seats = payload.get("seats", [])
 
-    if not user_id or not showing_id or not seats:
-        logger.error(f"Invalid booking request: {payload}")
-        publish_message(
-            f"booking/response/{user_id}",
-            {"success": False, "message": "Invalid booking request"},
-        )
-        return
+    async def process_booking():
+        user_id = payload.get("userId")
+        showing_id = payload.get("showingId")
 
-    logger.info(
-        f"Processing booking request from user {user_id} for showing {showing_id}, seats: {seats}"
-    )
-
-    # TODO: Implement booking logic with database integration
-    # This would:
-    # 1. Check if seats are available
-    # 2. Create a temporary reservation
-    # 3. Process payment (or simulate it)
-    # 4. Confirm the booking
-
-    # For now, just send a success response
-    success = True
-    message = "Booking successful"
-
-    # Publish result to user-specific topic
-    publish_message(
-        f"booking/response/{user_id}",
-        {"success": success, "message": message, "bookingId": "123456"},
-    )
-
-    if success:
-        # Publish seat updates to all clients
-        for seat_id in seats:
+        if not user_id or not showing_id:
+            logger.error(f"Invalid booking request: {payload}")
             publish_message(
-                "seats/updates",
+                f"booking/response/{user_id}",
+                {"success": False, "message": "Invalid booking request"},
+            )
+            return
+
+        async with async_session() as db:
+            result = await db.execute(
+                select(Showing)
+                .options(joinedload(Showing.room), joinedload(Showing.movie))
+                .filter(Showing.id == UUID(showing_id))
+            )
+            showing = result.scalars().first()
+
+            if not showing:
+                publish_message(
+                    f"booking/response/{user_id}",
+                    {"success": False, "message": "Screening not found"},
+                )
+                return
+
+            if showing.bookings_count >= showing.room.capacity:
+                publish_message(
+                    f"booking/response/{user_id}",
+                    {"success": False, "message": "No tickets available"},
+                )
+                return
+
+            booking = Booking(
+                id=uuid.uuid4(),
+                user_id=UUID(user_id),
+                showing_id=showing.id,
+                booking_number=str(uuid.uuid4())[:8].upper(),
+                total_price=showing.price,
+                status="confirmed",
+            )
+
+            db.add(booking)
+            showing.bookings_count += 1
+            await db.commit()
+
+            # MQTT feedback
+            remaining = showing.room.capacity - showing.bookings_count
+            publish_message(
+                f"screenings/{showing_id}/update",
                 {
-                    "showingId": showing_id,
-                    "seatId": seat_id,
-                    "status": "booked",
-                    "updatedAt": "2025-05-01T12:00:00Z",
-                    "userId": user_id,
+                    "screening_id": showing_id,
+                    "available_tickets": remaining,
+                    "total_capacity": showing.room.capacity,
                 },
             )
 
-        # Also publish to showing-specific topic
-        for seat_id in seats:
             publish_message(
-                f"showing/{showing_id}/seats",
+                f"booking/response/{user_id}",
                 {
-                    "seatId": seat_id,
-                    "status": "booked",
-                    "updatedAt": "2025-05-01T12:00:00Z",
-                    "userId": user_id,
+                    "success": True,
+                    "message": "Booking successful",
+                    "bookingId": str(booking.id),
+                    "movie_title": showing.movie.title if showing.movie else "Unknown",
+                    "start_time": showing.start_time.isoformat(),
+                    "room": showing.room.name if showing.room else "Unknown",
+                    "status": "confirmed",
                 },
             )
 
-
-@handle_topic("seats/status/#")
-def handle_seat_status(client: mqtt.Client, topic: str, payload: dict) -> None:
-    """Handle seat status updates from admin/system"""
-    showing_id = topic.split("/")[2] if len(topic.split("/")) > 2 else None
-
-    if not showing_id:
-        logger.error(f"Invalid seat status topic: {topic}")
-        return
-
-    logger.info(f"Received seat status update for showing {showing_id}: {payload}")
-
-    # Forward the update to all clients
-    publish_message("seats/updates", {"showingId": showing_id, **payload})
+    # Schedule the coroutine on the main event loop
+    try:
+        loop = asyncio.get_event_loop()
+        if loop.is_running():
+            asyncio.run_coroutine_threadsafe(process_booking(), loop)
+        else:
+            loop.run_until_complete(process_booking())
+    except RuntimeError:
+        # If no event loop is running, create a new one (for safety in rare cases)
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        loop.run_until_complete(process_booking())

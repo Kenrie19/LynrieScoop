@@ -8,10 +8,12 @@ the booking lifecycle.
 
 from datetime import datetime
 from typing import Any, List
+from uuid import UUID
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status, Body
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+from sqlalchemy.orm import joinedload
 
 from app.core.security import get_current_user
 from app.db.session import get_db
@@ -21,6 +23,9 @@ from app.models.room import Room
 from app.models.seat_reservation import SeatReservation
 from app.models.showing import Showing
 from app.models.user import User
+from app.core.mqtt_client import get_mqtt_client
+
+import uuid
 
 router = APIRouter(prefix="/bookings", tags=["bookings"])
 
@@ -102,7 +107,7 @@ async def get_my_bookings(
 
 @router.post("/create", response_model=dict)
 async def create_booking(
-    booking_data: dict,
+    screening_id: UUID,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ) -> Any:
@@ -126,8 +131,55 @@ async def create_booking(
         HTTPException: If the showing is not available, seats are already taken,
                       or payment processing fails
     """
-    # Placeholder implementation - would need proper implementation with MQTT integration
-    return {"message": "Booking created successfully"}
+    result = await db.execute(
+        select(Showing).options(joinedload(Showing.room)).filter(Showing.id == screening_id)
+    )
+    screening = result.scalars().first()
+
+    if not screening:
+        raise HTTPException(status_code=404, detail="Screening not found")
+    if not screening.room:
+        raise HTTPException(status_code=400, detail="Room not linked to screening")
+
+    available_tickets = screening.room.capacity - screening.bookings_count
+    if available_tickets <= 0:
+        raise HTTPException(status_code=400, detail="No tickets available for this screening")
+
+    booking_id = uuid.uuid4()
+    # Generate a booking number (e.g., use a short UUID or custom logic)
+    booking_number = str(uuid.uuid4())[:8].upper()  # Example: 8-char unique code
+    booking = Booking(
+        id=booking_id,
+        user_id=current_user.id,
+        showing_id=screening.id,
+        booking_number=booking_number,
+        total_price=screening.price,  # Set the price to the ticket price of the showing
+        status="confirmed",
+    )
+    db.add(booking)
+
+    await db.commit()
+
+    mqtt_client = get_mqtt_client()
+    remaining = screening.room.capacity - screening.bookings_count
+    mqtt_client.publish(
+        f"screenings/{screening_id}/update",
+        {
+            "screening_id": str(screening_id),
+            "available_tickets": remaining,
+            "total_capacity": screening.room.capacity,
+        },
+    )
+
+    return {
+        "booking_id": str(booking_id),
+        "screening_id": str(screening_id),
+        "movie_title": screening.movie.title if screening.movie else "Unknown",
+        "start_time": screening.start_time.isoformat(),
+        "room": screening.room.name,
+        "ticket_count": 1,
+        "status": booking.status,
+    }
 
 
 @router.post("/reserve-seats", response_model=dict)
