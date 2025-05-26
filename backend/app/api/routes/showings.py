@@ -4,13 +4,12 @@ from datetime import datetime
 from typing import Any, List
 from uuid import UUID
 
-import tmdbsimple as tmdb
 from fastapi import APIRouter, Body, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.orm import joinedload
 
-from app.core.security import get_current_user, get_current_manager_user
+from app.core.security import get_current_manager_user
 from app.db.session import get_db
 from app.models.movie import Movie
 from app.models.room import Room

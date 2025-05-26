@@ -5,7 +5,7 @@ This module defines the REST API endpoints for managing movies,
 including CRUD operations and integrations with TMDB for movie data.
 """
 
-from typing import Any, List, Optional
+from typing import Any, List
 
 import tmdbsimple as tmdb
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -13,14 +13,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from app.core.config import settings
-from app.core.security import get_current_manager_user
 from app.db.session import get_db
 from app.models.movie import Movie
-from app.models.room import Room
-from app.models.showing import Showing
-from app.models.user import User
 from app.schemas.movie import Movie as MovieSchema
-from app.schemas.movie import MovieCreate, MovieDetail, TMDBMovie
+from app.schemas.movie import MovieDetail, TMDBMovie
 
 tmdb.API_KEY = settings.TMDB_API_KEY
 

@@ -2,13 +2,11 @@ from datetime import datetime, timedelta
 from typing import Any, List
 from uuid import UUID
 
-import requests
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import desc
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from app.core.config import settings
 from app.core.security import get_current_manager_user
 from app.db.session import get_db
 from app.models.booking import Booking
