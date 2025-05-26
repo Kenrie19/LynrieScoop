@@ -11,6 +11,7 @@ from app.api.routes import (
     bookings_router,
     showings_router,
     users_router,
+    admin_router,
 )
 from app.core.config import settings
 from app.core.mqtt_client import setup_mqtt_for_app
@@ -53,6 +54,7 @@ app.include_router(movies_router, prefix="/movies", tags=["movies"])
 app.include_router(showings_router, prefix="/showings", tags=["showings"])
 app.include_router(bookings_router, prefix="/bookings", tags=["bookings"])
 app.include_router(users_router, prefix="/users", tags=["users"])
+app.include_router(admin_router, prefix="/admin", tags=["admin"])
 
 
 @app.get("/")
