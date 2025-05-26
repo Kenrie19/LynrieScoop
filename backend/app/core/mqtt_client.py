@@ -241,7 +241,7 @@ def handle_booking_request(client: mqtt.Client, topic: str, payload: dict) -> No
             )
 
             db.add(booking)
-            showing.bookings_count = int(showing.bookings_count or 0) + 1
+            setattr(showing, "bookings_count", int(getattr(showing, "bookings_count", 0) or 0) + 1)
             await db.commit()
 
             # MQTT feedback
