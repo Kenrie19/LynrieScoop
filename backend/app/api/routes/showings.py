@@ -183,16 +183,16 @@ async def update_showing(
         room = (await db.execute(select(Room).filter(Room.id == room_id))).scalars().first()
         if not room:
             raise HTTPException(status_code=404, detail="Room not found")
-        Showing.room_id = room_id
+        showing.room_id = room_id
 
     if start_time:
-        Showing.start_time = start_time
+        showing.start_time = start_time
     if end_time:
-        Showing.end_time = end_time
+        showing.end_time = end_time
     if price:
-        Showing.price = price
+        showing.price = price
     if status:
-        Showing.status = status
+        showing.status = status
 
     if room_id or start_time or end_time:
         actual_room = room_id or showing.room_id
