@@ -92,7 +92,7 @@ async def get_current_user(
     if user is None:
         raise credentials_exception
 
-    if not user.is_active.is_(True):
+    if user.is_active is not True:
         raise HTTPException(status_code=400, detail="Inactive user")
 
     return user
@@ -102,7 +102,7 @@ async def get_current_active_user(
     current_user: User = Depends(get_current_user),
 ) -> User:
     """Check if the current user is active."""
-    if not current_user.is_active.is_(True):
+    if current_user.is_active is not True:
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
 

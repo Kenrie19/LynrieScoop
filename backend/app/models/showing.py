@@ -9,7 +9,7 @@ import uuid
 from datetime import datetime
 from typing import Literal
 
-from sqlalchemy import Boolean, Column, DateTime, Enum, Float, ForeignKey
+from sqlalchemy import Boolean, Column, DateTime, Enum, Float, ForeignKey, Integer
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
