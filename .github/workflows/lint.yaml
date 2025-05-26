@@ -23,6 +23,7 @@ jobs:
         uses: dorny/paths-filter@v2
         id: filter
         with:
+          base: "main"
           filters: |
             frontend:
               - 'frontend/**'
@@ -44,11 +45,11 @@ jobs:
           node-version: "20"
 
       - name: Install root dependencies
-        run: npm install --no-cache
+        run: npm install --no-cache --quiet
 
       - name: Install frontend dependencies
         working-directory: ./frontend
-        run: npm install --no-cache
+        run: npm install --no-cache --quiet
 
       - name: Run frontend checks
         run: npm run check:frontend
@@ -76,9 +77,8 @@ jobs:
       - name: Install backend dependencies
         working-directory: ./backend
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install black flake8 isort mypy
+          pip install -r requirements.txt --quiet
+          pip install black flake8 isort mypy --quiet
 
       - name: Run backend checks
         run: npm run check:backend
