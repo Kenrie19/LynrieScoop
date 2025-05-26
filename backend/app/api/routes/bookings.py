@@ -6,6 +6,7 @@ including creating bookings, retrieving booking information, and handling
 the booking lifecycle.
 """
 
+import json
 import uuid
 from datetime import datetime
 from typing import Any, List
@@ -163,11 +164,13 @@ async def create_booking(
     remaining = screening.room.capacity - screening.bookings_count
     mqtt_client.publish(
         f"screenings/{screening_id}/update",
-        {
-            "screening_id": str(screening_id),
-            "available_tickets": remaining,
-            "total_capacity": screening.room.capacity,
-        },
+        json.dumps(
+            {
+                "screening_id": str(screening_id),
+                "available_tickets": remaining,
+                "total_capacity": screening.room.capacity,
+            }
+        ),
     )
 
     return {

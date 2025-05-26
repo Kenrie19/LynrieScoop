@@ -178,21 +178,23 @@ async def update_showing(
     showing = result.scalars().first()
     if not showing:
         raise HTTPException(status_code=404, detail="Showing not found")
-
     if room_id:
         room = (await db.execute(select(Room).filter(Room.id == room_id))).scalars().first()
         if not room:
             raise HTTPException(status_code=404, detail="Room not found")
-        showing.room_id = room_id
+        # Set attribute value directly rather than Column type
+        setattr(showing, "room_id", room_id)
 
     if start_time:
-        showing.start_time = start_time
+        setattr(showing, "start_time", start_time)
     if end_time:
-        showing.end_time = end_time
+        setattr(showing, "end_time", end_time)
     if price:
-        showing.price = price
+        setattr(showing, "price", price)
     if status:
-        showing.status = status
+        if status not in ["scheduled", "cancelled", "completed"]:
+            raise HTTPException(status_code=400, detail="Invalid status value")
+        setattr(showing, "status", status)
 
     if room_id or start_time or end_time:
         actual_room = room_id or showing.room_id

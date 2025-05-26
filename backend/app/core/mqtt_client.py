@@ -196,7 +196,8 @@ def setup_mqtt_for_app(app: FastAPI) -> None:
 def handle_booking_request(client: mqtt.Client, topic: str, payload: dict) -> None:
     """Handle booking requests from clients"""
 
-    async def process_booking():
+    async def process_booking() -> None:
+        """Process the booking request asynchronously"""
         user_id = payload.get("userId")
         showing_id = payload.get("showingId")
 
@@ -240,7 +241,7 @@ def handle_booking_request(client: mqtt.Client, topic: str, payload: dict) -> No
             )
 
             db.add(booking)
-            showing.bookings_count += 1
+            setattr(showing, "bookings_count", int(getattr(showing, "bookings_count", 0) or 0) + 1)
             await db.commit()
 
             # MQTT feedback
