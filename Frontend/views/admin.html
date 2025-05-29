@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Admin | LynrieScoop</title>
+    <link rel="stylesheet" href="/resources/css/style.css" />
+    <link rel="stylesheet" href="/resources/css/admin.css" />
+    <script defer type="module" src="/resources/javascript/main.js"></script>
+    <script defer type="module" src="/resources/javascript/admin.js"></script>
+  </head>
+  <body>
+    {% include "navbar.njk" %}
+
+    <header>
+      <h1>🎬 Admin Panel - Screening Toevoegen</h1>
+    </header>
+
+    <main class="admin-container">
+      <section class="form-section">
+        <label for="search">Zoek een film:</label>
+        <input type="text" id="search" placeholder="Typ een titel..." />
+
+        <div id="searchResults" class="movie-results"></div>
+
+        <div id="screeningForm" style="display: none">
+          <h2>Screening toevoegen voor: <span id="selectedTitle"></span></h2>
+
+          <label for="date">Datum:</label>
+          <input type="date" id="date" />
+
+          <label for="time">Uur:</label>
+          <input type="time" id="time" />
+
+          <label for="zaal">Zaal:</label>
+          <select id="zaal">
+            <option value="zaal-1">Zaal 1</option>
+            <option value="zaal-2">Zaal 2</option>
+            <option value="zaal-3">Zaal 3</option>
+          </select>
+
+          <button id="addScreening">Voeg screening toe</button>
+        </div>
+
+        <div id="feedbackMessage" class="feedback"></div>
+      </section>
+
+      <section class="overview-section">
+        <h2>Bestaande Screenings</h2>
+        <div id="screeningsList" class="screening-list"></div>
+      </section>
+    </main>
+  </body>
+</html>
