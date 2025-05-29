@@ -1,18 +1,9 @@
+import { decodeJwtPayload } from './authHelpers.js';
+
 function getCookie(name: string): string | null {
   const cookies = document.cookie.split('; ');
   const found = cookies.find((row) => row.startsWith(name + '='));
   return found ? decodeURIComponent(found.split('=')[1]) : null;
-}
-
-function decodeJwtPayload(token: string): any {
-  try {
-    const payload = token.split('.')[1];
-    const decoded = atob(payload);
-    return JSON.parse(decoded);
-  } catch (e) {
-    console.error('JWT decode error:', e);
-    return null;
-  }
 }
 
 document.addEventListener('DOMContentLoaded', () => {

@@ -9,7 +9,7 @@ export function getCookie(name: string): string | null {
   return found ? found.split('=')[1] : null;
 }
 
-export function decodeJwtPayload(token: string): any {
+export function decodeJwtPayload(token: string) {
   try {
     const payload = token.split('.')[1];
     return JSON.parse(atob(payload));

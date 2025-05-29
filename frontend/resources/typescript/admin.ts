@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const data = await res.json();
     if (!Array.isArray(data)) return;
 
-    data.forEach((movie: any) => {
+    data.forEach((movie) => {
       const container = document.createElement('div');
       container.className = 'movie-result';
 
@@ -91,20 +91,31 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  type Screening = {
+    // Possibly incomplete type
+    id: number;
+    movie_title?: string;
+    movie_id: number;
+    room_id: number | string;
+    start_time: string;
+    end_time: string;
+    price: number;
+  };
+
   async function loadScreenings() {
     screeningsList.replaceChildren();
     const res = await fetch('http://localhost:8000/screenings/screenings/');
-    const data = await res.json();
+    const data: Screening[] = await res.json();
 
     const upcomingScreenings = data
-      .filter((s: Record<string, any>) => new Date(s.start_time) >= new Date())
+      .filter((s: Screening) => new Date(s.start_time) >= new Date())
       .sort(
-        (a: Record<string, any>, b: Record<string, any>) =>
+        (a: Screening, b: Screening) =>
           new Date(a.start_time).getTime() - new Date(b.start_time).getTime()
       );
 
-    const grouped: Record<string, Record<string, any>[]> = {};
-    upcomingScreenings.forEach((s: Record<string, any>) => {
+    const grouped: Record<string, Screening[]> = {};
+    upcomingScreenings.forEach((s: Screening) => {
       const date = new Date(s.start_time).toLocaleDateString('en-GB', {
         weekday: 'long',
         day: 'numeric',
@@ -120,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
       title.textContent = day;
       screeningsList.appendChild(title);
 
-      screenings.forEach((screening: Record<string, any>) => {
+      screenings.forEach((screening: Screening) => {
         const card = document.createElement('div');
         card.className = 'screening-card';
 
@@ -155,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
           if (!newDate) return;
           const newTime = prompt('New time (HH:MM):', currentDate.toTimeString().slice(0, 5));
           if (!newTime) return;
-          const newRoom = prompt('New room:', screening.room_id);
+          const newRoom = prompt('New room:', String(screening.room_id));
           if (!newRoom) return;
 
           const newDatetime = `${newDate}T${newTime}:00`;
