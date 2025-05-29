@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const user = decodeJwtPayload(token);
   if (!user || user.role !== 'admin') {
-    alert('Geen toegang. Alleen admin.');
+    alert('Access denied. Admins only.');
     return redirectToLogin();
   }
 
@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const date = (document.getElementById('date') as HTMLInputElement).value;
     const time = (document.getElementById('time') as HTMLInputElement).value;
-    const zaal = (document.getElementById('zaal') as HTMLSelectElement).value;
+    const room = (document.getElementById('room') as HTMLSelectElement).value;
     const datetime = `${date}T${time}:00`;
 
     const response = await fetch('http://localhost:8000/screenings/screenings/', {
@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
       },
       body: JSON.stringify({
         movie_id: selectedMovieId,
-        room_id: zaal,
+        room_id: room,
         start_time: datetime,
         end_time: datetime,
         price: 10,
@@ -83,11 +83,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     if (response.ok) {
-      feedback.textContent = '✅ Screening succesvol toegevoegd!';
+      feedback.textContent = '✅ Screening successfully added!';
       screeningForm.style.display = 'none';
       await loadScreenings();
     } else {
-      feedback.textContent = '❌ Fout bij toevoegen.';
+      feedback.textContent = '❌ Failed to add screening.';
     }
   });
 
@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const grouped: Record<string, Record<string, any>[]> = {};
     upcomingScreenings.forEach((s: Record<string, any>) => {
-      const date = new Date(s.start_time).toLocaleDateString('nl-BE', {
+      const date = new Date(s.start_time).toLocaleDateString('en-GB', {
         weekday: 'long',
         day: 'numeric',
         month: 'long',
@@ -114,12 +114,11 @@ document.addEventListener('DOMContentLoaded', () => {
       grouped[date].push(s);
     });
 
-    // Use Object.entries in a way compatible with older TypeScript targets
-    (Object.keys(grouped) as Array<keyof typeof grouped>).forEach((dag) => {
-      const screenings = grouped[dag];
-      const titel = document.createElement('h3');
-      titel.textContent = dag;
-      screeningsList.appendChild(titel);
+    Object.keys(grouped).forEach((day) => {
+      const screenings = grouped[day];
+      const title = document.createElement('h3');
+      title.textContent = day;
+      screeningsList.appendChild(title);
 
       screenings.forEach((screening: Record<string, any>) => {
         const card = document.createElement('div');
@@ -128,8 +127,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const info = document.createElement('div');
         info.className = 'screening-info';
 
-        const title = document.createElement('strong');
-        title.textContent = screening.movie_title ?? 'Onbekende film';
+        const movieTitle = document.createElement('strong');
+        movieTitle.textContent = screening.movie_title ?? 'Unknown movie';
 
         const time = document.createElement('p');
         time.textContent = new Date(screening.start_time).toLocaleTimeString([], {
@@ -138,9 +137,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         const room = document.createElement('p');
-        room.textContent = `Zaal ${screening.room_id}`;
+        room.textContent = `Room ${screening.room_id}`;
 
-        info.appendChild(title);
+        info.appendChild(movieTitle);
         info.appendChild(time);
         info.appendChild(room);
 
@@ -149,17 +148,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const editBtn = document.createElement('button');
         editBtn.className = 'edit';
-        editBtn.textContent = 'Bewerk';
+        editBtn.textContent = 'Edit';
         editBtn.addEventListener('click', () => {
           const currentDate = new Date(screening.start_time);
-          const newDate = prompt(
-            'Nieuwe datum (YYYY-MM-DD):',
-            currentDate.toISOString().split('T')[0]
-          );
+          const newDate = prompt('New date (YYYY-MM-DD):', currentDate.toISOString().split('T')[0]);
           if (!newDate) return;
-          const newTime = prompt('Nieuw uur (HH:MM):', currentDate.toTimeString().slice(0, 5));
+          const newTime = prompt('New time (HH:MM):', currentDate.toTimeString().slice(0, 5));
           if (!newTime) return;
-          const newRoom = prompt('Nieuwe zaal:', screening.room_id);
+          const newRoom = prompt('New room:', screening.room_id);
           if (!newRoom) return;
 
           const newDatetime = `${newDate}T${newTime}:00`;
@@ -178,15 +174,15 @@ document.addEventListener('DOMContentLoaded', () => {
             }),
           }).then((res) => {
             if (res.ok) loadScreenings();
-            else alert('Fout bij bijwerken.');
+            else alert('Failed to update screening.');
           });
         });
 
         const deleteBtn = document.createElement('button');
         deleteBtn.className = 'delete';
-        deleteBtn.textContent = 'Verwijder';
+        deleteBtn.textContent = 'Delete';
         deleteBtn.addEventListener('click', async () => {
-          const confirmed = confirm('Weet je zeker dat je deze screening wilt verwijderen?');
+          const confirmed = confirm('Are you sure you want to delete this screening?');
           if (!confirmed) return;
 
           const delRes = await fetch(
@@ -198,7 +194,7 @@ document.addEventListener('DOMContentLoaded', () => {
           );
 
           if (delRes.ok) loadScreenings();
-          else alert('Fout bij verwijderen.');
+          else alert('Failed to delete screening.');
         });
 
         actions.append(editBtn, deleteBtn);
