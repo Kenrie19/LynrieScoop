@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Admin | LynrieScoop</title>
+    <link rel="stylesheet" href="/resources/css/style.css" />
+    <link rel="stylesheet" href="/resources/css/admin.css" />
+    <script defer type="module" src="/resources/javascript/main.js"></script>
+    <script defer type="module" src="/resources/javascript/admin.js"></script>
+  </head>
+  <body>
+    {% include "navbar.njk" %}
+
+    <header>
+      <h1>Admin Panel - Add Screening</h1>
+    </header>
+
+    <main class="admin-container">
+      <section class="form-section">
+        <label for="search">Search for a movie:</label>
+        <input type="text" id="search" placeholder="Type a title..." />
+
+        <div id="searchResults" class="movie-results"></div>
+
+        <div id="screeningForm" style="display: none">
+          <h2>Add screening for: <span id="selectedTitle"></span></h2>
+
+          <label for="date">Date:</label>
+          <input type="date" id="date" />
+
+          <label for="time">Time:</label>
+          <input type="time" id="time" />
+
+          <label for="room">Room:</label>
+          <select id="room">
+            <option value="room-1">Room 1</option>
+            <option value="room-2">Room 2</option>
+            <option value="room-3">Room 3</option>
+          </select>
+
+          <button id="addScreening">Add screening</button>
+        </div>
+
+        <div id="feedbackMessage" class="feedback"></div>
+      </section>
+
+      <section class="overview-section">
+        <h2>Scheduled Screenings</h2>
+        <div id="screeningsList" class="screening-list"></div>
+      </section>
+    </main>
+  </body>
+</html>
