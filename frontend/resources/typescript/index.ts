@@ -3,16 +3,56 @@
  * @interface
  */
 interface Movie {
-  /** Unique identifier for the movie */
-  id: number;
-  /** Title of the movie */
+  /** UUID from local database */
+  id: string;
+
+  /** TMDB ID */
+  tmdb_id: number;
+
+  /** Movie title */
   title: string;
-  /** URL or path to the movie poster image */
-  poster_path: string;
-  /** Plot summary of the movie (optional) */
+
+  /** Plot summary or description */
   overview?: string;
-  /** Average rating of the movie on a scale of 0-10 (optional) */
+
+  /** Path to the poster image */
+  poster_path?: string;
+
+  /** Path to the backdrop image */
+  backdrop_path?: string;
+
+  /** Release date in ISO string format */
+  release_date?: string;
+
+  /** Duration of the movie in minutes */
+  runtime?: number;
+
+  /** List of genre names */
+  genres?: string[];
+
+  /** Average rating (0–10) */
   vote_average?: number;
+
+  /** Number of votes received */
+  vote_count?: number;
+
+  /** Name of the movie director */
+  director?: string;
+
+  /** Main cast members */
+  cast?: string[];
+
+  /** URL to the movie trailer */
+  trailer_url?: string;
+
+  /** Current movie status (e.g., "Released", "Coming Soon") */
+  status?: string;
+
+  /** Creation timestamp */
+  created_at?: string;
+
+  /** Last updated timestamp */
+  updated_at?: string;
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -49,9 +89,12 @@ document.addEventListener('DOMContentLoaded', () => {
         card.classList.add('movie-card');
 
         const img = document.createElement('img');
-        img.src = movie.poster_path.startsWith('http')
-          ? movie.poster_path
-          : `https://image.tmdb.org/t/p/w500${movie.poster_path}`;
+        img.src =
+          movie.poster_path && movie.poster_path.startsWith('http')
+            ? movie.poster_path
+            : movie.poster_path
+              ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+              : 'path/to/default/poster.jpg'; // Provide a default image path if poster_path is undefined
         img.alt = movie.title;
 
         const title = document.createElement('h3');
@@ -96,9 +139,11 @@ if (nowPlayingGrid) {
         card.classList.add('movie-card');
 
         const img = document.createElement('img');
-        img.src = movie.poster_path.startsWith('http')
-          ? movie.poster_path
-          : `https://image.tmdb.org/t/p/w500${movie.poster_path}`;
+        img.src = movie.poster_path
+          ? movie.poster_path.startsWith('http')
+            ? movie.poster_path
+            : `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+          : 'path/to/default/poster.jpg';
         img.alt = movie.title;
 
         const title = document.createElement('h3');
@@ -118,7 +163,7 @@ if (nowPlayingGrid) {
         card.appendChild(rating);
 
         card.addEventListener('click', () => {
-          window.location.href = `views/movie_details/index.html?id=${movie.id}`;
+          window.location.href = `views/movie_details/index.html?id=${movie.tmdb_id}`;
         });
 
         nowPlayingGrid.appendChild(card);
