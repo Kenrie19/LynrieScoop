@@ -13,6 +13,7 @@ from app.models.movie import Movie
 from app.models.room import Room
 from app.models.showing import Showing
 from app.models.user import User
+from app.schemas.movie import Movie as MovieSchema
 
 router = APIRouter(prefix="/showings", tags=["showings"])
 
@@ -245,3 +246,17 @@ async def delete_showing(
 
     await db.delete(showing)
     await db.commit()
+
+
+@router.get("/now-playing", response_model=List[MovieSchema])
+async def get_now_playing_from_local(db: AsyncSession = Depends(get_db)) -> Any:
+    """
+    Get all movies that currently have at least one scheduled showing
+    """
+    from sqlalchemy import distinct
+
+    result = await db.execute(
+        select(Movie).join(Showing).filter(Showing.status == "scheduled").distinct()
+    )
+    movies = result.scalars().all()
+    return movies

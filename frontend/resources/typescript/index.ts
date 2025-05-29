@@ -17,16 +17,16 @@ interface Movie {
 
 document.addEventListener('DOMContentLoaded', () => {
   /**
-   * Retrieves and displays the currently playing movies
+   * Retrieves and displays the popular movies
    */
-  // 🎬 Now Playing movies ophalen
-  const grid = document.getElementById('nowPlayingGrid') as HTMLElement;
+  // Trending movies ophalen
+  const grid = document.getElementById('trendingMoviesGrid') as HTMLElement;
   if (!grid) return;
 
   /**
-   * Fetches now playing movies from the API
+   * Fetches popular movies from the API
    */
-  fetch('http://localhost:8000/movies/movies/now_playing') // Backend endpoint poort en url aanpassen
+  fetch('http://localhost:8000/movies/movies/popular') // Backend endpoint poort en url aanpassen
     .then((response) => {
       if (!response.ok) throw new Error('Network response was not ok');
       return response.json();
@@ -34,8 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
     .then((data) => {
       // Controleer of data een array is of object met results property
       let movies: Movie[] = [];
-      // Log de data om te zien wat er terugkomt
-      console.log('Movies data:', data);
 
       if (Array.isArray(data)) {
         movies = data; // backend geeft direct een array terug
@@ -84,3 +82,47 @@ document.addEventListener('DOMContentLoaded', () => {
       console.error('Error loading movies:', error);
     });
 });
+
+const nowPlayingGrid = document.getElementById('nowPlayingMoviesGrid') as HTMLElement;
+if (nowPlayingGrid) {
+  fetch('http://localhost:8000/showings/showings/now-playing')
+    .then((response) => {
+      if (!response.ok) throw new Error('Failed to fetch now playing movies');
+      return response.json();
+    })
+    .then((movies: Movie[]) => {
+      movies.forEach((movie) => {
+        const card = document.createElement('div');
+        card.classList.add('movie-card');
+
+        const img = document.createElement('img');
+        img.src = movie.poster_path.startsWith('http')
+          ? movie.poster_path
+          : `https://image.tmdb.org/t/p/w500${movie.poster_path}`;
+        img.alt = movie.title;
+
+        const title = document.createElement('h3');
+        title.textContent = movie.title;
+
+        const rating = document.createElement('div');
+        rating.className = 'movie-rating';
+        const stars = Math.round((movie.vote_average || 0) / 2);
+        for (let i = 1; i <= 5; i++) {
+          const star = document.createElement('span');
+          star.textContent = i <= stars ? '★' : '☆';
+          rating.appendChild(star);
+        }
+
+        card.appendChild(img);
+        card.appendChild(title);
+        card.appendChild(rating);
+
+        card.addEventListener('click', () => {
+          window.location.href = `views/movie_details/index.html?id=${movie.id}`;
+        });
+
+        nowPlayingGrid.appendChild(card);
+      });
+    })
+    .catch((error) => console.error('Error loading now playing movies:', error));
+}
