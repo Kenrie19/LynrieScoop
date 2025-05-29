@@ -253,7 +253,6 @@ async def get_now_playing_from_local(db: AsyncSession = Depends(get_db)) -> Any:
     """
     Get all movies that currently have at least one scheduled showing
     """
-    from sqlalchemy import distinct
 
     result = await db.execute(
         select(Movie).join(Showing).filter(Showing.status == "scheduled").distinct()

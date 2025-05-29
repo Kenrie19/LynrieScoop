@@ -17,7 +17,7 @@ async function login(email: string, password: string) {
     const data = await res.json();
     setCookie('token', data.access_token, 1);
     window.location.href = '/views/mymovies';
-  } catch (err) {
+  } catch {
     showError('Invalid email or password');
   }
 }
@@ -39,7 +39,7 @@ async function register(name: string, email: string, password: string) {
     const data = await res.json();
     setCookie('token', data.access_token, 1);
     window.location.href = '/views/mymovies';
-  } catch (err) {
+  } catch {
     showError('Registration failed. Email might be already in use.');
   }
 }
