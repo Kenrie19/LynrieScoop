@@ -110,11 +110,22 @@ async function renderMovies(): Promise<void> {
 
       // Poster
       if (movie.poster_path) {
+        const posterButton = document.createElement('button');
+        posterButton.classList.add('poster-btn');
+        posterButton.style.background = 'none';
+        posterButton.style.border = 'none';
+        posterButton.style.padding = '0';
+        posterButton.style.cursor = 'pointer';
+        posterButton.addEventListener('click', (e) => {
+          e.stopPropagation();
+          window.location.href = `/views/movie_details/index.html?id=${movie.tmdb_id}`;
+        });
         const poster = document.createElement('img');
         poster.src = movie.poster_path;
         poster.alt = `${movie.title} poster`;
         poster.classList.add('movie-poster');
-        movieSection.appendChild(poster);
+        posterButton.appendChild(poster);
+        movieSection.appendChild(posterButton);
       }
 
       // Title
@@ -127,11 +138,17 @@ async function renderMovies(): Promise<void> {
         const ul = document.createElement('ul');
         for (const s of screeningsOnDate) {
           const li = document.createElement('li');
+          // Maak een knop voor alleen de tijd
+          const timeButton = document.createElement('button');
           const time = new Date(s.start_time).toLocaleTimeString([], {
             hour: '2-digit',
             minute: '2-digit',
           });
-          li.textContent = `Zaal ${s.room_name} - ${time} - €${s.price.toFixed(2)}`;
+          timeButton.textContent = time;
+          timeButton.classList.add('screening-time-btn');
+          // Voeg eventueel een eventlistener toe voor toekomstige functionaliteit
+          // timeButton.addEventListener('click', () => { ... });
+          li.appendChild(timeButton);
           ul.appendChild(li);
         }
         movieSection.appendChild(ul);
