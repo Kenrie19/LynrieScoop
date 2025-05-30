@@ -135,10 +135,10 @@ async function renderMovies(): Promise<void> {
 
       // Screenings per date
       for (const [, screeningsOnDate] of Object.entries(grouped)) {
-        const ul = document.createElement('ul');
+        const timeContainer = document.createElement('div');
+        timeContainer.classList.add('screening-times');
+
         for (const s of screeningsOnDate) {
-          const li = document.createElement('li');
-          // Maak een knop voor alleen de tijd
           const timeButton = document.createElement('button');
           const time = new Date(s.start_time).toLocaleTimeString([], {
             hour: '2-digit',
@@ -146,12 +146,10 @@ async function renderMovies(): Promise<void> {
           });
           timeButton.textContent = time;
           timeButton.classList.add('screening-time-btn');
-          // Voeg eventueel een eventlistener toe voor toekomstige functionaliteit
-          // timeButton.addEventListener('click', () => { ... });
-          li.appendChild(timeButton);
-          ul.appendChild(li);
+          timeContainer.appendChild(timeButton);
         }
-        movieSection.appendChild(ul);
+
+        movieSection.appendChild(timeContainer);
       }
 
       moviesList.appendChild(movieSection);
