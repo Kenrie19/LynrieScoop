@@ -1,3 +1,5 @@
+import { getCookie } from './cookies.js';
+
 interface MovieDetail {
   /** UUID van de film in de database */
   id: string;
@@ -138,7 +140,12 @@ async function renderMovies(): Promise<void> {
         const timeContainer = document.createElement('div');
         timeContainer.classList.add('screening-times');
 
+        const ul = document.createElement('ul');
+        ul.classList.add('screening-time-list');
+        timeContainer.appendChild(ul);
+
         for (const s of screeningsOnDate) {
+          const li = document.createElement('li');
           const timeButton = document.createElement('button');
           const time = new Date(s.start_time).toLocaleTimeString([], {
             hour: '2-digit',
@@ -146,7 +153,21 @@ async function renderMovies(): Promise<void> {
           });
           timeButton.textContent = time;
           timeButton.classList.add('screening-time-btn');
-          timeContainer.appendChild(timeButton);
+          timeButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const token = getCookie('token');
+            const isLoggedIn = Boolean(token);
+            if (!isLoggedIn) {
+              alert('You have to be logged in to reserve tickets.');
+              window.location.href = '/views/login/index.html';
+              return;
+            }
+            console.log(`Reserving tickets for showing ID: ${s.id}`);
+            window.location.href = `/views/ticket_reservation/index.html?tmdb_id=${s.movie_id}`;
+          });
+
+          li.appendChild(timeButton);
+          ul.appendChild(li);
         }
 
         movieSection.appendChild(timeContainer);
