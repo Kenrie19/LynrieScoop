@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "concurrently \"npx tsc --watch\" \"npx @11ty/eleventy --serve\"",
+    "build": "tsc && npx @11ty/eleventy",
     "lint": "eslint \"**/*.{js,ts}\" --ignore-pattern \"_site/**\" --max-warnings=0",
     "lint:fix": "eslint \"**/*.{js,ts}\" --ignore-pattern \"_site/**\" --fix",
     "format": "prettier --write \"**/*.{js,ts,json,css,html}\" --ignore-path .prettierignore",
