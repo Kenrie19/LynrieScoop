@@ -23,7 +23,9 @@ li {
   border-radius: 20px;
   font-weight: bold;
   cursor: pointer;
-  transition: background-color 0.3s, box-shadow 0.3s;
+  transition:
+    background-color 0.3s,
+    box-shadow 0.3s;
   margin: 0 0.25em 0.5em 0;
   font-size: 1rem;
 }
@@ -38,9 +40,11 @@ li {
   color: var(--light-grey);
   border-radius: 8px;
   overflow: hidden;
-  transition: transform 0.3s, box-shadow 0.3s;
+  transition:
+    transform 0.3s,
+    box-shadow 0.3s;
   margin: 2rem 0;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
   display: flex;
   flex-direction: column;
   gap: 1.2em;
