@@ -1,4 +1,4 @@
-import { getCookie, decodeJwtPayload } from './authHelpers.js';
+import { getCookie, decodeJwtPayload } from './cookies.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   const token = getCookie('token');
