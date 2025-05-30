@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Toon admin-link enkel als de role "admin" is
-  if (user && user.role === 'admin') {
+  if (user && user.role === 'manager') {
     adminLink.style.display = 'inline';
   } else {
     adminLink.style.display = 'none';
