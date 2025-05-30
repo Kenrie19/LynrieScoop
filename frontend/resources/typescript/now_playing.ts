@@ -110,11 +110,22 @@ async function renderMovies(): Promise<void> {
 
       // Poster
       if (movie.poster_path) {
+        const posterButton = document.createElement('button');
+        posterButton.classList.add('poster-btn');
+        posterButton.style.background = 'none';
+        posterButton.style.border = 'none';
+        posterButton.style.padding = '0';
+        posterButton.style.cursor = 'pointer';
+        posterButton.addEventListener('click', (e) => {
+          e.stopPropagation();
+          window.location.href = `/views/movie_details/index.html?id=${movie.tmdb_id}`;
+        });
         const poster = document.createElement('img');
         poster.src = movie.poster_path;
         poster.alt = `${movie.title} poster`;
         poster.classList.add('movie-poster');
-        movieSection.appendChild(poster);
+        posterButton.appendChild(poster);
+        movieSection.appendChild(posterButton);
       }
 
       // Title
@@ -124,17 +135,21 @@ async function renderMovies(): Promise<void> {
 
       // Screenings per date
       for (const [, screeningsOnDate] of Object.entries(grouped)) {
-        const ul = document.createElement('ul');
+        const timeContainer = document.createElement('div');
+        timeContainer.classList.add('screening-times');
+
         for (const s of screeningsOnDate) {
-          const li = document.createElement('li');
+          const timeButton = document.createElement('button');
           const time = new Date(s.start_time).toLocaleTimeString([], {
             hour: '2-digit',
             minute: '2-digit',
           });
-          li.textContent = `Zaal ${s.room_name} - ${time} - €${s.price.toFixed(2)}`;
-          ul.appendChild(li);
+          timeButton.textContent = time;
+          timeButton.classList.add('screening-time-btn');
+          timeContainer.appendChild(timeButton);
         }
-        movieSection.appendChild(ul);
+
+        movieSection.appendChild(timeContainer);
       }
 
       moviesList.appendChild(movieSection);
