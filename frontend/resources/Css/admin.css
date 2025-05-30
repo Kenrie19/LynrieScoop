@@ -2,6 +2,7 @@
   --black-base: #121212;
   --aqua-accent: #30d5c8;
   --light-grey: #f1f1f1;
+  --error-red: #c62828;
 }
 
 body {
@@ -21,19 +22,29 @@ body {
 }
 
 h1,
-h2 {
+h2,
+h3 {
   color: var(--aqua-accent);
   text-align: center;
+  margin-bottom: 1rem;
+}
+
+.form-section {
+  margin-bottom: 2rem;
 }
 
 .form-section label {
   display: block;
   margin-top: 1rem;
   font-weight: bold;
+  cursor: pointer;
 }
 
-.form-section input,
-.form-section select {
+.form-section input[type='text'],
+.form-section input[type='date'],
+.form-section input[type='time'],
+.form-section select,
+.form-section textarea {
   width: 100%;
   padding: 0.75rem;
   margin-top: 0.25rem;
@@ -41,21 +52,42 @@ h2 {
   border-radius: 0.5rem;
   background-color: #2a2a2a;
   color: var(--light-grey);
+  box-sizing: border-box;
+  font-size: 1rem;
+  resize: vertical;
 }
 
-button {
+.feedback {
   margin-top: 1rem;
-  padding: 0.75rem 1rem;
+  font-weight: bold;
+  min-height: 1.5rem;
+}
+
+.feedback.error {
+  color: var(--error-red);
+}
+
+.feedback.success {
+  color: #4caf50;
+}
+
+button.btn {
+  margin-top: 1rem;
+  padding: 0.75rem 1.5rem;
   background-color: var(--aqua-accent);
   border: none;
   border-radius: 0.5rem;
   color: var(--black-base);
   font-weight: bold;
   cursor: pointer;
+  transition: background-color 0.3s ease;
+  user-select: none;
 }
 
-button:hover {
+button.btn:hover,
+button.btn:focus {
   background-color: #28b6a8;
+  outline: none;
 }
 
 .movie-results {
@@ -63,6 +95,7 @@ button:hover {
   flex-wrap: wrap;
   gap: 1rem;
   margin-top: 1rem;
+  justify-content: center;
 }
 
 .movie-result,
@@ -80,20 +113,14 @@ button:hover {
 .movie-entry img {
   height: 100px;
   border-radius: 0.5rem;
-}
-
-.feedback {
-  margin-top: 1rem;
-  color: #4caf50;
-  font-weight: bold;
-  text-align: center;
+  object-fit: cover;
 }
 
 .screening-list {
   margin-top: 2rem;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.5rem;
 }
 
 .screening-card {
@@ -101,16 +128,49 @@ button:hover {
   padding: 1rem;
   border-radius: 0.5rem;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  gap: 1rem;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  box-shadow: 0 0 8px rgba(48, 213, 200, 0.3);
+}
+
+.screening-card img {
+  width: 60px;
+  height: auto;
+  border-radius: 0.5rem;
+  flex-shrink: 0;
+  object-fit: cover;
 }
 
 .screening-info {
   flex-grow: 1;
+  min-width: 250px;
 }
 
-.screening-actions button {
-  margin-left: 0.5rem;
+.screening-info strong {
+  font-size: 1.1rem;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.screening-info p {
+  margin: 0.2rem 0;
+  font-size: 0.9rem;
+}
+
+.screening-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.screening-actions button.btn {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.9rem;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
 }
 
 .screening-actions .edit {
@@ -118,11 +178,62 @@ button:hover {
   color: var(--black-base);
 }
 
+.screening-actions .edit:hover,
+.screening-actions .edit:focus {
+  background-color: #28b6a8;
+  outline: none;
+}
+
 .screening-actions .delete {
   background-color: #c62828;
   color: white;
 }
 
-.screening-actions .delete:hover {
+.screening-actions .delete:hover,
+.screening-actions .delete:focus {
   background-color: #b71c1c;
+  outline: none;
+}
+
+/* Edit container styling */
+
+.form-section {
+  background-color: #212121;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-top: 1rem;
+}
+
+/* Headings margin tweak */
+
+h3 {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+/* Responsive tweaks */
+
+@media (max-width: 600px) {
+  .admin-container {
+    margin: 1rem;
+    padding: 1rem;
+  }
+
+  .screening-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .screening-info {
+    min-width: auto;
+  }
+
+  .screening-actions {
+    justify-content: flex-start;
+  }
+
+  .movie-result,
+  .movie-entry {
+    width: 45%;
+  }
 }

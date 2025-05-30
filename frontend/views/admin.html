@@ -17,29 +17,19 @@
 
     <main class="admin-container">
       <section class="form-section">
-        <label for="search">Search for a movie:</label>
-        <input type="text" id="search" placeholder="Type a title..." />
+        <label for="movieSelect">Select a movie:</label>
+        <select id="movieSelect" aria-label="Select a movie from database"></select>
 
-        <div id="searchResults" class="movie-results"></div>
+        <label for="date">Date:</label>
+        <input type="date" id="date" />
 
-        <div id="screeningForm" style="display: none">
-          <h2>Add screening for: <span id="selectedTitle"></span></h2>
+        <label for="time">Time:</label>
+        <input type="time" id="time" />
 
-          <label for="date">Date:</label>
-          <input type="date" id="date" />
+        <label for="roomSelect">Select a room:</label>
+        <select id="roomSelect" aria-label="Select a room"></select>
 
-          <label for="time">Time:</label>
-          <input type="time" id="time" />
-
-          <label for="room">Room:</label>
-          <select id="room">
-            <option value="room-1">Room 1</option>
-            <option value="room-2">Room 2</option>
-            <option value="room-3">Room 3</option>
-          </select>
-
-          <button id="addScreening">Add screening</button>
-        </div>
+        <button id="addScreening" class="btn">Add Screening</button>
 
         <div id="feedbackMessage" class="feedback"></div>
       </section>
@@ -47,6 +37,10 @@
       <section class="overview-section">
         <h2>Scheduled Screenings</h2>
         <div id="screeningsList" class="screening-list"></div>
+      </section>
+
+      <section class="overview-section go-to-movie-db">
+        <button id="goToMovieDbBtn" class="btn">Go to Movie Database Admin</button>
       </section>
     </main>
   </body>
