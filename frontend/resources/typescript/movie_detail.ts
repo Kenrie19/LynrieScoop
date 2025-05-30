@@ -1,7 +1,9 @@
 /**
- * Represents a movie genre with its identifier and name.
+ * Represents detailed information about a movie.
+ * Contains comprehensive data needed for the movie detail page.
  * @interface
  */
+
 interface Genre {
   /** Unique identifier for the genre */
   id: number;
@@ -9,40 +11,37 @@ interface Genre {
   name: string;
 }
 
-/**
- * Represents detailed information about a movie.
- * Contains comprehensive data needed for the movie detail page.
- * @interface
- */
 interface MovieDetail {
-  /** Unique identifier for the movie */
-  id: number;
-  /** Title of the movie */
+  /** UUID van de film in de database */
+  id: string;
+  /** TMDB ID van de film */
+  tmdb_id: number;
+  /** Titel van de film */
   title: string;
-  /** Plot summary or description of the movie */
-  overview: string;
-  /** URL or path to the movie poster image */
-  poster_path: string;
-  /** URL or path to the movie backdrop image (optional) */
-  backdrop_path?: string;
-  /** Release date of the movie in ISO format (YYYY-MM-DD) (optional) */
-  release_date?: string;
-  /** Duration of the movie in minutes (optional) */
-  runtime?: number;
-  /** List of genres the movie belongs to (optional) */
-  genres?: Genre[];
-  /** Average rating of the movie on a scale of 0-10 (optional) */
-  vote_average?: number;
-  /** Number of votes received for the rating (optional) */
-  vote_count?: number;
-  /** Name of the movie director (optional) */
+  /** Plot summary of description */
+  overview: string | null;
+  /** URL of path naar de poster */
+  poster_path: string | null;
+  /** URL of path naar de backdrop (optioneel) */
+  backdrop_path?: string | null;
+  /** Releasedatum in ISO formaat (optioneel) */
+  release_date?: string | null;
+  /** Duur in minuten (optioneel) */
+  runtime?: number | null;
+  /** Genres als lijst van strings (optioneel) */
+  genres?: string[] | null;
+  /** Gemiddelde rating (optioneel) */
+  vote_average?: number | null;
+  /** Aantal stemmen (optioneel) */
+  vote_count?: number | null;
+  /** Regisseur (optioneel) */
   director?: string | null;
-  /** List of cast members (optional) */
-  cast?: string | null;
-  /** URL to the movie trailer (optional) */
+  /** Cast als lijst van strings (optioneel) */
+  cast?: string[] | null;
+  /** Trailer URL (optioneel) */
   trailer_url?: string | null;
-  /** Current status of the movie (e.g., "Released", "In Production") (optional) */
-  status?: string;
+  /** Status van de film (optioneel) */
+  status?: string | null;
 }
 
 /**
@@ -63,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
     .then((movie: MovieDetail) => {
       // Log de movie data om te zien wat er terugkomt
       console.log('Movie detail data:', movie);
-      // Render movie details
+      // Render movie details zonder inline styling
       container.innerHTML = `
         <div class="movie-detail-card">
           <img class="movie-detail-poster" src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title}">
@@ -72,7 +71,15 @@ document.addEventListener('DOMContentLoaded', () => {
             <p><strong>Release date:</strong> ${movie.release_date || 'N/A'}</p>
             <p><strong>Runtime:</strong> ${movie.runtime ? movie.runtime + ' min' : 'N/A'}</p>
             <p><strong>Status:</strong> ${movie.status || 'N/A'}</p>
-            <p><strong>Genres:</strong> ${movie.genres && movie.genres.length > 0 ? movie.genres.map((g) => g.name).join(', ') : 'N/A'}</p>
+            <p><strong>Genres:</strong> ${
+              movie.genres && movie.genres.length > 0
+                ? movie.genres
+                    .map((genre: string | Genre) =>
+                      typeof genre === 'string' ? genre : genre.name
+                    )
+                    .join(', ')
+                : 'N/A'
+            }</p>
             <p><strong>Rating:</strong> ${movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A'} (${movie.vote_count || 0} votes)</p>
             <p><strong>Overview:</strong> ${movie.overview}</p>
           </div>
