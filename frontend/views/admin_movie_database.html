@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Movie Database Admin | LynrieScoop</title>
+    <link rel="stylesheet" href="/resources/css/style.css" />
+    <link rel="stylesheet" href="/resources/css/admin_movie_database.css" />
+    <script defer type="module" src="/resources/javascript/main.js"></script>
+    <script defer type="module" src="/resources/javascript/admin_movie_database.js"></script>
+  </head>
+  <body>
+    {% include "navbar.njk" %}
+
+    <main class="admin-container">
+      <header>
+        <h1>Add movie to database</h1>
+      </header>
+
+      <section class="form-section">
+        <label for="searchTmdb">Search TMDB Movies:</label>
+        <input type="text" id="searchTmdb" placeholder="Type a movie title..." autocomplete="off" />
+        <div id="tmdbSearchResults" class="movie-results"></div>
+        <div id="addMovieFeedback" class="feedback"></div>
+      </section>
+
+      <section class="overview-section">
+        <h2>Movies in database</h2>
+        <div id="allMoviesList" class="movie-results"></div>
+      </section>
+    </main>
+  </body>
+</html>
