@@ -1,58 +1,40 @@
 /**
- * Represents a movie with its basic information.
+ * Represents detailed information about a movie.
+ * Contains comprehensive data needed for the movie detail page.
  * @interface
  */
-interface Movie {
-  /** UUID from local database */
+
+interface MovieDetail {
+  /** UUID van de film in de database */
   id: string;
-
-  /** TMDB ID */
+  /** TMDB ID van de film */
   tmdb_id: number;
-
-  /** Movie title */
+  /** Titel van de film */
   title: string;
-
-  /** Plot summary or description */
-  overview?: string;
-
-  /** Path to the poster image */
-  poster_path?: string;
-
-  /** Path to the backdrop image */
-  backdrop_path?: string;
-
-  /** Release date in ISO string format */
-  release_date?: string;
-
-  /** Duration of the movie in minutes */
-  runtime?: number;
-
-  /** List of genre names */
-  genres?: string[];
-
-  /** Average rating (0–10) */
-  vote_average?: number;
-
-  /** Number of votes received */
-  vote_count?: number;
-
-  /** Name of the movie director */
-  director?: string;
-
-  /** Main cast members */
-  cast?: string[];
-
-  /** URL to the movie trailer */
-  trailer_url?: string;
-
-  /** Current movie status (e.g., "Released", "Coming Soon") */
-  status?: string;
-
-  /** Creation timestamp */
-  created_at?: string;
-
-  /** Last updated timestamp */
-  updated_at?: string;
+  /** Plot summary of description */
+  overview: string | null;
+  /** URL of path naar de poster */
+  poster_path: string | null;
+  /** URL of path naar de backdrop (optioneel) */
+  backdrop_path?: string | null;
+  /** Releasedatum in ISO formaat (optioneel) */
+  release_date?: string | null;
+  /** Duur in minuten (optioneel) */
+  runtime?: number | null;
+  /** Genres als lijst van strings (optioneel) */
+  genres?: string[] | null;
+  /** Gemiddelde rating (optioneel) */
+  vote_average?: number | null;
+  /** Aantal stemmen (optioneel) */
+  vote_count?: number | null;
+  /** Regisseur (optioneel) */
+  director?: string | null;
+  /** Cast als lijst van strings (optioneel) */
+  cast?: string[] | null;
+  /** Trailer URL (optioneel) */
+  trailer_url?: string | null;
+  /** Status van de film (optioneel) */
+  status?: string | null;
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -73,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
     })
     .then((data) => {
       // Controleer of data een array is of object met results property
-      let movies: Movie[] = [];
+      let movies: MovieDetail[] = [];
 
       if (Array.isArray(data)) {
         movies = data; // backend geeft direct een array terug
@@ -133,8 +115,9 @@ if (nowPlayingGrid) {
       if (!response.ok) throw new Error('Failed to fetch now playing movies');
       return response.json();
     })
-    .then((movies: Movie[]) => {
+    .then((movies: MovieDetail[]) => {
       movies.forEach((movie) => {
+        console.log('Now Playing Movie:', movie);
         const card = document.createElement('div');
         card.classList.add('movie-card');
 
