@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="nl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lynriescoop - Movies</title>
+    <link rel="stylesheet" href="/resources/Css/style.css" />
+    <link rel="stylesheet" href="/resources/Css/ticket_reservation.css" />
+    <script defer type="module" src="/resources/javascript/main.js"></script>
+    <script type="module" src="/resources/javascript/ticket_reservation.js" type="module"></script>
+  </head>
+  <body>
+    <div class="reservation-container">
+      <h1>Reserve Ticket</h1>
+      <div class="reservation-info">
+        <div><strong>Cinema:</strong> <span id="cinema-name">...</span></div>
+        <div><strong>Movie:</strong> <span id="movie-title">...</span></div>
+        <div><strong>Time:</strong> <span id="showing-time">...</span></div>
+      </div>
+      <form id="reservation-form">
+        <label for="num-tickets">Number of tickets:</label>
+        <input type="number" id="num-tickets" name="num-tickets" min="1" max="10" value="1" required />
+        <button type="submit">Reserve</button>
+      </form>
+      <div id="reservation-message"></div>
+    </div>
+
+  </body>
+</html>

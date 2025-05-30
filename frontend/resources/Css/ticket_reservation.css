@@ -1,0 +1,54 @@
+/* Ticket reserveren pagina styling */
+.reservation-container {
+  max-width: 400px;
+  margin: 3em auto;
+  background: #1e1e1e;
+  color: var(--light-grey);
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+  padding: 2em 2em 1.5em 2em;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2em;
+}
+.reservation-container h1 {
+  text-align: center;
+  margin-bottom: 0.5em;
+}
+.reservation-info {
+  background: #232323;
+  border-radius: 6px;
+  padding: 1em;
+  margin-bottom: 1em;
+  font-size: 1.05em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+}
+.reservation-container label {
+  font-weight: bold;
+  margin-bottom: 0.3em;
+}
+.reservation-container input[type="number"] {
+  width: 100%;
+  padding: 0.5em;
+  border-radius: 6px;
+  border: 1px solid #444;
+  background: #222;
+  color: var(--light-grey);
+  margin-bottom: 1em;
+}
+.reservation-container button {
+  width: 100%;
+  margin-top: 1em;
+}
+.success-message {
+  color: var(--aqua-accent);
+  text-align: center;
+  font-weight: bold;
+}
+.error-message {
+  color: var(--red-accent);
+  text-align: center;
+  font-weight: bold;
+}
