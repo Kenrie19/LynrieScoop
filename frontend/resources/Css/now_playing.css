@@ -7,6 +7,8 @@ ul {
   flex-wrap: wrap;
   gap: 0.5em;
   justify-content: center;
+  width: 100%;
+  align-items: center;
 }
 
 li {
@@ -48,6 +50,7 @@ li {
   display: flex;
   flex-direction: column;
   gap: 1.2em;
+  align-items: center;
 }
 
 .movie-card:hover {
@@ -69,6 +72,11 @@ h2 {
   margin: 0 0 0.5em 0;
   text-align: center;
   color: var(--light-grey);
+  min-height: 2.2em; /* Zorgt voor gelijke hoogte titels */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
 }
 
 .poster-btn {
