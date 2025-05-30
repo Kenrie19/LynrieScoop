@@ -1,4 +1,4 @@
-import { setCookie } from './authHelpers.js';
+import { setCookie } from './cookies.js';
 
 async function login(email: string, password: string) {
   try {

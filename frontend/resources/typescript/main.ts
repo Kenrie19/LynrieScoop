@@ -1,4 +1,4 @@
-import { decodeJwtPayload } from './authHelpers.js';
+import { decodeJwtPayload } from './cookies.js';
 
 function getCookie(name: string): string | null {
   const cookies = document.cookie.split('; ');
