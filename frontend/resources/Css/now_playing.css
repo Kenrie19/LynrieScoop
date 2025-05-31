@@ -1,22 +1,3 @@
-/* ...existing code... */
-ul {
-  list-style: none;
-  padding-left: 0;
-  margin: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5em;
-  justify-content: center;
-  width: 100%;
-  align-items: center;
-}
-
-li {
-  margin: 0;
-  padding: 0;
-}
-
-/* Optioneel: ruimte tussen knoppen */
 .screening-time-btn {
   background-color: var(--red-accent);
   color: white;
@@ -50,7 +31,7 @@ li {
   display: flex;
   flex-wrap: wrap;
   flex-direction: column;
-  gap: 2em;
+  gap: 0.7em;
   align-items: center;
   justify-content: center;
 }
@@ -60,21 +41,20 @@ li {
   box-shadow: 0 0 15px var(--aqua-accent);
 }
 
-/* Optioneel: ruimte tussen poster en titel */
 .movie-poster {
   width: 100%;
+  height: auto;
   display: block;
-  margin-bottom: 1em;
-  border-radius: 6px;
+  margin-bottom: 0.5em;
 }
 
 h2 {
   font-size: 1.3rem;
   font-weight: bold;
-  margin: 0 0 0.5em 0;
+  margin: 0 0 0.2em 0;
   text-align: center;
   color: var(--light-grey);
-  min-height: 2.2em; /* Zorgt voor gelijke hoogte titels */
+  min-height: 2.2em;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -97,4 +77,41 @@ h2 {
   width: 100%;
   padding: 0.5em 1em 1em;
   box-sizing: border-box;
+}
+
+.movie-info {
+  display: flex;
+  flex-direction: row;
+  gap: 1em;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 0.3em;
+  margin-top: 0.1em;
+  font-size: 1.05em;
+  color: var(--light-grey);
+}
+
+.movie-room {
+  font-weight: 500;
+}
+
+.movie-price {
+  font-weight: 500;
+}
+
+.screening-time-list-unique {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5em;
+  justify-content: center;
+  width: 100%;
+  align-items: center;
+}
+
+.screening-time-item-unique {
+  margin: 0;
+  padding: 0;
 }
