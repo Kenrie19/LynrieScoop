@@ -1,8 +1,9 @@
 import { setCookie } from './cookies.js';
+import { buildApiUrl } from './config.js';
 
 async function login(email: string, password: string) {
   try {
-    const res = await fetch('http://localhost:8000/auth/login', {
+    const res = await fetch(buildApiUrl('/auth/login'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -24,7 +25,7 @@ async function login(email: string, password: string) {
 
 async function register(name: string, email: string, password: string) {
   try {
-    const res = await fetch('http://localhost:8000/auth/register', {
+    const res = await fetch(buildApiUrl('/auth/register'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
