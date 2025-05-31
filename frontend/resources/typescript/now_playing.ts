@@ -1,35 +1,35 @@
 import { getCookie } from './cookies.js';
 
 interface MovieDetail {
-  /** UUID van de film in de database */
+  /** UUID of the movie in the database */
   id: string;
-  /** TMDB ID van de film */
+  /** TMDB ID of the movie */
   tmdb_id: number;
-  /** Titel van de film */
+  /** Title of the movie */
   title: string;
-  /** Plot summary of description */
+  /** Plot summary or description */
   overview: string | null;
-  /** URL of path naar de poster */
+  /** URL or path to the poster */
   poster_path: string | null;
-  /** URL of path naar de backdrop (optioneel) */
+  /** URL or path to the backdrop (optional) */
   backdrop_path?: string | null;
-  /** Releasedatum in ISO formaat (optioneel) */
+  /** Release date in ISO format (optional) */
   release_date?: string | null;
-  /** Duur in minuten (optioneel) */
+  /** Duration in minutes (optional) */
   runtime?: number | null;
-  /** Genres als lijst van strings (optioneel) */
+  /** Genres as a list of strings (optional) */
   genres?: string[] | null;
-  /** Gemiddelde rating (optioneel) */
+  /** Average rating (optional) */
   vote_average?: number | null;
-  /** Aantal stemmen (optioneel) */
+  /** Number of votes (optional) */
   vote_count?: number | null;
-  /** Regisseur (optioneel) */
+  /** Director (optional) */
   director?: string | null;
-  /** Cast als lijst van strings (optioneel) */
+  /** Cast as a list of strings (optional) */
   cast?: string[] | null;
-  /** Trailer URL (optioneel) */
+  /** Trailer URL (optional) */
   trailer_url?: string | null;
-  /** Status van de film (optioneel) */
+  /** Status of the movie (optional) */
   status?: string | null;
 }
 
@@ -101,11 +101,24 @@ async function renderMovies(): Promise<void> {
   moviesList.innerHTML = '';
   try {
     const nowPlaying: MovieDetail[] = await fetchNowPlaying();
-    for (const movie of nowPlaying) {
-      const screenings = await fetchScreenings(movie.tmdb_id);
-      const filtered = filterScreeningsBySelectedDay(screenings);
+    // Sort movies by the earliest screening time
+    const moviesWithFirstScreening = await Promise.all(
+      nowPlaying.map(async (movie) => {
+        const screenings = await fetchScreenings(movie.tmdb_id);
+        const filtered = filterScreeningsBySelectedDay(screenings);
+        const firstScreening = filtered.length > 0 ? filtered[0].start_time : null;
+        return { movie, screenings, filtered, firstScreening };
+      })
+    );
+    // Sort by the earliest screening time (nulls last)
+    moviesWithFirstScreening.sort((a, b) => {
+      if (!a.firstScreening && !b.firstScreening) return 0;
+      if (!a.firstScreening) return 1;
+      if (!b.firstScreening) return -1;
+      return new Date(a.firstScreening).getTime() - new Date(b.firstScreening).getTime();
+    });
+    for (const { movie, filtered } of moviesWithFirstScreening) {
       if (filtered.length === 0) continue;
-
       const grouped = groupAndSortByDate(filtered);
       const movieSection = document.createElement('div');
       movieSection.classList.add('movie-card');
@@ -114,16 +127,12 @@ async function renderMovies(): Promise<void> {
       if (movie.poster_path) {
         const posterButton = document.createElement('button');
         posterButton.classList.add('poster-btn');
-        posterButton.style.background = 'none';
-        posterButton.style.border = 'none';
-        posterButton.style.padding = '0';
-        posterButton.style.cursor = 'pointer';
         posterButton.addEventListener('click', (e) => {
           e.stopPropagation();
           window.location.href = `/views/movie_details/index.html?id=${movie.tmdb_id}`;
         });
         const poster = document.createElement('img');
-        poster.src = movie.poster_path;
+        poster.src = `https://image.tmdb.org/t/p/w500${movie.poster_path}`;
         poster.alt = `${movie.title} poster`;
         poster.classList.add('movie-poster');
         posterButton.appendChild(poster);
@@ -135,17 +144,37 @@ async function renderMovies(): Promise<void> {
       title.textContent = movie.title;
       movieSection.appendChild(title);
 
+      // Room info and price (first screening of the day)
+      const firstScreening = filtered[0];
+      if (firstScreening) {
+        const infoDiv = document.createElement('div');
+        infoDiv.classList.add('movie-info');
+        // Room info
+        const roomSpan = document.createElement('span');
+        roomSpan.classList.add('movie-room');
+        roomSpan.textContent = firstScreening.room_name ? ` ${firstScreening.room_name}` : '';
+        // Price
+        const priceSpan = document.createElement('span');
+        priceSpan.classList.add('movie-price');
+        priceSpan.textContent = `€${firstScreening.price.toFixed(2)}`;
+        infoDiv.appendChild(roomSpan);
+        infoDiv.appendChild(document.createTextNode(' '));
+        infoDiv.appendChild(priceSpan);
+        movieSection.appendChild(infoDiv);
+      }
+
       // Screenings per date
       for (const [, screeningsOnDate] of Object.entries(grouped)) {
         const timeContainer = document.createElement('div');
         timeContainer.classList.add('screening-times');
 
-        const ul = document.createElement('ul');
-        ul.classList.add('screening-time-list');
-        timeContainer.appendChild(ul);
+        const screeningList = document.createElement('ul');
+        screeningList.classList.add('screening-time-list-unique');
+        timeContainer.appendChild(screeningList);
 
         for (const s of screeningsOnDate) {
-          const li = document.createElement('li');
+          const screeningItem = document.createElement('li');
+          screeningItem.classList.add('screening-time-item-unique');
           const timeButton = document.createElement('button');
           const time = new Date(s.start_time).toLocaleTimeString([], {
             hour: '2-digit',
@@ -166,8 +195,8 @@ async function renderMovies(): Promise<void> {
             window.location.href = `/views/ticket_reservation/index.html?tmdb_id=${s.movie_id}`;
           });
 
-          li.appendChild(timeButton);
-          ul.appendChild(li);
+          screeningItem.appendChild(timeButton);
+          screeningList.appendChild(screeningItem);
         }
 
         movieSection.appendChild(timeContainer);
@@ -176,7 +205,7 @@ async function renderMovies(): Promise<void> {
       moviesList.appendChild(movieSection);
     }
   } catch (err) {
-    console.error('Fout bij het laden van screenings:', err);
+    console.error('Error loading screenings:', err);
     moviesList.innerHTML =
       "<p style='grid-column:1/-1; text-align:center; color:var(--light-grey);'>Failed to load screenings.</p>";
   }
