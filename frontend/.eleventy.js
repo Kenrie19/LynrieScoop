@@ -1,3 +1,7 @@
+import { config } from 'dotenv';
+import process from 'process';
+
+config();
 /**
  * Eleventy configuration file for the LynrieScoop frontend project
  * @file Eleventy configuration
@@ -20,6 +24,8 @@ export default function (eleventyConfig) {
     'resources/Javascript': 'resources/javascript',
     'resources/videos': 'resources/videos',
   });
+
+  eleventyConfig.addGlobalData('env', process.env);
 
   // Optioneel: kopieer ook alles uit resources als fallback
   // eleventyConfig.addPassthroughCopy({ "resources": "resources" });
