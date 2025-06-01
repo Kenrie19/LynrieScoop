@@ -107,7 +107,8 @@ tmdb_movies = [
             "Entity — which has infiltrated intelligence networks all over the globe — with "
             "the world's governments and a mysterious ghost from Hunt's past on their trail. "
             "Joined by new allies and armed with the means to shut the Entity down for good, "
-            "Hunt is in a race against time to prevent the world as we know it from changing forever."
+            "Hunt is in a race against time to prevent the world as we know it from changing"
+            " forever."
         ),
         "popularity": 286.3732,
         "poster_path": "/z53D72EAOxGRqdr7KXXWp9dJiDe.jpg",
@@ -167,7 +168,8 @@ tmdb_movies = [
             "Four misfits find themselves struggling with ordinary problems when they are "
             "suddenly pulled through a mysterious portal into the Overworld: a bizarre, cubic "
             "wonderland that thrives on imagination. To get back home, they'll have to master "
-            "this world while embarking on a magical quest with an unexpected, expert crafter, Steve."
+            "this world while embarking on a magical quest with an unexpected, expert crafter,"
+            " Steve."
         ),
         "popularity": 469.6691,
         "poster_path": "/yFHHfHcUgGAxziP1C3lLt0q2T4s.jpg",
@@ -373,9 +375,7 @@ async def create_sample_data() -> None:
                         break
 
                 if not scheduled:
-                    logger.warning(
-                        f"Could not find a time slot for movie {movie.title} on {current_date.date()}"
-                    )
+                    logger.warning(f'Could not schedule movie "{movie.title}" ')
 
         await session.commit()
         logger.info("Sample data created successfully!")
