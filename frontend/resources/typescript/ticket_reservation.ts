@@ -14,7 +14,6 @@
 //   return await res.json();
 // }
 
-
 // async function fetchMovieDetails(movieId: number) {
 //     const res = await fetch(`http://localhost:8000/movies/movies/${movieId}`);
 //     if (!res.ok) throw new Error('Can not fetch movie details');
