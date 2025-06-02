@@ -1,3 +1,5 @@
+import { buildApiUrl } from './config.js';
+
 /**
  * Represents detailed information about a movie.
  * Contains comprehensive data needed for the movie detail page.
@@ -54,14 +56,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const container = document.getElementById('movieDetailContainer');
   if (!movieId || !container) return;
 
-  fetch(`http://localhost:8000/movies/movies/tmdb/${movieId}`)
+  fetch(buildApiUrl(`/movies/movies/tmdb/${movieId}`))
     .then((response) => {
       if (!response.ok) throw new Error('Network response was not ok');
       return response.json();
     })
     .then((movie: MovieDetail) => {
-      // Log de movie data om te zien wat er terugkomt
-      console.log('Movie detail data:', movie);
       // Render movie details zonder inline styling
       container.innerHTML = `
         <div class="movie-detail-card">

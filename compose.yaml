@@ -69,6 +69,10 @@ services:
     restart: unless-stopped
     ports:
       - "80:80"
+    env_file:
+      - ./frontend/.env
+    environment:
+      - API_BASE_URL=API_BASE_URL
     depends_on:
       - backend
 

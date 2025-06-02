@@ -1,3 +1,5 @@
+import { buildApiUrl } from './config.js';
+
 /**
  * Represents detailed information about a movie.
  * Contains comprehensive data needed for the movie detail page.
@@ -43,12 +45,10 @@ document.addEventListener('DOMContentLoaded', () => {
    */
   // Trending movies ophalen
   const grid = document.getElementById('trendingMoviesGrid') as HTMLElement;
-  if (!grid) return;
-
-  /**
+  if (!grid) return; /**
    * Fetches popular movies from the API
    */
-  fetch('http://localhost:8000/movies/movies/popular') // Backend endpoint poort en url aanpassen
+  fetch(buildApiUrl('/movies/movies/popular'))
     .then((response) => {
       if (!response.ok) throw new Error('Network response was not ok');
       return response.json();
@@ -110,14 +110,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
 const nowPlayingGrid = document.getElementById('nowPlayingMoviesGrid') as HTMLElement;
 if (nowPlayingGrid) {
-  fetch('http://localhost:8000/showings/showings/now-playing')
+  fetch(buildApiUrl('/showings/showings/now-playing'))
     .then((response) => {
       if (!response.ok) throw new Error('Failed to fetch now playing movies');
       return response.json();
     })
     .then((movies: MovieDetail[]) => {
       movies.forEach((movie) => {
-        console.log('Now Playing Movie:', movie);
         const card = document.createElement('div');
         card.classList.add('movie-card');
 
@@ -152,5 +151,5 @@ if (nowPlayingGrid) {
         nowPlayingGrid.appendChild(card);
       });
     })
-    .catch((error) => console.error('Error loading now playing movies:', error));
+    .catch(() => {});
 }

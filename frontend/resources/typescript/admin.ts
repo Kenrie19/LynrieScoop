@@ -1,4 +1,5 @@
 import { getCookie, decodeJwtPayload } from './cookies.js';
+import { buildApiUrl } from './config.js';
 
 interface Room {
   id: string;
@@ -43,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
   async function loadMovies() {
     movieSelect.replaceChildren();
     try {
-      const res = await fetch('http://localhost:8000/movies/movies/', {
+      const res = await fetch(buildApiUrl('/movies/movies/'), {
         headers: { Authorization: `Bearer ${token}` },
       });
       const movies: Movie[] = await res.json();
@@ -65,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
   async function loadRooms() {
     roomSelect.replaceChildren();
     try {
-      const cinemasRes = await fetch('http://localhost:8000/admin/admin/cinemas', {
+      const cinemasRes = await fetch(buildApiUrl('admin/admin/cinemas'), {
         headers: { Authorization: `Bearer ${token}` },
       });
       const cinemas = await cinemasRes.json();
@@ -75,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       const cinemaId = cinemas[0].id;
 
-      const roomsRes = await fetch(`http://localhost:8000/admin/admin/cinemas/${cinemaId}/rooms`, {
+      const roomsRes = await fetch(buildApiUrl(`admin/admin/cinemas/${cinemaId}/rooms`), {
         headers: { Authorization: `Bearer ${token}` },
       });
       const rooms: Room[] = await roomsRes.json();
@@ -124,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     try {
-      const res = await fetch('http://localhost:8000/showings/showings/', {
+      const res = await fetch(buildApiUrl('/showings/showings/'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -165,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     try {
       // Map movies by local UUID
-      const movieRes = await fetch('http://localhost:8000/movies/movies/', {
+      const movieRes = await fetch(buildApiUrl('/movies/movies/'), {
         headers: { Authorization: `Bearer ${token}` },
       });
       const movies = await movieRes.json();
@@ -177,7 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       // Get cinema and rooms
-      const cinemasRes = await fetch('http://localhost:8000/admin/admin/cinemas', {
+      const cinemasRes = await fetch(buildApiUrl('/admin/admin/cinemas'), {
         headers: { Authorization: `Bearer ${token}` },
       });
       const cinemas = await cinemasRes.json();
@@ -187,7 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       const cinemaId = cinemas[0].id;
 
-      const roomsRes = await fetch(`http://localhost:8000/admin/admin/cinemas/${cinemaId}/rooms`, {
+      const roomsRes = await fetch(buildApiUrl(`/admin/admin/cinemas/${cinemaId}/rooms`), {
         headers: { Authorization: `Bearer ${token}` },
       });
       const rooms = await roomsRes.json();
@@ -199,7 +200,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       // Fetch showings
-      const res = await fetch('http://localhost:8000/admin/admin/showings', {
+      const res = await fetch(buildApiUrl('/admin/admin/showings'), {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -323,7 +324,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const newDatetime = `${newDate}T${newTime}:00`;
 
             try {
-              const res = await fetch(`http://localhost:8000/showings/showings/${screening.id}`, {
+              const res = await fetch(buildApiUrl(`/showings/showings/${screening.id}`), {
                 method: 'PUT',
                 headers: {
                   Authorization: `Bearer ${token}`,
@@ -376,7 +377,7 @@ document.addEventListener('DOMContentLoaded', () => {
           deleteBtn.addEventListener('click', async () => {
             if (!confirm('Are you sure you want to delete this screening?')) return;
 
-            const delRes = await fetch(`http://localhost:8000/showings/showings/${screening.id}`, {
+            const delRes = await fetch(buildApiUrl(`/showings/showings/${screening.id}`), {
               method: 'DELETE',
               headers: { Authorization: `Bearer ${token}` },
             });
@@ -396,8 +397,7 @@ document.addEventListener('DOMContentLoaded', () => {
           screeningsList.appendChild(card);
         });
       });
-    } catch (err) {
-      console.error('Error loading screenings:', err);
+    } catch {
       feedback.textContent = '❌ Failed to load screenings.';
     }
   }

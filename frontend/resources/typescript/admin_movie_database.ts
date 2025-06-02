@@ -1,3 +1,4 @@
+import { buildApiUrl } from './config.js';
 import { getCookie, decodeJwtPayload } from './cookies.js';
 
 type Movie = {
@@ -32,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     try {
       const res = await fetch(
-        `http://localhost:8000/movies/movies/search?query=${encodeURIComponent(query)}`,
+        buildApiUrl(`/movies/movies/search?query=${encodeURIComponent(query)}`),
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -85,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
   async function importMovieByTmdbId(tmdbId: string) {
     addMovieFeedback.textContent = '';
     try {
-      const res = await fetch(`http://localhost:8000/admin/admin/tmdb/import/${tmdbId}`, {
+      const res = await fetch(buildApiUrl(`/admin/admin/tmdb/import/${tmdbId}`), {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -108,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
     allMoviesList.replaceChildren();
 
     try {
-      const res = await fetch('http://localhost:8000/movies/movies/', {
+      const res = await fetch(buildApiUrl('/movies/movies/'), {
         headers: { Authorization: `Bearer ${token}` },
       });
       const movies: Movie[] = await res.json();

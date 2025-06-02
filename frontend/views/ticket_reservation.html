@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="nl">
   <head>
     <meta charset="UTF-8" />
@@ -6,6 +6,7 @@
     <title>Lynriescoop - Movies</title>
     <link rel="stylesheet" href="/resources/Css/style.css" />
     <link rel="stylesheet" href="/resources/Css/ticket_reservation.css" />
+    {% include "env.njk" %}
     <script defer type="module" src="/resources/javascript/main.js"></script>
     <script type="module" src="/resources/javascript/ticket_reservation.js" type="module"></script>
   </head>
@@ -19,11 +20,18 @@
       </div>
       <form id="reservation-form">
         <label for="num-tickets">Number of tickets:</label>
-        <input type="number" id="num-tickets" name="num-tickets" min="1" max="10" value="1" required />
+        <input
+          type="number"
+          id="num-tickets"
+          name="num-tickets"
+          min="1"
+          max="10"
+          value="1"
+          required
+        />
         <button type="submit">Reserve</button>
       </form>
       <div id="reservation-message"></div>
     </div>
-
   </body>
 </html>
