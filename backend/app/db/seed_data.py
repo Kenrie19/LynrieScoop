@@ -1,7 +1,10 @@
 import asyncio
 import logging
 import random
-from datetime import datetime, timedelta
+from collections import defaultdict
+from datetime import datetime, time, timedelta
+from typing import Any, Dict, List, Set, Tuple, cast
+from uuid import UUID
 
 from sqlalchemy import select
 from sqlalchemy.sql import text
@@ -21,7 +24,7 @@ tmdb_movies = [
         "adult": False,
         "backdrop_path": "/nAxGnGHOsfzufThz20zgmRwKur3.jpg",
         "genre_ids": [27, 53],
-        "id": 1233413,
+        "tmdb_id": 1233413,
         "original_language": "en",
         "original_title": "Sinners",
         "overview": (
@@ -36,12 +39,13 @@ tmdb_movies = [
         "video": False,
         "vote_average": 7.5,
         "vote_count": 869,
+        "runtime": 138,
     },
     {
         "adult": False,
         "backdrop_path": "/m9EtP1Yrzv6v7dMaC9mRaGhd1um.jpg",
         "genre_ids": [28, 878, 12],
-        "id": 986056,
+        "tmdb_id": 986056,
         "original_language": "en",
         "original_title": "Thunderbolts*",
         "overview": (
@@ -56,12 +60,13 @@ tmdb_movies = [
         "video": False,
         "vote_average": 7.43,
         "vote_count": 1035,
+        "runtime": 127,
     },
     {
         "adult": False,
         "backdrop_path": "/cJvUJEEQ86LSjl4gFLkYpdCJC96.jpg",
         "genre_ids": [10752, 28],
-        "id": 1241436,
+        "tmdb_id": 1241436,
         "original_language": "en",
         "original_title": "Warfare",
         "overview": (
@@ -75,12 +80,13 @@ tmdb_movies = [
         "video": False,
         "vote_average": 7.302,
         "vote_count": 461,
+        "runtime": 95,
     },
     {
         "adult": False,
         "backdrop_path": "/7Zx3wDG5bBtcfk8lcnCWDOLM4Y4.jpg",
         "genre_ids": [10751, 35, 878],
-        "id": 552524,
+        "tmdb_id": 552524,
         "original_language": "en",
         "original_title": "Lilo & Stitch",
         "overview": (
@@ -94,12 +100,13 @@ tmdb_movies = [
         "video": False,
         "vote_average": 7.1,
         "vote_count": 334,
+        "runtime": 108,
     },
     {
         "adult": False,
         "backdrop_path": "/z53D72EAOxGRqdr7KXXWp9dJiDe.jpg",
         "genre_ids": [28, 12, 53],
-        "id": 575265,
+        "tmdb_id": 575265,
         "original_language": "en",
         "original_title": "Mission: Impossible - The Final Reckoning",
         "overview": (
@@ -107,7 +114,8 @@ tmdb_movies = [
             "Entity — which has infiltrated intelligence networks all over the globe — with "
             "the world's governments and a mysterious ghost from Hunt's past on their trail. "
             "Joined by new allies and armed with the means to shut the Entity down for good, "
-            "Hunt is in a race against time to prevent the world as we know it from changing forever."
+            "Hunt is in a race against time to prevent the world as we know it from changing"
+            " forever."
         ),
         "popularity": 286.3732,
         "poster_path": "/z53D72EAOxGRqdr7KXXWp9dJiDe.jpg",
@@ -116,12 +124,13 @@ tmdb_movies = [
         "video": False,
         "vote_average": 7.1,
         "vote_count": 471,
+        "runtime": 170,
     },
     {
         "adult": False,
         "backdrop_path": "/uIpJPDNFoeX0TVml9smPrs9KUVx.jpg",
         "genre_ids": [27, 9648],
-        "id": 574475,
+        "tmdb_id": 574475,
         "original_language": "en",
         "original_title": "Final Destination Bloodlines",
         "overview": (
@@ -136,38 +145,21 @@ tmdb_movies = [
         "video": False,
         "vote_average": 7.035,
         "vote_count": 502,
-    },
-    {
-        "adult": False,
-        "backdrop_path": "/14UFWFJsGeInCbhTiehRLTff4Yx.jpg",
-        "genre_ids": [53, 28],
-        "id": 1233069,
-        "original_language": "de",
-        "original_title": "Exterritorial",
-        "overview": (
-            "When her son vanishes inside a US consulate, ex-special forces soldier Sara does "
-            "everything in her power to find him — and uncovers a dark conspiracy."
-        ),
-        "popularity": 125.9771,
-        "poster_path": "/jM2uqCZNKbiyStyzXOERpMqAbdx.jpg",
-        "release_date": "2025-04-29",
-        "title": "Exterritorial",
-        "video": False,
-        "vote_average": 6.734,
-        "vote_count": 418,
+        "runtime": 110,
     },
     {
         "adult": False,
         "backdrop_path": "/yFHHfHcUgGAxziP1C3lLt0q2T4s.jpg",
         "genre_ids": [10751, 35, 12, 14],
-        "id": 950387,
+        "tmdb_id": 950387,
         "original_language": "en",
         "original_title": "A Minecraft Movie",
         "overview": (
             "Four misfits find themselves struggling with ordinary problems when they are "
             "suddenly pulled through a mysterious portal into the Overworld: a bizarre, cubic "
             "wonderland that thrives on imagination. To get back home, they'll have to master "
-            "this world while embarking on a magical quest with an unexpected, expert crafter, Steve."
+            "this world while embarking on a magical quest with an unexpected, expert crafter,"
+            " Steve."
         ),
         "popularity": 469.6691,
         "poster_path": "/yFHHfHcUgGAxziP1C3lLt0q2T4s.jpg",
@@ -176,64 +168,49 @@ tmdb_movies = [
         "video": False,
         "vote_average": 6.504,
         "vote_count": 1550,
-    },
-    {
-        "adult": False,
-        "backdrop_path": "/juA4IWO52Fecx8lhAsxmDgy3M3.jpg",
-        "genre_ids": [27, 9648],
-        "id": 1232546,
-        "original_language": "en",
-        "original_title": "Until Dawn",
-        "overview": (
-            "One year after her sister Melanie mysteriously disappeared, Clover and her friends "
-            "head into the remote valley where she vanished in search of answers. Exploring an "
-            "abandoned visitor center, they find themselves stalked by a masked killer and "
-            "horrifically murdered one by one...only to wake up and find themselves back at the "
-            "beginning of the same evening."
-        ),
-        "popularity": 296.7954,
-        "poster_path": "/juA4IWO52Fecx8lhAsxmDgy3M3.jpg",
-        "release_date": "2025-04-23",
-        "title": "Until Dawn",
-        "video": False,
-        "vote_average": 6.464,
-        "vote_count": 498,
+        "runtime": 101,
     },
 ]
 
 
+def to_uuid(val: Any) -> UUID:
+    return UUID(str(val)) if not isinstance(val, UUID) else val
+
+
+def to_int(val: Any) -> int:
+    try:
+        return int(val)
+    except Exception:
+        return int(str(val).replace("-", "")[0:12], 16)  # fallback for UUIDs
+
+
 async def create_sample_data() -> None:
-    """Create sample data for development and testing."""
     logger.info("Creating sample data...")
 
     async with AsyncSessionLocal() as session:
-        # Check if we already have users
         result = await session.execute(text("SELECT COUNT(*) FROM users"))
         user_count = result.scalar()
 
-        if user_count is not None and user_count > 0:
+        if user_count and user_count > 0:
             logger.info("Sample data already exists, skipping...")
             return
 
-        # Create admin user
+        # Users
         admin_user = User(
             email="admin@cinema.com",
             hashed_password=get_password_hash("admin"),
             role="manager",
             name="Admin User",
         )
-        session.add(admin_user)
-
-        # Create regular user
         regular_user = User(
             email="user@cinema.com",
             hashed_password=get_password_hash("password"),
             role="user",
             name="Regular User",
         )
-        session.add(regular_user)
+        session.add_all([admin_user, regular_user])
 
-        # Create a cinema
+        # Cinema
         cinema = Cinema(
             name="Central Cinema",
             address="123 Main Street",
@@ -242,15 +219,13 @@ async def create_sample_data() -> None:
             postal_code="10001",
             phone="555-123-4567",
             email="info@centralcinema.com",
-            description=("A premier cinema experience in the heart of the city"),
+            description="A premier cinema experience in the heart of the city",
         )
         session.add(cinema)
-
-        # Commit to get cinema ID
         await session.commit()
 
-        # Make 5 rooms for the cinema
-        rooms = [
+        # Rooms
+        temp_rooms = [
             Room(
                 name=f"Room {i}",
                 capacity=random.randint(50, 100),
@@ -260,39 +235,40 @@ async def create_sample_data() -> None:
             )
             for i in range(1, 6)
         ]
-        session.add_all(rooms)
+        session.add_all(temp_rooms)
         await session.commit()
 
+        # Retrieve persisted Room objects
         result = await session.execute(select(Room).where(Room.cinema_id == cinema.id))
-        rooms = result.scalars().all()
+        rooms = cast(List[Room], list(result.scalars()))  # type: ignore
 
-        # Create sample movies from TMDB data
+        # Movies
         for tmdb_movie in tmdb_movies:
             movie = Movie(
                 title=tmdb_movie["title"],
                 overview=tmdb_movie["overview"],
-                runtime=random.randint(90, 180),
+                runtime=tmdb_movie.get("runtime", random.randint(90, 120)),
                 vote_average=tmdb_movie["vote_average"],
                 poster_path=tmdb_movie["poster_path"],
                 backdrop_path=tmdb_movie["backdrop_path"],
-                tmdb_id=tmdb_movie["id"],
-                release_date=datetime.strptime(tmdb_movie["release_date"], "%Y-%m-%d"),
-                genres=[str(genre) for genre in tmdb_movie.get("genre_ids", [])],
+                tmdb_id=tmdb_movie["tmdb_id"],
+                release_date=datetime.strptime(str(tmdb_movie["release_date"]), "%Y-%m-%d"),
+                genres=[str(genre) for genre in cast(List[int], tmdb_movie.get("genre_ids", []))],
                 vote_count=tmdb_movie["vote_count"],
             )
             session.add(movie)
-
-        # Commit to get IDs
         await session.commit()
 
         result = await session.execute(select(Movie))
-        movies = result.scalars().all()
+        movies = cast(List[Movie], list(result.scalars()))  # type: ignore
+        movie_map: Dict[int, Movie] = {
+            to_int(movie.tmdb_id): movie for movie in movies if movie.tmdb_id is not None
+        }
 
-        # Start date for showings
-        start_date = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        def is_family_friendly(movie_data: Dict[str, Any]) -> bool:
+            return 10751 in movie_data.get("genre_ids", []) or 16 in movie_data.get("genre_ids", [])
 
-        # Time slots for showings
-        time_slots = [
+        time_slots: List[time] = [
             datetime.strptime(t, "%H:%M").time()
             for t in [
                 "13:45",
@@ -306,81 +282,84 @@ async def create_sample_data() -> None:
                 "21:45",
             ]
         ]
+        afternoon_slots = {t for t in time_slots if t < time(17, 0)}
+        start_date = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
 
-        # Retrieve the added movies
-        result = await session.execute(select(Movie))
-        movies = result.scalars().all()
-
-        # Mapping: tmdb_id -> Movie
-        movie_map = {movie.tmdb_id: movie for movie in movies}
-
-        # Helper: determine if a movie is family-friendly
-        def is_family_friendly(tmdb_movie):
-            return 10751 in tmdb_movie.get("genre_ids", []) or 16 in tmdb_movie.get("genre_ids", [])
-
-        # For the next 7 days
         for day_offset in range(7):
             current_date = start_date + timedelta(days=day_offset)
+            room_schedule: Dict[UUID, List[Tuple[datetime, datetime]]] = {
+                to_uuid(room.id): [] for room in rooms
+            }
+            movie_counts: Dict[int, int] = {to_int(m["tmdb_id"]): 0 for m in tmdb_movies}
+            scheduled_movies_per_slot: Dict[datetime, Set[int]] = defaultdict(set)
 
-            # For each room, keep track of which time slots are already booked
-            room_schedule = {room.id: set() for room in rooms}
+            for slot in time_slots:
+                start_time = current_date.replace(hour=slot.hour, minute=slot.minute)
+                random.shuffle(rooms)
 
-            # Sort family-friendly movies first, then the rest
-            sorted_tmdb_movies = sorted(
-                tmdb_movies, key=lambda m: (not is_family_friendly(m), -m["vote_average"])
-            )
+                for room in rooms:
+                    room_key = to_uuid(room.id)
+                    if any(s <= start_time < e for s, e in room_schedule[room_key]):
+                        continue
 
-            for tmdb_movie in sorted_tmdb_movies:
-                movie = movie_map.get(tmdb_movie["id"])
-                if not movie:
-                    continue
+                    # eligible_movies = [
+                    #     m
+                    #     for m in tmdb_movies
+                    #     if movie_counts[m["tmdb_id"]] < 3
+                    #     and movie_map[m["tmdb_id"]].id
+                    #     not in scheduled_movies_per_slot[start_time]  # type: ignore
+                    # ]
+                    eligible_movies = []
+                    for m in tmdb_movies:
+                        tmdb_id = cast(int, m["tmdb_id"])
+                        if (
+                            movie_counts[tmdb_id] < 3
+                            and movie_map[tmdb_id].id not in scheduled_movies_per_slot[start_time]
+                        ):
+                            eligible_movies.append(m)
 
-                # Choose preferred time slots based on genre
-                if 27 in tmdb_movie["genre_ids"]:
-                    preferred_slots = [(21, 30), (21, 45)]
-                elif is_family_friendly(tmdb_movie):
-                    preferred_slots = [(13, 45), (14, 0), (14, 15)]
-                else:
-                    preferred_slots = [(16, 30), (16, 45), (19, 30), (19, 45)]
+                    if slot in afternoon_slots:
+                        eligible_movies.sort(
+                            key=lambda m: (
+                                not is_family_friendly(m),
+                                -float(str(m["vote_average"])),
+                            )
+                        )
+                    else:
+                        eligible_movies.sort(key=lambda m: -float(str(m["vote_average"])))
 
-                # Add other time slots as backup
-                all_slots = preferred_slots + [t for t in time_slots if t not in preferred_slots]
+                    for m in eligible_movies:
+                        movie_ = movie_map.get(to_int(m["tmdb_id"]))
+                        if movie_ is None:
+                            continue
 
-                scheduled = False
+                        runtime = int(movie.runtime or 120)
+                        end_time = start_time + timedelta(minutes=runtime)
 
-                # Try to schedule in an available room
-                for hour, minute in all_slots:
-                    start_time = current_date.replace(hour=hour, minute=minute)
-                    end_time = start_time + timedelta(minutes=movie.runtime or 120)
+                        if any(
+                            not (end_time <= s or start_time >= e)
+                            for s, e in room_schedule[room_key]
+                        ):
+                            continue
 
-                    for room in rooms:
-                        if (hour, minute) not in room_schedule[room.id]:
-                            # Schedule the showing
-                            showing = Showing(
-                                movie_id=movie.id,
+                        session.add(
+                            Showing(
+                                movie_id=movie_.id,
                                 room_id=room.id,
                                 start_time=start_time,
                                 end_time=end_time,
                                 status="scheduled",
-                                price=12.50,  # Set default price to avoid NOT NULL violation
+                                price=12.50,
                             )
-                            session.add(showing)
-                            room_schedule[room.id].add((hour, minute))
-                            scheduled = True
-                            break
-
-                    if scheduled:
+                        )
+                        room_schedule[room_key].append((start_time, end_time))
+                        movie_counts[to_int(m["tmdb_id"])] += 1
+                        scheduled_movies_per_slot[start_time].add(to_int(movie.id))  # type: ignore
                         break
-
-                if not scheduled:
-                    logger.warning(
-                        f"Could not find a time slot for movie {movie.title} on {current_date.date()}"
-                    )
 
         await session.commit()
         logger.info("Sample data created successfully!")
 
 
-# This can be run directly for testing
 if __name__ == "__main__":
     asyncio.run(create_sample_data())
