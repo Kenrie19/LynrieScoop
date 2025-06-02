@@ -1,108 +1,149 @@
-// import { getCookie } from './cookies.js';
+import { getCookie } from './cookies.js';
 
-// const urlParams = new URLSearchParams(window.location.search);
-// const tmdbId = urlParams.get('tmdb_id');
-// const form = document.getElementById('reservation-form') as HTMLFormElement | null;
-// const messageDiv = document.getElementById('reservation-message') as HTMLElement | null;
-// const cinemaNameSpan = document.getElementById('cinema-name') as HTMLElement | null;
-// const movieTitleSpan = document.getElementById('movie-title') as HTMLElement | null;
-// const showingTimeSpan = document.getElementById('showing-time') as HTMLElement | null;
+declare global {
+  interface Window {
+    API_BASE_URL: string;
+  }
+}
+const API_BASE_URL = window.API_BASE_URL || 'http://localhost:8000';
 
-// async function fetchScreeningsByTmdbId(tmdbId: string): Promise<any[]> {
-//   const res = await fetch(`http://localhost:8000/showings/showings?movie_id=${tmdbId}`);
-//   if (!res.ok) throw new Error('Kan screenings niet ophalen');
-//   return await res.json();
-// }
+interface ShowingTicketInfo {
+  showing_id: string;
+  total_capacity: number;
+  available_tickets: number;
+  price: number;
+  movie_title: string;
+  start_time: string;
+  end_time: string;
+  room_name: string;
+  movie_poster: string | null;
+  movie_overview: string | null;
+}
 
-// async function fetchMovieDetails(movieId: number) {
-//     const res = await fetch(`http://localhost:8000/movies/movies/${movieId}`);
-//     if (!res.ok) throw new Error('Can not fetch movie details');
-//     const movie = await res.json();
-//     console.log('Fetched movie details:', movie);
-//     return movie;
-// }
+document.addEventListener('DOMContentLoaded', async () => {
+  const showingId = getShowingIdFromURL();
+  if (!showingId) {
+    return showError('No showing ID provided in the URL.');
+  }
 
-// async function renderReservationInfo() {
-//   if (!tmdbId) {
-//     if (messageDiv) messageDiv.textContent = 'Geen geldige film geselecteerd.';
-//     if (form) form.style.display = 'none';
-//     return;
-//   }
+  try {
+    const showing = await fetchShowingInfo(showingId);
+    updateReservationUI(showing);
 
-//   try {
-//     const screenings = await fetchScreeningsByTmdbId(tmdbId);
-//     const showing = selectNextAvailableScreening(screenings);
+    const form = document.getElementById('reservation-form') as HTMLFormElement;
+    form.addEventListener('submit', (e) => handleReservationSubmit(e, showingId));
+  } catch (error) {
+    showError('Could not fetch showing data.');
+    console.error(error);
+  }
+});
 
-//     if (!showing) {
-//       if (messageDiv) messageDiv.textContent = 'Geen actieve voorstellingen beschikbaar.';
-//       if (form) form.style.display = 'none';
-//       return;
-//     }
+function getShowingIdFromURL(): string | null {
+  const url = new URL(window.location.href);
+  return url.searchParams.get('showing_id');
+}
 
-//     // Vul info
-//     if (cinemaNameSpan) cinemaNameSpan.textContent = showing.room_name || 'Onbekend';
-//     if (showingTimeSpan) showingTimeSpan.textContent = new Date(showing.start_time).toLocaleString('nl-BE', {
-//       hour: '2-digit',
-//       minute: '2-digit',
-//       day: '2-digit',
-//       month: '2-digit',
-//       year: 'numeric',
-//     });
+async function fetchShowingInfo(id: string): Promise<ShowingTicketInfo> {
+  const res = await fetch(`${API_BASE_URL}/showings/showings/${id}/tickets`);
+  if (!res.ok) {
+    throw new Error('Error fetching showing.');
+  }
+  const data = await res.json();
+  console.log('Showing data:', data);
+  return data;
+}
 
-//     // Haal moviedetails op
-//     const movie = await fetchMovieDetails(showing.movie_id);
-//     if (movieTitleSpan) movieTitleSpan.textContent = movie.title || 'Onbekend';
+function updateReservationUI(showing: ShowingTicketInfo): void {
+  const posterEl = document.getElementById('movie-poster') as HTMLImageElement | null;
+  if (posterEl && showing.movie_poster) {
+    posterEl.src = showing.movie_poster.startsWith('http')
+      ? showing.movie_poster
+      : `https://image.tmdb.org/t/p/w500${showing.movie_poster}`;
+    posterEl.alt = showing.movie_title;
+    posterEl.style.display = '';
+  } else if (posterEl) {
+    posterEl.style.display = 'none';
+  }
 
-//     // Sla showing ID op voor reservering
-//     if (form) form.dataset.showingId = showing.id;
+  const movieTitleEl = document.getElementById('movie-title');
+  if (movieTitleEl) movieTitleEl.textContent = showing.movie_title;
 
-//   } catch (err) {
-//     if (messageDiv) messageDiv.textContent = 'Kan reserveringsinfo niet laden.';
-//     if (form) form.style.display = 'none';
-//   }
-// }
+  const overviewEl = document.getElementById('movie-overview');
+  if (overviewEl) overviewEl.textContent = showing.movie_overview || '';
 
-// if (form) {
-//   form.addEventListener('submit', async (e) => {
-//     e.preventDefault();
-//     const numTickets = parseInt((document.getElementById('num-tickets') as HTMLInputElement).value, 10);
-//     const token = getCookie('token');
-//     if (!token) {
-//       if (messageDiv) {
-//         messageDiv.textContent = 'Je moet ingelogd zijn om te reserveren.';
-//         messageDiv.className = 'error-message';
-//       }
-//       return;
-//     }
-//     try {
-//       const res = await fetch('http://localhost:8000/bookings/reserve', {
-//         method: 'POST',
-//         headers: {
-//           'Content-Type': 'application/json',
-//           Authorization: `Bearer ${token}`,
-//         },
-//         body: JSON.stringify({ showing_id: form.dataset.showingId, num_tickets: numTickets }),
-//       });
-//       if (!res.ok) {
-//         const err = await res.json();
-//         if (messageDiv) {
-//           messageDiv.textContent = err.detail || 'Reserveren mislukt.';
-//           messageDiv.className = 'error-message';
-//         }
-//         return;
-//       }
-//       if (messageDiv) {
-//         messageDiv.textContent = 'Reservering gelukt! Je tickets zijn geboekt.';
-//         messageDiv.className = 'success-message';
-//       }
-//       form.reset();
-//     } catch (err) {
-//       if (messageDiv) {
-//         messageDiv.textContent = 'Er is een fout opgetreden bij het reserveren.';
-//         messageDiv.className = 'error-message';
-//       }
-//     }
-//   });
-// }
+  const cinemaNameEl = document.getElementById('cinema-name');
+  if (cinemaNameEl) cinemaNameEl.textContent = showing.room_name;
 
-// renderReservationInfo();
+  const dateEl = document.getElementById('showing-date');
+  if (dateEl) dateEl.textContent = formatDate(showing.start_time);
+
+  const timeEl = document.getElementById('showing-time');
+  if (timeEl) timeEl.textContent = formatTime(showing.start_time);
+
+  const ticketInput = document.getElementById('num-tickets') as HTMLInputElement | null;
+  if (ticketInput) ticketInput.max = showing.available_tickets.toString();
+}
+
+function formatDate(dateTime: string): string {
+  const date = new Date(dateTime);
+  return date.toLocaleDateString('en-GB', { dateStyle: 'long' });
+}
+
+function formatTime(dateTime: string): string {
+  const date = new Date(dateTime);
+  return date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+}
+
+async function handleReservationSubmit(e: Event, showingId: string): Promise<void> {
+  e.preventDefault();
+
+  const token = getCookie('token');
+  if (!token) {
+    alert('You must be logged in to reserve a ticket.');
+    window.location.href = '/views/login/index.html';
+    return;
+  }
+
+  const ticketInput = document.getElementById('num-tickets') as HTMLInputElement | null;
+  const numTickets = ticketInput ? parseInt(ticketInput.value, 10) : 0;
+  const messageEl = document.getElementById('reservation-message');
+  if (messageEl) messageEl.textContent = 'Reserving...';
+
+  try {
+    for (let i = 0; i < numTickets; i++) {
+      const res = await fetch(
+        `${API_BASE_URL}/bookings/bookings/create?screening_id=${showingId}`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.detail || 'Reservation failed.');
+      }
+    }
+
+    if (messageEl) {
+      messageEl.textContent = 'Reservation successful!';
+      messageEl.style.color = 'green';
+    }
+  } catch (error) {
+    if (messageEl) {
+      const errMsg = error instanceof Error ? error.message : String(error);
+      messageEl.textContent = `Error: ${errMsg}`;
+      messageEl.style.color = 'red';
+    }
+  }
+}
+
+function showError(message: string): void {
+  const el = document.getElementById('reservation-message');
+  if (el) {
+    el.textContent = message;
+    el.style.color = 'red';
+  }
+}

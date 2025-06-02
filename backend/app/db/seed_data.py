@@ -302,13 +302,6 @@ async def create_sample_data() -> None:
                     if any(s <= start_time < e for s, e in room_schedule[room_key]):
                         continue
 
-                    # eligible_movies = [
-                    #     m
-                    #     for m in tmdb_movies
-                    #     if movie_counts[m["tmdb_id"]] < 3
-                    #     and movie_map[m["tmdb_id"]].id
-                    #     not in scheduled_movies_per_slot[start_time]  # type: ignore
-                    # ]
                     eligible_movies = []
                     for m in tmdb_movies:
                         tmdb_id = cast(int, m["tmdb_id"])
