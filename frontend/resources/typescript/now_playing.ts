@@ -192,7 +192,7 @@ async function renderMovies(): Promise<void> {
               window.location.href = '/views/login/index.html';
               return;
             }
-            window.location.href = `/views/ticket_reservation/index.html?tmdb_id=${s.movie_id}`;
+            window.location.href = `/views/ticket_reservation/index.html?showing_id=${s.id}`;
           });
 
           screeningItem.appendChild(timeButton);

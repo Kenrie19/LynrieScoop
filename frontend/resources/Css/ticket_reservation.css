@@ -1,46 +1,102 @@
-/* Ticket reserveren pagina styling */
-.reservation-container {
-  max-width: 400px;
-  margin: 3em auto;
-  background: #1e1e1e;
+/* Consistent global and component styling for cinema site */
+body {
+  background-color: var(--black-base);
   color: var(--light-grey);
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
-  padding: 2em 2em 1.5em 2em;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  min-height: 100vh;
+}
+
+.main-content {
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  gap: 1.2em;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 2rem 1rem 3rem 1rem;
+}
+
+/* Ticket reserveren pagina styling */
+.reservation-container {
+  max-width: 600px;
+  width: 100%;
+  margin: 2rem auto;
+  background: none;
+  color: var(--light-grey);
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5em;
+}
+.movie-info,
+.reservation-info,
+#reservation-form {
+  width: 100%;
+  max-width: 600px;
+  box-sizing: border-box;
+  margin-left: auto;
+  margin-right: auto;
 }
 .reservation-container h1 {
   text-align: center;
   margin-bottom: 0.5em;
+  font-size: 2rem;
+  font-weight: bold;
+  letter-spacing: 0.01em;
 }
 .reservation-info {
   background: #232323;
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 1em;
-  margin-bottom: 1em;
   font-size: 1.05em;
   display: flex;
   flex-direction: column;
   gap: 0.5em;
 }
 .reservation-container label {
-  font-weight: bold;
-  margin-bottom: 0.3em;
+  font-weight: 600;
+  margin-bottom: 0.2em;
 }
-.reservation-container input[type='number'] {
-  width: 100%;
-  padding: 0.5em;
-  border-radius: 6px;
+#num-tickets {
+  display: flex;
+  width: 96%;
+  padding: 0.6em;
+  border-radius: 8px;
   border: 1px solid #444;
   background: #222;
   color: var(--light-grey);
-  margin-bottom: 1em;
+  margin-bottom: 0.5em;
+  font-size: 1rem;
 }
 .reservation-container button {
   width: 100%;
-  margin-top: 1em;
+  margin-top: 0.5em;
+  background-color: var(--red-accent);
+  color: white;
+  border: none;
+  padding: 0.8em 0;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    color 0.2s,
+    box-shadow 0.2s;
+}
+.reservation-container button:hover,
+.reservation-container button:focus {
+  background-color: var(--aqua-accent);
+  color: var(--black-base);
+  box-shadow: 0 0 8px var(--aqua-accent);
+}
+#reservation-message {
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-top: 0.5em;
 }
 .success-message {
   color: var(--aqua-accent);
@@ -51,4 +107,42 @@
   color: var(--red-accent);
   text-align: center;
   font-weight: bold;
+}
+.movie-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7em;
+  margin-bottom: 0.5em;
+}
+.movie-poster {
+  display: block;
+  margin: 0 auto 0.7em auto;
+  max-width: 320px;
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+}
+.movie-title {
+  text-align: center;
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin: 0.2em 0 0.2em 0;
+}
+.movie-overview {
+  font-size: 1rem;
+  color: #bdbdbd;
+  text-align: center;
+  min-height: 48px;
+  margin-bottom: 0.2em;
+}
+@media (max-width: 600px) {
+  .reservation-container {
+    padding: 1.2rem 0.5rem 1.2rem 0.5rem;
+    max-width: 98vw;
+  }
+  .movie-poster {
+    max-width: 95vw;
+  }
 }

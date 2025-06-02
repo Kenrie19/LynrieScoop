@@ -56,7 +56,9 @@ async def get_showing_tickets(
     db: AsyncSession = Depends(get_db),
 ) -> Any:
     result = await db.execute(
-        select(Showing).options(joinedload(Showing.room)).filter(Showing.id == id)
+        select(Showing)
+        .options(joinedload(Showing.room), joinedload(Showing.movie))
+        .filter(Showing.id == id)
     )
     showing = result.scalars().first()
     if not showing:
@@ -67,6 +69,13 @@ async def get_showing_tickets(
         "total_capacity": showing.room.capacity,
         "available_tickets": showing.room.capacity - showing.bookings_count,
         "price": showing.price,
+        "movie_title": showing.movie.title if showing.movie else None,
+        "movie_id": showing.movie.tmdb_id if showing.movie else None,
+        "start_time": showing.start_time.isoformat() if showing.start_time else None,
+        "end_time": showing.end_time.isoformat() if showing.end_time else None,
+        "room_name": showing.room.name if showing.room else None,
+        "movie_poster": showing.movie.poster_path if showing.movie else None,
+        "movie_overview": showing.movie.overview if showing.movie else None,
     }
 
 
