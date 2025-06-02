@@ -48,7 +48,7 @@ def get_mqtt_client() -> mqtt.Client:
     Note:
         Initializes the client if it doesn't already exist
     """
-    global _mqtt_client
+    # global _mqtt_client
     if _mqtt_client is None:
         return init_mqtt_client()
     return _mqtt_client
