@@ -302,14 +302,21 @@ async def create_sample_data() -> None:
                     if any(s <= start_time < e for s, e in room_schedule[room_key]):
                         continue
 
-                    eligible_movies = [
-                        m
-                        for m in tmdb_movies
-                        if movie_counts[to_int(m["tmdb_id"])] < 3
-                        and to_int(m["tmdb_id"]) in movie_map
-                        and to_int(movie_map[to_int(m["tmdb_id"])].id)
-                        not in scheduled_movies_per_slot[start_time]  # type: ignore
-                    ]
+                    # eligible_movies = [
+                    #     m
+                    #     for m in tmdb_movies
+                    #     if movie_counts[m["tmdb_id"]] < 3
+                    #     and movie_map[m["tmdb_id"]].id
+                    #     not in scheduled_movies_per_slot[start_time]  # type: ignore
+                    # ]
+                    eligible_movies = []
+                    for m in tmdb_movies:
+                        tmdb_id = cast(int, m["tmdb_id"])
+                        if (
+                            movie_counts[tmdb_id] < 3
+                            and movie_map[tmdb_id].id not in scheduled_movies_per_slot[start_time]
+                        ):
+                            eligible_movies.append(m)
 
                     if slot in afternoon_slots:
                         eligible_movies.sort(
@@ -326,9 +333,8 @@ async def create_sample_data() -> None:
                         if movie_ is None:
                             continue
 
-                        runtime = movie.runtime or 120
-                        runtime_val = to_int(runtime)
-                        end_time = start_time + timedelta(minutes=runtime_val)
+                        runtime = int(movie.runtime or 120)
+                        end_time = start_time + timedelta(minutes=runtime)
 
                         if any(
                             not (end_time <= s or start_time >= e)
@@ -338,7 +344,7 @@ async def create_sample_data() -> None:
 
                         session.add(
                             Showing(
-                                movie_id=movie.id,
+                                movie_id=movie_.id,
                                 room_id=room.id,
                                 start_time=start_time,
                                 end_time=end_time,
