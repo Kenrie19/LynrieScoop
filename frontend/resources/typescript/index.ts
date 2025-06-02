@@ -117,7 +117,6 @@ if (nowPlayingGrid) {
     })
     .then((movies: MovieDetail[]) => {
       movies.forEach((movie) => {
-        console.log('Now Playing Movie:', movie);
         const card = document.createElement('div');
         card.classList.add('movie-card');
 
@@ -152,5 +151,5 @@ if (nowPlayingGrid) {
         nowPlayingGrid.appendChild(card);
       });
     })
-    .catch((error) => console.error('Error loading now playing movies:', error));
+    .catch(() => {});
 }

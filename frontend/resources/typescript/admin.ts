@@ -357,8 +357,7 @@ document.addEventListener('DOMContentLoaded', () => {
           screeningsList.appendChild(card);
         });
       });
-    } catch (err) {
-      console.error('Error loading screenings:', err);
+    } catch {
       feedback.textContent = '❌ Failed to load screenings.';
     }
   }

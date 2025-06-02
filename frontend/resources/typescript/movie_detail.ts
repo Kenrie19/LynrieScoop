@@ -62,8 +62,6 @@ document.addEventListener('DOMContentLoaded', () => {
       return response.json();
     })
     .then((movie: MovieDetail) => {
-      // Log de movie data om te zien wat er terugkomt
-      console.log('Movie detail data:', movie);
       // Render movie details zonder inline styling
       container.innerHTML = `
         <div class="movie-detail-card">

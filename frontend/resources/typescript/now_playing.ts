@@ -163,7 +163,6 @@ async function renderMovies(): Promise<void> {
               window.location.href = '/views/login/index.html';
               return;
             }
-            console.log(`Reserving tickets for showing ID: ${s.id}`);
             window.location.href = `/views/ticket_reservation/index.html?tmdb_id=${s.movie_id}`;
           });
 
@@ -176,8 +175,7 @@ async function renderMovies(): Promise<void> {
 
       moviesList.appendChild(movieSection);
     }
-  } catch (err) {
-    console.error('Fout bij het laden van screenings:', err);
+  } catch {
     moviesList.innerHTML =
       "<p style='grid-column:1/-1; text-align:center; color:var(--light-grey);'>Failed to load screenings.</p>";
   }
@@ -221,7 +219,6 @@ async function fetchNowPlaying(): Promise<MovieDetail[]> {
   const res = await fetch(buildApiUrl('/showings/showings/now-playing'));
   if (!res.ok) throw new Error('Failed to fetch now playing movies');
   const data = await res.json();
-  console.log('Now Playing Movies:', data);
   return data;
 }
 
@@ -229,6 +226,5 @@ async function fetchScreenings(movieId: number): Promise<Showing[]> {
   const res = await fetch(buildApiUrl(`/showings/showings?movie_id=${movieId}`));
   if (!res.ok) throw new Error(`Failed to fetch screenings for movie ${movieId}`);
   const data = await res.json();
-  console.log('The data fetched from the API:', data);
   return data;
 }

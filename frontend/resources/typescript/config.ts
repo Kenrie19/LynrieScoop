@@ -17,7 +17,6 @@ declare global {
  * @returns {string} The API base URL
  */
 export function getApiBaseUrl(): string {
-  console.log('getApiBaseUrl called', window.ENV?.API_BASE_URL);
   if (window.ENV?.API_BASE_URL) {
     return window.ENV.API_BASE_URL;
   }
