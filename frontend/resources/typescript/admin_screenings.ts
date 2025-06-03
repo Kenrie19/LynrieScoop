@@ -36,6 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const roomSelect = document.getElementById('roomSelect') as HTMLSelectElement;
   const dateInput = document.getElementById('date') as HTMLInputElement;
   const timeInput = document.getElementById('time') as HTMLInputElement;
+  const priceInput = document.getElementById('price') as HTMLInputElement;
   const addBtn = document.getElementById('addScreening')!;
   const feedback = document.getElementById('feedbackMessage')!;
   const screeningsList = document.getElementById('screeningsList')!;
@@ -48,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       const movies: Movie[] = await res.json();
       if (!Array.isArray(movies)) {
-        feedback.textContent = '❌ Failed to load movies.';
+        feedback.textContent = 'Failed to load movies.';
         return;
       }
       movies.forEach((movie) => {
@@ -58,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
         movieSelect.appendChild(option);
       });
     } catch {
-      feedback.textContent = '❌ Error loading movies.';
+      feedback.textContent = 'Error loading movies.';
     }
   }
 
@@ -70,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       const cinemas = await cinemasRes.json();
       if (!Array.isArray(cinemas) || cinemas.length === 0) {
-        feedback.textContent = '❌ No cinemas found.';
+        feedback.textContent = 'No cinemas found.';
         return;
       }
       const cinemaId = cinemas[0].id;
@@ -81,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const rooms: Room[] = await roomsRes.json();
 
       if (!Array.isArray(rooms)) {
-        feedback.textContent = '❌ Failed to load rooms.';
+        feedback.textContent = 'Failed to load rooms.';
         return;
       }
 
@@ -92,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
         roomSelect.appendChild(option);
       });
     } catch {
-      feedback.textContent = '❌ Error loading rooms.';
+      feedback.textContent = 'Error loading rooms.';
     }
   }
 
@@ -101,6 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const roomId = roomSelect.value;
     const date = dateInput.value;
     const time = timeInput.value;
+    const price = parseFloat(priceInput.value);
 
     if (!movieIdStr || !roomId || !date || !time) {
       feedback.textContent = 'Please fill in all fields.';
@@ -115,12 +117,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const startTime = `${date}T${time}:00`;
 
+    if (isNaN(price)) {
+      feedback.textContent = 'Please enter a valid price.';
+      return;
+    }
+
     const payload = {
       movie_id: movieId,
       room_id: roomId,
       start_time: startTime,
       end_time: startTime,
-      price: 10,
+      price: price,
     };
 
     try {
@@ -147,16 +154,17 @@ document.addEventListener('DOMContentLoaded', () => {
             msg = JSON.stringify(errData.detail);
           }
         }
-        feedback.textContent = `❌ ${msg}`;
+        feedback.textContent = `${msg}`;
         return;
       }
 
-      feedback.textContent = '✅ Screening successfully added!';
+      feedback.textContent = 'Screening successfully added!';
       dateInput.value = '';
       timeInput.value = '';
+      priceInput.value = '';
       await loadScreenings();
     } catch {
-      feedback.textContent = '❌ Network error. Please try again.';
+      feedback.textContent = 'Network error. Please try again.';
     }
   });
 
@@ -262,6 +270,11 @@ document.addEventListener('DOMContentLoaded', () => {
           rightContainer.appendChild(time);
           rightContainer.appendChild(room);
 
+          // Price display
+          const price = document.createElement('p');
+          price.textContent = `Price: €${screening.price.toFixed(2)}`;
+          rightContainer.appendChild(price);
+
           // Edit form container (hidden by default)
           const editContainer = document.createElement('div');
           editContainer.className = 'form-section';
@@ -302,6 +315,16 @@ document.addEventListener('DOMContentLoaded', () => {
           editContainer.appendChild(roomLabel);
           editContainer.appendChild(roomInputEdit);
 
+          const priceLabel = document.createElement('label');
+          priceLabel.textContent = 'Price:';
+          const priceInputEdit = document.createElement('input');
+          priceInputEdit.type = 'number';
+          priceInputEdit.step = '0.01';
+          priceInputEdit.min = '0';
+          priceInputEdit.value = screening.price.toFixed(2);
+          editContainer.appendChild(priceLabel);
+          editContainer.appendChild(priceInputEdit);
+
           const btnContainer = document.createElement('div');
           btnContainer.style.display = 'flex';
           btnContainer.style.gap = '0.5rem';
@@ -333,7 +356,7 @@ document.addEventListener('DOMContentLoaded', () => {
                   room_id: newRoom,
                   start_time: newDatetime,
                   end_time: newDatetime,
-                  price: screening.price,
+                  price: parseFloat(priceInputEdit.value),
                 }),
               });
               if (res.ok) {
@@ -397,7 +420,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       });
     } catch {
-      feedback.textContent = '❌ Failed to load screenings.';
+      feedback.textContent = 'Failed to load screenings.';
     }
   }
 
