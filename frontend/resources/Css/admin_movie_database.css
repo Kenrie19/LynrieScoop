@@ -70,10 +70,9 @@ h2 {
 }
 
 /* Knoppen */
-
 button.btn {
-  margin-top: 1rem;
-  padding: 0.75rem 1.5rem;
+  margin-top: 0.5rem;
+  padding: 0.6rem 1.2rem;
   background-color: var(--aqua-accent);
   border: none;
   border-radius: 0.5rem;
@@ -82,6 +81,7 @@ button.btn {
   cursor: pointer;
   transition: background-color 0.3s ease;
   user-select: none;
+  font-size: 0.85rem;
 }
 
 button.btn:hover,
@@ -90,8 +90,17 @@ button.btn:focus {
   outline: none;
 }
 
-/* Zoekresultaten en film lijst */
+/* Rode delete knop */
+button.btn-delete {
+  background-color: var(--error-red);
+  color: white;
+}
 
+button.btn-delete:hover {
+  background-color: #a31515;
+}
+
+/* Zoekresultaten en film lijst */
 .movie-results {
   display: flex;
   flex-wrap: wrap;
@@ -103,7 +112,6 @@ button.btn:focus {
 .movie-result {
   background-color: #2a2a2a;
   border-radius: 0.5rem;
-  cursor: pointer;
   width: 180px;
   display: flex;
   flex-direction: column;
@@ -111,9 +119,9 @@ button.btn:focus {
   box-sizing: border-box;
   transition: background-color 0.3s ease;
   user-select: none;
+  justify-content: space-between;
 }
 
-/* Verwijderd position absolute */
 .movie-result:hover {
   background-color: #393939;
 }
@@ -127,29 +135,47 @@ button.btn:focus {
   margin-bottom: 0.5rem;
 }
 
-/* Titel + knop wrapper: flex voor nette uitlijning */
-.movie-result > div.title-btn-wrapper {
+.title-btn-wrapper {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
-  width: 100%;
+  justify-content: flex-end;
+  flex-grow: 1;
+  margin-top: auto;
 }
 
 .movie-result span {
   font-size: 1rem;
   color: var(--light-grey);
   overflow-wrap: break-word;
+  text-align: center;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* Import knop: geen absolute positioning meer */
-.movie-result button.btn {
-  padding: 0.3rem 0.6rem;
-  font-size: 0.85rem;
-  flex-shrink: 0;
+.delete-error {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.feedback.success {
+  color: #4caf50;
+  margin-top: 0.5rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+.feedback.error {
+  color: #c62828;
+  margin-top: 0.5rem;
+  font-weight: bold;
+  text-align: center;
 }
 
 /* Responsiveness */
-
 @media (max-width: 600px) {
   .admin-container {
     margin: 1rem;
