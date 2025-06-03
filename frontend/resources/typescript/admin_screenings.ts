@@ -39,7 +39,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const addBtn = document.getElementById('addScreening')!;
   const feedback = document.getElementById('feedbackMessage')!;
   const screeningsList = document.getElementById('screeningsList')!;
-  const goToMovieDbBtn = document.getElementById('goToMovieDbBtn');
 
   async function loadMovies() {
     movieSelect.replaceChildren();
@@ -400,12 +399,6 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch {
       feedback.textContent = '❌ Failed to load screenings.';
     }
-  }
-
-  if (goToMovieDbBtn) {
-    goToMovieDbBtn.addEventListener('click', () => {
-      window.location.href = '/views/admin_movie_database';
-    });
   }
 
   function redirectToLogin() {

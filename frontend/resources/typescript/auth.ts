@@ -1,4 +1,4 @@
-import { setCookie } from './cookies.js';
+import { setCookie, decodeJwtPayload } from './cookies.js';
 import { buildApiUrl } from './config.js';
 
 async function login(email: string, password: string) {
@@ -17,7 +17,13 @@ async function login(email: string, password: string) {
 
     const data = await res.json();
     setCookie('token', data.access_token, 1);
-    window.location.href = '/views/mymovies';
+
+    const user = decodeJwtPayload(data.access_token);
+    if (user?.role === 'manager') {
+      window.location.href = '/views/admin_screenings';
+    } else {
+      window.location.href = '/views/mymovies';
+    }
   } catch {
     showError('Invalid email or password');
   }

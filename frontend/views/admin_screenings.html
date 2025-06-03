@@ -4,10 +4,10 @@
     <meta charset="UTF-8" />
     <title>Admin | LynrieScoop</title>
     <link rel="stylesheet" href="/resources/css/style.css" />
-    <link rel="stylesheet" href="/resources/css/admin.css" />
+    <link rel="stylesheet" href="/resources/css/admin_screenings.css" />
     {% include "env.njk" %}
     <script defer type="module" src="/resources/javascript/main.js"></script>
-    <script defer type="module" src="/resources/javascript/admin.js"></script>
+    <script defer type="module" src="/resources/javascript/admin_screenings.js"></script>
   </head>
   <body>
     {% include "navbar.njk" %}
@@ -38,10 +38,6 @@
       <section class="overview-section">
         <h2>Scheduled Screenings</h2>
         <div id="screeningsList" class="screening-list"></div>
-      </section>
-
-      <section class="overview-section go-to-movie-db">
-        <button id="goToMovieDbBtn" class="btn">Go to Movie Database Admin</button>
       </section>
     </main>
   </body>
