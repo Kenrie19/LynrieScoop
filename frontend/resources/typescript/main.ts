@@ -11,6 +11,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const authLinks = document.querySelectorAll('.auth-only');
   const guestLinks = document.querySelectorAll('.guest-only');
   const adminLink = document.querySelector('.admin-only') as HTMLElement;
+  const myMoviesLink = document.querySelector('a[href="/views/mymovies"]')
+    ?.parentElement as HTMLElement;
 
   const isLoggedIn = !!token;
   const user = token ? decodeJwtPayload(token) : null;
@@ -23,13 +25,17 @@ document.addEventListener('DOMContentLoaded', () => {
     (link as HTMLElement).style.display = isLoggedIn ? 'none' : 'inline';
   });
 
-  // Toon admin-link enkel als de role "admin" is
   if (user && user.role === 'manager') {
     adminLink.style.display = 'inline';
+
+    // Hide My Movies link for admin users
+    if (myMoviesLink) {
+      myMoviesLink.style.display = 'none';
+    }
   } else {
     adminLink.style.display = 'none';
   }
-  // Toon logout-link als gebruiker ingelogd is
+
   const logoutLink = document.querySelector('.logout-link') as HTMLElement;
   if (isLoggedIn && logoutLink) {
     logoutLink.style.display = 'inline';
@@ -43,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
     logoutBtn.addEventListener('click', (e) => {
       e.preventDefault();
       document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
-      window.location.href = '/views/login'; // of "/"
+      window.location.href = '/views/login';
     });
   }
 });

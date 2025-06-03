@@ -22,13 +22,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const searchTmdbInput = document.getElementById('searchTmdb') as HTMLInputElement;
   const tmdbSearchResults = document.getElementById('tmdbSearchResults')!;
-  const addMovieFeedback = document.getElementById('addMovieFeedback')!;
   const allMoviesList = document.getElementById('allMoviesList')!;
 
   searchTmdbInput.addEventListener('input', async () => {
     const query = searchTmdbInput.value.trim();
     tmdbSearchResults.replaceChildren();
-    addMovieFeedback.textContent = '';
     if (query.length < 2) return;
 
     try {
@@ -67,15 +65,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const importBtn = document.createElement('button');
         importBtn.className = 'btn';
         importBtn.textContent = 'Import';
+        importBtn.addEventListener('click', () => importMovieByTmdbId(movie.id, container));
 
-        importBtn.addEventListener('click', () => importMovieByTmdbId(movie.id));
+        const feedback = document.createElement('div');
+        feedback.className = 'feedback';
 
         titleBtnWrapper.appendChild(title);
         titleBtnWrapper.appendChild(importBtn);
+        titleBtnWrapper.appendChild(feedback);
 
         container.appendChild(img);
         container.appendChild(titleBtnWrapper);
-
         tmdbSearchResults.appendChild(container);
       });
     } catch {
@@ -83,8 +83,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  async function importMovieByTmdbId(tmdbId: string) {
-    addMovieFeedback.textContent = '';
+  async function importMovieByTmdbId(tmdbId: string, container: HTMLElement) {
+    const feedback = container.querySelector('.feedback') as HTMLElement;
+    feedback.textContent = '';
+
     try {
       const res = await fetch(buildApiUrl(`/admin/admin/tmdb/import/${tmdbId}`), {
         method: 'POST',
@@ -94,14 +96,18 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       if (res.ok) {
-        addMovieFeedback.textContent = '✅ Movie successfully imported!';
+        feedback.textContent = 'Movie successfully imported!';
+        feedback.classList.remove('error');
+        feedback.classList.add('success');
         await loadAllMovies();
       } else {
         const errData = await res.json();
-        addMovieFeedback.textContent = errData.detail || 'Failed to import movie.';
+        feedback.textContent = errData.detail || 'Failed to import movie.';
+        feedback.classList.add('error');
       }
     } catch {
-      addMovieFeedback.textContent = 'Network error. Please try again.';
+      feedback.textContent = 'Network error. Please try again.';
+      feedback.classList.add('error');
     }
   }
 
@@ -137,7 +143,34 @@ document.addEventListener('DOMContentLoaded', () => {
         title.textContent = movie.title;
         title.style.textAlign = 'center';
 
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'btn btn-delete';
+        deleteBtn.textContent = 'Delete';
+
+        deleteBtn.addEventListener('click', async () => {
+          const confirmed = confirm(`Are you sure you want to delete "${movie.title}"?`);
+          if (!confirmed) return;
+
+          try {
+            const res = await fetch(buildApiUrl(`/admin/admin/movies/${movie.id}`), {
+              method: 'DELETE',
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            });
+
+            if (res.ok) {
+              await loadAllMovies();
+            } else {
+              alert('Failed to delete movie');
+            }
+          } catch {
+            alert('Network error while deleting movie');
+          }
+        });
+
         titleBtnWrapper.appendChild(title);
+        titleBtnWrapper.appendChild(deleteBtn);
 
         container.appendChild(img);
         container.appendChild(titleBtnWrapper);
