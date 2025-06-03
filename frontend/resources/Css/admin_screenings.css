@@ -1,8 +1,14 @@
 :root {
   --black-base: #121212;
-  --aqua-accent: #30d5c8;
+  --dark-bg: #1e1e1e;
   --light-grey: #f1f1f1;
+  --aqua-accent: #30d5c8;
   --error-red: #c62828;
+  --input-bg: #2a2a2a;
+  --btn-hover: #28b6a8;
+  --delete-red: #c62828;
+  --delete-hover: #b71c1c;
+  --success-green: #4caf50;
 }
 
 body {
@@ -15,8 +21,8 @@ body {
 .admin-container {
   max-width: 900px;
   margin: 2rem auto;
-  background-color: #1e1e1e;
   padding: 2rem;
+  background-color: var(--dark-bg);
   border-radius: 1rem;
   box-shadow: 0 0 20px rgba(48, 213, 200, 0.2);
 }
@@ -31,6 +37,9 @@ h3 {
 
 .form-section {
   margin-bottom: 2rem;
+  background-color: #212121;
+  padding: 1rem;
+  border-radius: 0.5rem;
 }
 
 .form-section label {
@@ -43,6 +52,7 @@ h3 {
 .form-section input[type='text'],
 .form-section input[type='date'],
 .form-section input[type='time'],
+.form-section input[type='number'],
 .form-section select,
 .form-section textarea {
   width: 100%;
@@ -50,27 +60,14 @@ h3 {
   margin-top: 0.25rem;
   border: none;
   border-radius: 0.5rem;
-  background-color: #2a2a2a;
+  background-color: var(--input-bg);
   color: var(--light-grey);
-  box-sizing: border-box;
   font-size: 1rem;
+  box-sizing: border-box;
   resize: vertical;
 }
 
-.feedback {
-  margin-top: 1rem;
-  font-weight: bold;
-  min-height: 1.5rem;
-}
-
-.feedback.error {
-  color: var(--error-red);
-}
-
-.feedback.success {
-  color: #4caf50;
-}
-
+/* Button styling */
 button.btn {
   margin-top: 1rem;
   padding: 0.75rem 1.5rem;
@@ -86,10 +83,26 @@ button.btn {
 
 button.btn:hover,
 button.btn:focus {
-  background-color: #28b6a8;
+  background-color: var(--btn-hover);
   outline: none;
 }
 
+/* Feedback messages */
+.feedback {
+  margin-top: 1rem;
+  font-weight: bold;
+  min-height: 1.5rem;
+}
+
+.feedback.error {
+  color: var(--error-red);
+}
+
+.feedback.success {
+  color: var(--success-green);
+}
+
+/* Movie selection grid */
 .movie-results {
   display: flex;
   flex-wrap: wrap;
@@ -102,7 +115,7 @@ button.btn:focus {
 .movie-entry {
   display: flex;
   align-items: center;
-  background-color: #2a2a2a;
+  background-color: var(--input-bg);
   padding: 0.5rem;
   border-radius: 0.5rem;
   cursor: pointer;
@@ -116,6 +129,7 @@ button.btn:focus {
   object-fit: cover;
 }
 
+/* Screenings list */
 .screening-list {
   margin-top: 2rem;
   display: flex;
@@ -124,7 +138,7 @@ button.btn:focus {
 }
 
 .screening-card {
-  background-color: #2a2a2a;
+  background-color: var(--input-bg);
   padding: 1rem;
   border-radius: 0.5rem;
   display: flex;
@@ -136,10 +150,9 @@ button.btn:focus {
 
 .screening-card img {
   width: 60px;
-  height: auto;
   border-radius: 0.5rem;
-  flex-shrink: 0;
   object-fit: cover;
+  flex-shrink: 0;
 }
 
 .screening-info {
@@ -168,9 +181,6 @@ button.btn:focus {
   padding: 0.4rem 0.8rem;
   font-size: 0.9rem;
   border-radius: 0.5rem;
-  border: none;
-  cursor: pointer;
-  font-weight: bold;
 }
 
 .screening-actions .edit {
@@ -180,39 +190,22 @@ button.btn:focus {
 
 .screening-actions .edit:hover,
 .screening-actions .edit:focus {
-  background-color: #28b6a8;
+  background-color: var(--btn-hover);
   outline: none;
 }
 
 .screening-actions .delete {
-  background-color: #c62828;
+  background-color: var(--delete-red);
   color: white;
 }
 
 .screening-actions .delete:hover,
 .screening-actions .delete:focus {
-  background-color: #b71c1c;
+  background-color: var(--delete-hover);
   outline: none;
 }
 
-/* Edit container styling */
-
-.form-section {
-  background-color: #212121;
-  padding: 1rem;
-  border-radius: 0.5rem;
-  margin-top: 1rem;
-}
-
-/* Headings margin tweak */
-
-h3 {
-  margin-top: 2rem;
-  margin-bottom: 1rem;
-}
-
-/* Responsive tweaks */
-
+/* Responsive styling */
 @media (max-width: 600px) {
   .admin-container {
     margin: 1rem;
