@@ -11,6 +11,7 @@ interface Movie {
   tmdb_id: number;
   title: string;
   poster_path?: string;
+  runtime?: number;
 }
 
 interface Screening {
@@ -41,6 +42,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const feedback = document.getElementById('feedbackMessage')!;
   const screeningsList = document.getElementById('screeningsList')!;
 
+  // Add a variable to store movies with runtime for lookup
+  let moviesWithRuntime: Movie[] = [];
+
   async function loadMovies() {
     movieSelect.replaceChildren();
     try {
@@ -52,9 +56,10 @@ document.addEventListener('DOMContentLoaded', () => {
         feedback.textContent = 'Failed to load movies.';
         return;
       }
+      moviesWithRuntime = movies; // Store for runtime lookup
       movies.forEach((movie) => {
         const option = document.createElement('option');
-        option.value = movie.tmdb_id.toString();
+        option.value = movie.id;
         option.textContent = movie.title;
         movieSelect.appendChild(option);
       });
@@ -98,20 +103,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   addBtn.addEventListener('click', async () => {
-    const movieIdStr = movieSelect.value;
+    const movieId = movieSelect.value;
     const roomId = roomSelect.value;
     const date = dateInput.value;
     const time = timeInput.value;
     const price = parseFloat(priceInput.value);
 
-    if (!movieIdStr || !roomId || !date || !time) {
+    if (!movieId || !roomId || !date || !time) {
       feedback.textContent = 'Please fill in all fields.';
-      return;
-    }
-
-    const movieId = parseInt(movieIdStr, 10);
-    if (isNaN(movieId)) {
-      feedback.textContent = 'Invalid movie ID.';
       return;
     }
 
@@ -122,16 +121,43 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    // Lookup movie runtime
+    const selectedMovie = moviesWithRuntime.find((m) => m.id === movieId);
+    if (
+      !selectedMovie ||
+      typeof selectedMovie.runtime !== 'number' ||
+      isNaN(selectedMovie.runtime)
+    ) {
+      feedback.textContent = 'Selected movie does not have a valid runtime.';
+      return;
+    }
+    // Calculate end_time
+    // Parse string like '2025-06-04T11:30:00' as local time manually
+    const [datePart, timePart] = startTime.split('T');
+    const [year, month, day] = datePart.split('-').map(Number);
+    const [hour, minute] = timePart.split(':').map(Number);
+
+    // Note: month is 0-indexed in JS Date
+    const startDateObj = new Date(year, month - 1, day, hour, minute);
+    const endDateObj = new Date(startDateObj.getTime() + Math.abs(selectedMovie.runtime) * 60000); // Ensure runtime is positive
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    const endTime = `${endDateObj.getFullYear()}-${pad(endDateObj.getMonth() + 1)}-${pad(endDateObj.getDate())}T${pad(endDateObj.getHours())}:${pad(endDateObj.getMinutes())}:00`;
+
+    console.log('Selected movie:', selectedMovie);
+    console.log('Runtime (minutes):', selectedMovie.runtime);
+
     const payload = {
       movie_id: movieId,
       room_id: roomId,
       start_time: startTime,
-      end_time: startTime,
+      end_time: endTime, // Correct ISO string, e.g. '2025-06-04T13:35:00'
       price: price,
+      status: 'scheduled', // Add status as required by backend
     };
+    console.log('Adding screening with payload:', payload);
 
     try {
-      const res = await fetch(buildApiUrl('/showings/showings/'), {
+      const res = await fetch(buildApiUrl('/admin/admin/showings'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -139,6 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         body: JSON.stringify(payload),
       });
+      console.log('Add screening response:', res);
 
       if (!res.ok) {
         const errData = await res.json();
@@ -211,6 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
+      console.log('Fetched showings:', data);
       if (!Array.isArray(data)) {
         feedback.textContent = '❌ Unexpected response from server.';
         return;
@@ -315,6 +343,20 @@ document.addEventListener('DOMContentLoaded', () => {
           editContainer.appendChild(roomLabel);
           editContainer.appendChild(roomInputEdit);
 
+          // Add movie select for edit form
+          const movieLabelEdit = document.createElement('label');
+          movieLabelEdit.textContent = 'Movie:';
+          const movieInputEdit = document.createElement('select');
+          moviesWithRuntime.forEach((movie) => {
+            const option = document.createElement('option');
+            option.value = movie.id;
+            option.textContent = movie.title;
+            if (movie.id === screening.movie_id) option.selected = true;
+            movieInputEdit.appendChild(option);
+          });
+          editContainer.appendChild(movieLabelEdit);
+          editContainer.appendChild(movieInputEdit);
+
           const priceLabel = document.createElement('label');
           priceLabel.textContent = 'Price:';
           const priceInputEdit = document.createElement('input');
@@ -339,23 +381,41 @@ document.addEventListener('DOMContentLoaded', () => {
             const newDate = dateInputEdit.value;
             const newTime = timeInputEdit.value;
             const newRoom = roomInputEdit.value;
-            if (!newDate || !newTime || !newRoom) {
+            const newMovieId = movieInputEdit.value;
+            if (!newDate || !newTime || !newRoom || !newMovieId) {
               errorMsg.textContent = 'Please fill all fields';
               return;
             }
             const newDatetime = `${newDate}T${newTime}:00`;
 
+            // Lookup movie runtime for edit
+            const selectedMovie = moviesWithRuntime.find((m) => m.id === newMovieId);
+            if (
+              !selectedMovie ||
+              typeof selectedMovie.runtime !== 'number' ||
+              isNaN(selectedMovie.runtime)
+            ) {
+              errorMsg.textContent = 'Selected movie does not have a valid runtime.';
+              return;
+            }
+            const startDateObj = new Date(newDatetime);
+            const endDateObj = new Date(
+              startDateObj.getTime() + Math.abs(selectedMovie.runtime) * 60000
+            ); // Ensure runtime is positive
+            const endTime = endDateObj.toISOString().slice(0, 16) + ':00';
+
             try {
-              const res = await fetch(buildApiUrl(`/showings/showings/${screening.id}`), {
+              const res = await fetch(buildApiUrl(`/admin/admin/showings/${screening.id}`), {
                 method: 'PUT',
                 headers: {
                   Authorization: `Bearer ${token}`,
                   'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
+                  movie_id: newMovieId,
                   room_id: newRoom,
                   start_time: newDatetime,
-                  end_time: newDatetime,
+                  end_time: endTime,
                   price: parseFloat(priceInputEdit.value),
                 }),
               });
@@ -399,7 +459,7 @@ document.addEventListener('DOMContentLoaded', () => {
           deleteBtn.addEventListener('click', async () => {
             if (!confirm('Are you sure you want to delete this screening?')) return;
 
-            const delRes = await fetch(buildApiUrl(`/showings/showings/${screening.id}`), {
+            const delRes = await fetch(buildApiUrl(`/admin/admin/showings/${screening.id}`), {
               method: 'DELETE',
               headers: { Authorization: `Bearer ${token}` },
             });

@@ -102,6 +102,7 @@ async function renderMovies(): Promise<void> {
   moviesList.innerHTML = '';
   try {
     const nowPlaying: MovieDetail[] = await fetchNowPlaying();
+    console.log('Now Playing Movies:', nowPlaying);
     // Sort movies by the earliest screening time
     const moviesWithFirstScreening = await Promise.all(
       nowPlaying.map(async (movie) => {
