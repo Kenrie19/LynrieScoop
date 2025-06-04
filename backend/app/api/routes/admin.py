@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta
-from typing import Any, List
+from typing import Any, List, Optional
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Body, Depends, HTTPException, status
 from sqlalchemy import desc
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
@@ -86,13 +86,11 @@ async def get_all_bookings(
 async def get_all_showings(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_manager_user),
-    skip: int = 0,
-    limit: int = 100,
 ) -> Any:
     """
     Get all showings (admin only)
     """
-    query = select(Showing).offset(skip).limit(limit)
+    query = select(Showing)
     result = await db.execute(query)
     showings = result.scalars().all()
 
@@ -123,17 +121,65 @@ async def create_room(
     return {"message": "Room created successfully"}
 
 
-@router.post("/showing", response_model=dict)
-async def create_showing(
-    showing_data: dict,
-    db: AsyncSession = Depends(get_db),
+@router.post("/showings", status_code=status.HTTP_201_CREATED)
+async def create_showing_admin(
+    movie_id: UUID = Body(...),
+    room_id: UUID = Body(...),
+    start_time: datetime = Body(...),
+    end_time: datetime = Body(...),
+    price: float = Body(...),
     current_user: User = Depends(get_current_manager_user),
+    db: AsyncSession = Depends(get_db),
 ) -> Any:
     """
     Create a new showing (admin only)
     """
-    # Placeholder implementation - would need proper implementation
-    return {"message": "Showing created successfully"}
+    result = await db.execute(select(Movie).filter(Movie.id == movie_id))
+    movie = result.scalars().first()
+    if not movie:
+        raise HTTPException(status_code=404, detail="Movie not found")
+
+    result = await db.execute(select(Room).filter(Room.id == room_id))
+    room = result.scalars().first()
+    if not room:
+        raise HTTPException(status_code=404, detail="Room not found")
+
+    conflict_query = (
+        select(Showing)
+        .filter(Showing.room_id == room_id)
+        .filter(Showing.status == "scheduled")
+        .filter(
+            ((Showing.start_time <= start_time) & (Showing.end_time > start_time))
+            | ((Showing.start_time < end_time) & (Showing.end_time >= end_time))
+            | ((Showing.start_time >= start_time) & (Showing.end_time <= end_time))
+        )
+    )
+    conflict = (await db.execute(conflict_query)).scalars().first()
+    if conflict:
+        raise HTTPException(status_code=400, detail="Time conflict in room")
+
+    new_showing = Showing(
+        movie_id=movie.id,
+        room_id=room_id,
+        start_time=start_time,
+        end_time=end_time,
+        price=price,
+        status="scheduled",
+        bookings_count=0,
+    )
+    db.add(new_showing)
+    await db.commit()
+    await db.refresh(new_showing)
+
+    return {
+        "id": str(new_showing.id),
+        "movie_id": str(movie_id),
+        "room_id": str(room_id),
+        "start_time": new_showing.start_time.isoformat(),
+        "end_time": new_showing.end_time.isoformat(),
+        "price": new_showing.price,
+        "status": new_showing.status,
+    }
 
 
 @router.get("/dashboard/recent-bookings", response_model=List[dict])
@@ -578,3 +624,85 @@ async def get_admin_cinema_rooms(
         }
         for room in rooms
     ]
+
+
+@router.put("/showings/{id}", status_code=status.HTTP_200_OK)
+async def update_showing_admin(
+    id: UUID,
+    room_id: Optional[UUID] = Body(None),
+    start_time: Optional[datetime] = Body(None),
+    end_time: Optional[datetime] = Body(None),
+    price: Optional[float] = Body(None),
+    status: Optional[str] = Body(None),
+    current_user: User = Depends(get_current_manager_user),
+    db: AsyncSession = Depends(get_db),
+) -> Any:
+    """
+    Update an existing showing (admin only)
+    """
+    result = await db.execute(select(Showing).filter(Showing.id == id))
+    showing = result.scalars().first()
+    if not showing:
+        raise HTTPException(status_code=404, detail="Showing not found")
+    if room_id:
+        room = (await db.execute(select(Room).filter(Room.id == room_id))).scalars().first()
+        if not room:
+            raise HTTPException(status_code=404, detail="Room not found")
+        setattr(showing, "room_id", room_id)
+    if start_time:
+        setattr(showing, "start_time", start_time)
+    if end_time:
+        setattr(showing, "end_time", end_time)
+    if price:
+        setattr(showing, "price", price)
+    if status:
+        if status not in ["scheduled", "cancelled", "completed"]:
+            raise HTTPException(status_code=400, detail="Invalid status value")
+        setattr(showing, "status", status)
+    if room_id or start_time or end_time:
+        actual_room = room_id or showing.room_id
+        actual_start = start_time or showing.start_time
+        actual_end = end_time or showing.end_time
+        conflict_query = (
+            select(Showing)
+            .filter(Showing.room_id == actual_room)
+            .filter(Showing.status == "scheduled")
+            .filter(Showing.id != id)
+            .filter(
+                ((Showing.start_time <= actual_start) & (Showing.end_time > actual_start))
+                | ((Showing.start_time < actual_end) & (Showing.end_time >= actual_end))
+                | ((Showing.start_time >= actual_start) & (Showing.end_time <= actual_end))
+            )
+        )
+        conflict = (await db.execute(conflict_query)).scalars().first()
+        if conflict:
+            raise HTTPException(status_code=400, detail="Time conflict in room")
+    await db.commit()
+    await db.refresh(showing)
+    movie = (await db.execute(select(Movie).filter(Movie.id == showing.movie_id))).scalars().first()
+    return {
+        "id": str(showing.id),
+        "movie_id": movie.tmdb_id if movie else None,
+        "room_id": str(showing.room_id),
+        "start_time": showing.start_time.isoformat(),
+        "end_time": showing.end_time.isoformat() if showing.end_time else None,
+        "price": showing.price,
+        "status": showing.status,
+    }
+
+
+@router.delete("/showings/{id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_showing_admin(
+    id: UUID,
+    current_user: User = Depends(get_current_manager_user),
+    db: AsyncSession = Depends(get_db),
+) -> None:
+    """
+    Delete a showing (admin only)
+    """
+    result = await db.execute(select(Showing).filter(Showing.id == id))
+    showing = result.scalars().first()
+    if not showing:
+        raise HTTPException(status_code=404, detail="Showing not found")
+    await db.delete(showing)
+    await db.commit()
