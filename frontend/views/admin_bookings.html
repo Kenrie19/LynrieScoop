@@ -6,6 +6,7 @@
     <title>Admin - All Bookings</title>
 
     <link rel="stylesheet" href="/resources/css/style.css" />
+    <link rel="stylesheet" href="/resources/css/admin.css" />
     <link rel="stylesheet" href="/resources/css/admin_bookings.css" />
 
     <script type="module" defer src="/resources/javascript/main.js"></script>
@@ -18,26 +19,27 @@
       <h1>Manage Bookings</h1>
     </header>
 
-    <div class="admin-container">
-      <h1>All Bookings</h1>
-
-      <section class="booking-table-section">
-        <table class="bookings-table" id="bookingsTable">
-          <thead>
-            <tr>
-              <th>Booking Number</th>
-              <th>User ID</th>
-              <th>Showing ID</th>
-              <th>Status</th>
-              <th>Total Price</th>
-              <th>Created At</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- Data injected by TypeScript -->
-          </tbody>
-        </table>
+    <main class="admin-container">
+      <section>
+        <h2>All Bookings</h2>
+        <div class="booking-table-section">
+          <table class="bookings-table" id="bookingsTable">
+            <thead>
+              <tr>
+                <th>Booking Number</th>
+                <th>User ID</th>
+                <th>Showing ID</th>
+                <th>Status</th>
+                <th>Total Price</th>
+                <th>Created At</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Data injected by TypeScript -->
+            </tbody>
+          </table>
+        </div>
       </section>
-    </div>
+    </main>
   </body>
 </html>

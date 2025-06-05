@@ -20,7 +20,7 @@ async function login(email: string, password: string) {
 
     const user = decodeJwtPayload(data.access_token);
     if (user?.role === 'manager') {
-      window.location.href = '/views/admin_screenings';
+      window.location.href = '/views/admin';
     } else {
       window.location.href = '/views/my_movies';
     }

@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Admin Panel | LynrieScoop</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/resources/css/style.css" />
+    <link rel="stylesheet" href="/resources/css/admin.css" />
+    <script defer type="module" src="/resources/javascript/main.js"></script>
+    <script defer type="module" src="/resources/javascript/admin.js"></script>
+
+    {% include "env.njk" %}
+  </head>
+  <body>
+    {% include "navbar.njk" %}
+
+    <header class="admin-header">
+      <h1>Admin Panel</h1>
+    </header>
+
+    <main class="admin-container">
+      <section class="admin-overview-grid">
+        <a href="/views/admin_dashboard" class="admin-btn">Dashboard Stats</a>
+        <p class="admin-description">
+          View real-time statistics about bookings, users, and movie trends.
+        </p>
+
+        <a href="/views/admin_screenings" class="admin-btn">Manage Screenings</a>
+        <p class="admin-description">
+          Add new showtimes, adjust schedules, or delete existing screenings.
+        </p>
+
+        <a href="/views/admin_movie_database" class="admin-btn">Manage Movies</a>
+        <p class="admin-description">
+          Search and import movies via TMDB and manage your local movie database.
+        </p>
+
+        <a href="/views/admin_bookings" class="admin-btn">View Bookings</a>
+        <p class="admin-description">
+          See a full list of all bookings with user details, showtime, and status.
+        </p>
+      </section>
+    </main>
+  </body>
+</html>

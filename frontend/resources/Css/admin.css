@@ -1,0 +1,136 @@
+:root {
+  --black-base: #121212;
+  --dark-bg: #1e1e1e;
+  --light-grey: #f1f1f1;
+  --aqua-accent: #30d5c8;
+  --error-red: #c62828;
+  --input-bg: #2a2a2a;
+  --btn-hover: #28b6a8;
+  --delete-red: #c62828;
+  --delete-hover: #b71c1c;
+  --success-green: #4caf50;
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: var(--black-base);
+  color: var(--light-grey);
+}
+
+.admin-header {
+  background-color: var(--dark-bg);
+  padding: 1.5rem 0;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(48, 213, 200, 0.15);
+  margin-bottom: 2rem;
+}
+
+.admin-header h1 {
+  color: var(--aqua-accent);
+  font-size: 1.75rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.admin-container {
+  max-width: 1000px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: var(--dark-bg);
+  border-radius: 1rem;
+  box-shadow: 0 0 20px rgba(48, 213, 200, 0.2);
+}
+
+h1,
+h2,
+h3 {
+  color: var(--aqua-accent);
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.feedback {
+  margin-top: 1rem;
+  font-weight: bold;
+  min-height: 1.5rem;
+  text-align: center;
+}
+
+.feedback.success {
+  color: var(--success-green);
+}
+
+.feedback.error {
+  color: var(--error-red);
+}
+
+button.btn {
+  margin-top: 1rem;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--aqua-accent);
+  border: none;
+  border-radius: 0.5rem;
+  color: var(--black-base);
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  user-select: none;
+}
+
+button.btn:hover,
+button.btn:focus {
+  background-color: var(--btn-hover);
+  outline: none;
+}
+
+button.btn-delete {
+  background-color: var(--delete-red);
+  color: white;
+}
+
+button.btn-delete:hover {
+  background-color: var(--delete-hover);
+}
+
+/* === Admin Overview Page Buttons === */
+.admin-overview-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: center;
+  padding-top: 1rem;
+}
+
+.admin-btn {
+  width: 100%;
+  max-width: 500px;
+  padding: 1.25rem 2rem;
+  background-color: var(--input-bg);
+  color: var(--light-grey);
+  text-decoration: none;
+  font-weight: bold;
+  border-radius: 0.75rem;
+  font-size: 1.2rem;
+  text-align: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 10px rgba(48, 213, 200, 0.1);
+  border: 2px solid var(--aqua-accent);
+}
+
+.admin-btn:hover {
+  background-color: var(--btn-hover);
+  color: var(--black-base);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(48, 213, 200, 0.25);
+}
+
+.admin-description {
+  max-width: 500px;
+  margin-top: -1rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+  color: #bbb;
+  text-align: center;
+  line-height: 1.4;
+}
