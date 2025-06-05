@@ -79,15 +79,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     debounceTimer = window.setTimeout(() => {
-      const query = searchInput.value.trim();
-      console.log(`Search term: "${query}"`);
       handleSearch();
     }, 300);
   });
 
   // Set up source select event listener
   sourceSelect.addEventListener('change', () => {
-    console.log(`Source changed to: ${sourceSelect.value}`);
     handleSearch();
   });
 });
