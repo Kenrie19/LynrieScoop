@@ -22,7 +22,7 @@ async function login(email: string, password: string) {
     if (user?.role === 'manager') {
       window.location.href = '/views/admin_screenings';
     } else {
-      window.location.href = '/views/mymovies';
+      window.location.href = '/views/my_movies';
     }
   } catch {
     showError('Invalid email or password');
@@ -45,7 +45,7 @@ async function register(name: string, email: string, password: string) {
 
     const data = await res.json();
     setCookie('token', data.access_token, 1);
-    window.location.href = '/views/mymovies';
+    window.location.href = '/views/my_movies';
   } catch {
     showError('Registration failed. Email might be already in use.');
   }

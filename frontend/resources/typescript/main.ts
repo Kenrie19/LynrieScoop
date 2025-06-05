@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const authLinks = document.querySelectorAll('.auth-only');
   const guestLinks = document.querySelectorAll('.guest-only');
   const adminLink = document.querySelector('.admin-only') as HTMLElement;
-  const myMoviesLink = document.querySelector('a[href="/views/mymovies"]')
+  const myMoviesLink = document.querySelector('a[href="/views/my_movies"]')
     ?.parentElement as HTMLElement;
 
   const isLoggedIn = !!token;
