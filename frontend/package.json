@@ -23,7 +23,8 @@
   "homepage": "https://github.com/Kenrie19/LynrieScoop#readme",
   "description": "",
   "dependencies": {
-    "@11ty/eleventy": "^3.1.0"
+    "@11ty/eleventy": "^3.1.0",
+    "paho-mqtt": "^1.1.0"
   },
   "devDependencies": {
     "@eslint/css": "^0.8.0",

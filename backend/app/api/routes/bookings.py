@@ -13,6 +13,7 @@ from typing import Any, List
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy import func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.orm import joinedload
@@ -132,7 +133,9 @@ async def create_booking(
                       or payment processing fails
     """
     result = await db.execute(
-        select(Showing).options(joinedload(Showing.room)).filter(Showing.id == screening_id)
+        select(Showing)
+        .options(joinedload(Showing.room), joinedload(Showing.movie))
+        .filter(Showing.id == screening_id)
     )
     screening = result.scalars().first()
 
@@ -141,7 +144,13 @@ async def create_booking(
     if not screening.room:
         raise HTTPException(status_code=400, detail="Room not linked to screening")
 
-    available_tickets = screening.room.capacity - screening.bookings_count
+    # Fix: haal het aantal boekingen op via een aparte query
+    bookings_count_result = await db.execute(
+        select(func.count(Booking.id)).where(Booking.showing_id == screening_id)
+    )
+    bookings_count = bookings_count_result.scalar() or 0
+
+    available_tickets = screening.room.capacity - bookings_count
     if available_tickets <= 0:
         raise HTTPException(status_code=400, detail="No tickets available for this screening")
 
@@ -161,7 +170,7 @@ async def create_booking(
     await db.commit()
 
     mqtt_client = get_mqtt_client()
-    remaining = screening.room.capacity - screening.bookings_count
+    remaining = screening.room.capacity - (bookings_count + 1)  # +1 want net geboekt
     mqtt_client.publish(
         f"screenings/{screening_id}/update",
         json.dumps(
