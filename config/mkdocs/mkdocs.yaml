@@ -51,8 +51,10 @@ nav:
   - Implementation:
       - Frontend Guide: frontend-guide.md
       - Backend Guide: backend-guide.md
+      - Code Quality Tools: code-quality-tools.md
   - Operations:
       - Deployment Guide: deployment-guide.md
+      - Documentation Guide: documentation-guide.md
 
 markdown_extensions:
   - pymdownx.highlight:
