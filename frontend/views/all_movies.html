@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lynriescoop - All Movies</title>
+    <link rel="stylesheet" href="/resources/css/style.css" />
+    <link rel="stylesheet" href="/resources/css/all_movies.css" />
+    {% include "env.njk" %}
+    <script defer type="module" src="/resources/javascript/main.js"></script>
+    <script defer type="module" src="/resources/javascript/all_movies.js"></script>
+  </head>
+
+  <body>
+    {% include "navbar.njk" %}
+    <div class="all-movies-container">
+      <header class="page-header">
+        <h1>All Movies</h1>
+        <div class="filters-container">
+          <div class="search-container">
+            <input
+              type="text"
+              id="movie-search"
+              placeholder="Search for a movie..."
+              aria-label="Search for movies"
+            />
+          </div>
+          <div class="source-filter-container">
+            <select id="movie-source" aria-label="Filter movie source">
+              <option value="local">Local Movies Only</option>
+              <option value="all">Include TMDB Movies</option>
+            </select>
+          </div>
+        </div>
+      </header>
+
+      <!-- Movies grid -->
+      <section class="movies-grid" id="all-movies-list">
+        <!-- Movies will be loaded here dynamically -->
+      </section>
+
+      <!-- Loading indicator -->
+      <div id="loading-indicator" class="loading-indicator">
+        <div class="spinner"></div>
+      </div>
+    </div>
+  </body>
+</html>
