@@ -198,8 +198,8 @@ def handle_booking_request(client: mqtt.Client, topic: str, payload: dict) -> No
 
     async def process_booking() -> None:
         """Process the booking request asynchronously"""
-        user_id = payload.get("userId")
-        showing_id = payload.get("showingId")
+        user_id = payload.get("user_id")
+        showing_id = payload.get("showing_id")
 
         if not user_id or not showing_id:
             logger.error(f"Invalid booking request: {payload}")
@@ -224,7 +224,13 @@ def handle_booking_request(client: mqtt.Client, topic: str, payload: dict) -> No
                 )
                 return
 
-            if showing.bookings_count >= showing.room.capacity:
+            # Fetch bookings_count using SQL expression
+            bookings_count_result = await db.execute(
+                select(getattr(Showing, "bookings_count")).where(Showing.id == showing.id)
+            )
+            bookings_count = bookings_count_result.scalar() or 0
+
+            if bookings_count >= showing.room.capacity:
                 publish_message(
                     f"booking/response/{user_id}",
                     {"success": False, "message": "No tickets available"},
@@ -241,11 +247,10 @@ def handle_booking_request(client: mqtt.Client, topic: str, payload: dict) -> No
             )
 
             db.add(booking)
-            setattr(showing, "bookings_count", int(getattr(showing, "bookings_count", 0) or 0) + 1)
             await db.commit()
 
             # MQTT feedback
-            remaining = showing.room.capacity - showing.bookings_count
+            remaining = showing.room.capacity - (bookings_count + 1)
             publish_message(
                 f"screenings/{showing_id}/update",
                 {
