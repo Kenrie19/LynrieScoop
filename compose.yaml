@@ -41,6 +41,20 @@ services:
       - "8082:80"
     restart: unless-stopped
 
+  docs:
+    container_name: docs
+    build:
+      context: .
+      dockerfile: config/mkdocs/Dockerfile
+    restart: unless-stopped
+    volumes:
+      - ./config/mkdocs:/config/mkdocs:ro
+    user: "${UID:-1000}:${GID:-1000}"
+    ports:
+      - "8080:8000"
+    environment:
+      - ENABLE_LIVE_RELOAD=true
+
   backend:
     container_name: backend-api
     build:
