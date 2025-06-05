@@ -60,10 +60,16 @@ async def get_showing_tickets(
     if not showing:
         raise HTTPException(status_code=404, detail="Showing not found")
 
+    # Fetch bookings_count using SQL expression
+    bookings_count_result = await db.execute(
+        select(Showing.bookings_count).where(Showing.id == showing.id)
+    )
+    bookings_count = bookings_count_result.scalar() or 0
+
     return {
         "showing_id": str(showing.id),
         "total_capacity": showing.room.capacity,
-        "available_tickets": showing.room.capacity - showing.bookings_count,
+        "available_tickets": showing.room.capacity - bookings_count,
         "price": showing.price,
         "movie_title": showing.movie.title if showing.movie else None,
         "movie_id": showing.movie.tmdb_id if showing.movie else None,

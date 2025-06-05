@@ -7,13 +7,15 @@ scheduled screenings of movies in specific cinema rooms.
 
 import uuid
 from datetime import datetime
-from typing import Literal
+from typing import Literal, cast
 
-from sqlalchemy import Boolean, Column, DateTime, Enum, Float, ForeignKey, Integer
+from sqlalchemy import Boolean, Column, DateTime, Enum, Float, ForeignKey, func, select
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
 
 from app.db.session import Base
+from app.models.booking import Booking
 
 
 class Showing(Base):
@@ -63,7 +65,6 @@ class Showing(Base):
         default="scheduled",
         nullable=False,
     )
-    bookings_count = Column(Integer, default=0, nullable=False)
 
     # Timestamps
     created_at = Column(DateTime, default=datetime.utcnow)
@@ -75,4 +76,17 @@ class Showing(Base):
     bookings = relationship("Booking", back_populates="showing", cascade="all, delete-orphan")
     seat_reservations = relationship(
         "SeatReservation", back_populates="showing", cascade="all, delete-orphan"
+    )
+
+    bookings_count = cast(
+        hybrid_property,
+        hybrid_property(
+            fget=lambda self: NotImplementedError("Use SQL expression version"),
+            expr=lambda cls: (
+                select(func.count(Booking.id))
+                .where(Booking.showing_id == cls.id)
+                .correlate(cls)
+                .scalar_subquery()
+            ),
+        ),
     )
