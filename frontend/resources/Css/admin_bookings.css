@@ -16,6 +16,22 @@ body {
   color: var(--light-grey);
 }
 
+.admin-header {
+  background-color: var(--dark-bg);
+  padding: 1.5rem 0;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(48, 213, 200, 0.15);
+  margin-bottom: 2rem;
+}
+
+.admin-header h1 {
+  color: var(--aqua-accent);
+  font-size: 1.75rem;
+  font-weight: bold;
+  margin: 0;
+  text-align: center;
+}
+
 .admin-container {
   max-width: 1000px;
   margin: 2rem auto;
