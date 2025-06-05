@@ -3,7 +3,6 @@ import { getCookie } from './cookies.js';
 declare global {
   interface Window {
     API_BASE_URL: string;
-    Paho: unknown;
   }
 }
 const API_BASE_URL = window.API_BASE_URL || 'http://localhost:8000';
@@ -54,69 +53,6 @@ async function fetchShowingInfo(id: string): Promise<ShowingTicketInfo> {
   return data;
 }
 
-// MQTT setup for real-time updates
-// This function sets up the MQTT client to listen for updates on ticket availability
-// It uses the global Paho client from the window object, which is expected to be loaded from a CDN.
-function setupMqttRealtime(showingId: string) {
-  // Use the global Paho client from the window object
-  type PahoClientType = {
-    onConnectionLost: (() => void) | null;
-    onMessageArrived: ((msg: { destinationName: string; payloadString: string }) => void) | null;
-    connect: (options: { onSuccess: () => void; useSSL: boolean }) => void;
-    subscribe: (topic: string) => void;
-  };
-  // Paho from CDN has the Client property directly
-  const PahoNS = window.Paho as {
-    Client: new (host: string, port: number, path: string, clientId: string) => PahoClientType;
-  };
-  if (!PahoNS || !PahoNS.Client) {
-    console.warn('MQTT client not loaded.');
-    return;
-  }
-  const host = 'localhost';
-  const port = 9001;
-  const path = '/';
-  const clientId = 'web-' + Math.random();
-  const client = new PahoNS.Client(host, port, path, clientId);
-  client.onConnectionLost = () => {
-    const ticketInput = document.getElementById('num-tickets') as HTMLInputElement | null;
-    if (ticketInput) ticketInput.disabled = true;
-    const msg = document.getElementById('reservation-message');
-    if (msg) msg.textContent = 'Connection to server lost.';
-  };
-  client.onMessageArrived = (msg: { destinationName: string; payloadString: string }) => {
-    if (msg.destinationName === `screenings/${showingId}/update`) {
-      const payload = JSON.parse(msg.payloadString);
-      const ticketInput = document.getElementById('num-tickets') as HTMLInputElement | null;
-      if (ticketInput) ticketInput.max = payload.available_tickets.toString();
-      const availableDiv = document.getElementById('available-tickets');
-      if (availableDiv)
-        availableDiv.textContent = `Available tickets: ${payload.available_tickets}`;
-    }
-  };
-  client.connect({
-    onSuccess: () => {
-      client.subscribe(`screenings/${showingId}/update`);
-    },
-    useSSL: false,
-  });
-}
-
-// This function creates or updates a div to show the number of available tickets
-// It checks if the div already exists, and if not, it creates it and inserts it before the reservation form.
-function showAvailableTicketsDiv(count: number) {
-  let availableDiv = document.getElementById('available-tickets');
-  if (!availableDiv) {
-    availableDiv = document.createElement('div');
-    availableDiv.id = 'available-tickets';
-    availableDiv.style.textAlign = 'center';
-    const form = document.getElementById('reservation-form');
-    form?.parentElement?.insertBefore(availableDiv, form);
-  }
-  availableDiv.textContent = `Available tickets: ${count}`;
-}
-
-// --- Pas updateReservationUI aan om ook de div te vullen ---
 function updateReservationUI(showing: ShowingTicketInfo): void {
   const posterEl = document.getElementById('movie-poster') as HTMLImageElement | null;
   if (posterEl && showing.movie_poster) {
@@ -146,8 +82,6 @@ function updateReservationUI(showing: ShowingTicketInfo): void {
 
   const ticketInput = document.getElementById('num-tickets') as HTMLInputElement | null;
   if (ticketInput) ticketInput.max = showing.available_tickets.toString();
-  showAvailableTicketsDiv(showing.available_tickets);
-  setupMqttRealtime(showing.showing_id);
 }
 
 function formatDate(dateTime: string): string {
