@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Admin Dashboard | LynrieScoop</title>
+    <link rel="stylesheet" href="/resources/css/style.css" />
+    <link rel="stylesheet" href="/resources/css/admin_dashboard.css" />
+    <script defer type="module" src="/resources/javascript/main.js"></script>
+    <script defer type="module" src="/resources/javascript/admin_dashboard.js"></script>
+  </head>
+  <body>
+    {% include "navbar.njk" %}
+
+    <header class="admin-header">
+      <h1>Dashboard</h1>
+    </header>
+
+    <main class="admin-container">
+      <section id="statsGrid" class="dashboard-grid">
+        <!-- Dynamische data komt hier via JS -->
+      </section>
+      <div class="feedback error" id="errorMessage"></div>
+    </main>
+  </body>
+</html>
