@@ -1,49 +1,3 @@
-:root {
-  --black-base: #121212;
-  --aqua-accent: #30d5c8;
-  --light-grey: #f1f1f1;
-  --error-red: #c62828;
-}
-
-body {
-  margin: 0;
-  font-family: 'Segoe UI', sans-serif;
-  background-color: var(--black-base);
-  color: var(--light-grey);
-}
-
-.admin-header {
-  background-color: var(--dark-bg);
-  padding: 1.5rem 0;
-  text-align: center;
-  box-shadow: 0 2px 6px rgba(48, 213, 200, 0.15);
-  margin-bottom: 2rem;
-}
-
-.admin-header h1 {
-  color: var(--aqua-accent);
-  font-size: 1.75rem;
-  font-weight: bold;
-  margin: 0;
-  text-align: center;
-}
-
-.admin-container {
-  max-width: 900px;
-  margin: 2rem auto;
-  background-color: #1e1e1e;
-  padding: 2rem;
-  border-radius: 1rem;
-  box-shadow: 0 0 20px rgba(48, 213, 200, 0.2);
-}
-
-h1,
-h2 {
-  color: var(--aqua-accent);
-  text-align: center;
-  margin-bottom: 1rem;
-}
-
 .form-section {
   margin-bottom: 2rem;
 }
@@ -55,68 +9,18 @@ h2 {
   cursor: pointer;
 }
 
-.form-section input[type='text'],
-.form-section input[type='date'],
-.form-section input[type='number'],
-.form-section textarea {
+.form-section input[type='text'] {
   width: 100%;
   padding: 0.75rem;
   margin-top: 0.25rem;
   border: none;
   border-radius: 0.5rem;
-  background-color: #2a2a2a;
+  background-color: var(--input-bg);
   color: var(--light-grey);
-  box-sizing: border-box;
   font-size: 1rem;
-  resize: vertical;
+  box-sizing: border-box;
 }
 
-.feedback {
-  margin-top: 1rem;
-  font-weight: bold;
-  min-height: 1.5rem;
-}
-
-.feedback.error {
-  color: var(--error-red);
-}
-
-.feedback.success {
-  color: #4caf50;
-}
-
-/* Knoppen */
-button.btn {
-  margin-top: 0.5rem;
-  padding: 0.6rem 1.2rem;
-  background-color: var(--aqua-accent);
-  border: none;
-  border-radius: 0.5rem;
-  color: var(--black-base);
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  user-select: none;
-  font-size: 0.85rem;
-}
-
-button.btn:hover,
-button.btn:focus {
-  background-color: #28b6a8;
-  outline: none;
-}
-
-/* Rode delete knop */
-button.btn-delete {
-  background-color: var(--error-red);
-  color: white;
-}
-
-button.btn-delete:hover {
-  background-color: #a31515;
-}
-
-/* Zoekresultaten en film lijst */
 .movie-results {
   display: flex;
   flex-wrap: wrap;
@@ -126,7 +30,7 @@ button.btn-delete:hover {
 }
 
 .movie-result {
-  background-color: #2a2a2a;
+  background-color: var(--input-bg);
   border-radius: 0.5rem;
   width: 180px;
   display: flex;
@@ -134,7 +38,6 @@ button.btn-delete:hover {
   padding: 0.5rem;
   box-sizing: border-box;
   transition: background-color 0.3s ease;
-  user-select: none;
   justify-content: space-between;
 }
 
@@ -147,7 +50,6 @@ button.btn-delete:hover {
   height: 270px;
   object-fit: cover;
   border-radius: 0.5rem;
-  user-select: none;
   margin-bottom: 0.5rem;
 }
 
@@ -163,7 +65,6 @@ button.btn-delete:hover {
 .movie-result span {
   font-size: 1rem;
   color: var(--light-grey);
-  overflow-wrap: break-word;
   text-align: center;
   height: 3rem;
   display: flex;
@@ -177,21 +78,6 @@ button.btn-delete:hover {
   text-align: center;
 }
 
-.feedback.success {
-  color: #4caf50;
-  margin-top: 0.5rem;
-  font-weight: bold;
-  text-align: center;
-}
-
-.feedback.error {
-  color: #c62828;
-  margin-top: 0.5rem;
-  font-weight: bold;
-  text-align: center;
-}
-
-/* Responsiveness */
 @media (max-width: 600px) {
   .admin-container {
     margin: 1rem;

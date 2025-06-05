@@ -1,56 +1,3 @@
-:root {
-  --black-base: #121212;
-  --dark-bg: #1e1e1e;
-  --light-grey: #f1f1f1;
-  --aqua-accent: #30d5c8;
-  --error-red: #c62828;
-  --input-bg: #2a2a2a;
-  --btn-hover: #28b6a8;
-  --delete-red: #c62828;
-  --delete-hover: #b71c1c;
-  --success-green: #4caf50;
-}
-
-body {
-  margin: 0;
-  font-family: 'Segoe UI', sans-serif;
-  background-color: var(--black-base);
-  color: var(--light-grey);
-}
-
-.admin-header {
-  background-color: var(--dark-bg);
-  padding: 1.5rem 0;
-  text-align: center;
-  box-shadow: 0 2px 6px rgba(48, 213, 200, 0.15);
-  margin-bottom: 2rem;
-}
-
-.admin-header h1 {
-  color: var(--aqua-accent);
-  font-size: 1.75rem;
-  font-weight: bold;
-  margin: 0;
-  text-align: center;
-}
-
-.admin-container {
-  max-width: 900px;
-  margin: 2rem auto;
-  padding: 2rem;
-  background-color: var(--dark-bg);
-  border-radius: 1rem;
-  box-shadow: 0 0 20px rgba(48, 213, 200, 0.2);
-}
-
-h1,
-h2,
-h3 {
-  color: var(--aqua-accent);
-  text-align: center;
-  margin-bottom: 1rem;
-}
-
 .form-section {
   margin-bottom: 2rem;
   background-color: #212121;
@@ -69,8 +16,7 @@ h3 {
 .form-section input[type='date'],
 .form-section input[type='time'],
 .form-section input[type='number'],
-.form-section select,
-.form-section textarea {
+.form-section select {
   width: 100%;
   padding: 0.75rem;
   margin-top: 0.25rem;
@@ -80,72 +26,8 @@ h3 {
   color: var(--light-grey);
   font-size: 1rem;
   box-sizing: border-box;
-  resize: vertical;
 }
 
-/* Button styling */
-button.btn {
-  margin-top: 1rem;
-  padding: 0.75rem 1.5rem;
-  background-color: var(--aqua-accent);
-  border: none;
-  border-radius: 0.5rem;
-  color: var(--black-base);
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  user-select: none;
-}
-
-button.btn:hover,
-button.btn:focus {
-  background-color: var(--btn-hover);
-  outline: none;
-}
-
-/* Feedback messages */
-.feedback {
-  margin-top: 1rem;
-  font-weight: bold;
-  min-height: 1.5rem;
-}
-
-.feedback.error {
-  color: var(--error-red);
-}
-
-.feedback.success {
-  color: var(--success-green);
-}
-
-/* Movie selection grid */
-.movie-results {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-top: 1rem;
-  justify-content: center;
-}
-
-.movie-result,
-.movie-entry {
-  display: flex;
-  align-items: center;
-  background-color: var(--input-bg);
-  padding: 0.5rem;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  gap: 1rem;
-}
-
-.movie-result img,
-.movie-entry img {
-  height: 100px;
-  border-radius: 0.5rem;
-  object-fit: cover;
-}
-
-/* Screenings list */
 .screening-list {
   margin-top: 2rem;
   display: flex;
@@ -204,10 +86,8 @@ button.btn:focus {
   color: var(--black-base);
 }
 
-.screening-actions .edit:hover,
-.screening-actions .edit:focus {
+.screening-actions .edit:hover {
   background-color: var(--btn-hover);
-  outline: none;
 }
 
 .screening-actions .delete {
@@ -215,13 +95,10 @@ button.btn:focus {
   color: white;
 }
 
-.screening-actions .delete:hover,
-.screening-actions .delete:focus {
+.screening-actions .delete:hover {
   background-color: var(--delete-hover);
-  outline: none;
 }
 
-/* Responsive styling */
 @media (max-width: 600px) {
   .admin-container {
     margin: 1rem;
@@ -233,16 +110,8 @@ button.btn:focus {
     align-items: stretch;
   }
 
-  .screening-info {
-    min-width: auto;
-  }
-
-  .screening-actions {
-    justify-content: flex-start;
-  }
-
   .movie-result,
   .movie-entry {
-    width: 45%;
+    width: 100%;
   }
 }
