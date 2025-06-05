@@ -8,15 +8,17 @@ function getCookie(name: string): string | null {
 
 document.addEventListener('DOMContentLoaded', () => {
   const token = getCookie('token');
-  const authLinks = document.querySelectorAll('.auth-only');
-  const guestLinks = document.querySelectorAll('.guest-only');
-  const adminLink = document.querySelector('.admin-only') as HTMLElement;
-  const myMoviesLink = document.querySelector('a[href="/views/my_movies"]')
-    ?.parentElement as HTMLElement;
-
   const isLoggedIn = !!token;
   const user = token ? decodeJwtPayload(token) : null;
 
+  const authLinks = document.querySelectorAll('.auth-only');
+  const guestLinks = document.querySelectorAll('.guest-only');
+  const adminLinks = document.querySelectorAll('.admin-only');
+  const myMoviesLink = document.querySelector('a[href="/views/my_movies"]')
+    ?.parentElement as HTMLElement;
+  const logoutLink = document.querySelector('.logout-link') as HTMLElement;
+
+  // Toon of verberg auth- en guest-links
   authLinks.forEach((link) => {
     (link as HTMLElement).style.display = isLoggedIn ? 'inline' : 'none';
   });
@@ -25,25 +27,29 @@ document.addEventListener('DOMContentLoaded', () => {
     (link as HTMLElement).style.display = isLoggedIn ? 'none' : 'inline';
   });
 
+  // Admin of gewone user?
   if (user && user.role === 'manager') {
-    adminLink.style.display = 'inline';
+    adminLinks.forEach((link) => {
+      (link as HTMLElement).style.display = 'inline';
+    });
 
-    // Hide My Movies link for admin users
+    // Verberg "My Movies" voor admins
     if (myMoviesLink) {
       myMoviesLink.style.display = 'none';
     }
   } else {
-    adminLink.style.display = 'none';
+    adminLinks.forEach((link) => {
+      (link as HTMLElement).style.display = 'none';
+    });
   }
 
-  const logoutLink = document.querySelector('.logout-link') as HTMLElement;
+  // Logout knop
   if (isLoggedIn && logoutLink) {
     logoutLink.style.display = 'inline';
-  } else {
+  } else if (logoutLink) {
     logoutLink.style.display = 'none';
   }
 
-  // Logout button
   const logoutBtn = document.getElementById('logoutBtn');
   if (logoutBtn) {
     logoutBtn.addEventListener('click', (e) => {
