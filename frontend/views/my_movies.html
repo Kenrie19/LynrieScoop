@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/resources/css/my_movies.css" />
     {% include "env.njk" %}
     <script defer type="module" src="/resources/javascript/main.js"></script>
-    <script defer src="/resources/javascript/my_movies.js"></script>
+    <script defer type="module" src="/resources/javascript/my_movies.js"></script>
   </head>
   <body>
     {% include "navbar.njk" %}
@@ -19,6 +19,11 @@
         <!-- Upcoming movies will be dynamically inserted here -->
       </div>
     </section>
-    nieuwe content
+    <section class="watched-movies">
+      <h2>Past movies</h2>
+      <div class="movie-list" id="watched-list">
+        <!-- Past movies will be dynamically inserted here -->
+      </div>
+    </section>
   </body>
 </html>
