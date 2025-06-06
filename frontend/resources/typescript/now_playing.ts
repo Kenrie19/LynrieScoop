@@ -145,27 +145,15 @@ async function renderMovies(): Promise<void> {
       title.textContent = movie.title;
       movieSection.appendChild(title);
 
-      // Room info and price (first screening of the day)
-      const firstScreening = filtered[0];
-      if (firstScreening) {
-        const infoDiv = document.createElement('div');
-        infoDiv.classList.add('movie-info');
-        // Room info
-        const roomSpan = document.createElement('span');
-        roomSpan.classList.add('movie-room');
-        roomSpan.textContent = firstScreening.room_name ? ` ${firstScreening.room_name}` : '';
-        // Price
-        const priceSpan = document.createElement('span');
-        priceSpan.classList.add('movie-price');
-        priceSpan.textContent = `€${firstScreening.price.toFixed(2)}`;
-        infoDiv.appendChild(roomSpan);
-        infoDiv.appendChild(document.createTextNode(' '));
-        infoDiv.appendChild(priceSpan);
-        movieSection.appendChild(infoDiv);
-      }
-
       // Screenings per date
       for (const [, screeningsOnDate] of Object.entries(grouped)) {
+        // Sort screenings by room name, with 'Room 1' first
+        screeningsOnDate.sort((a, b) => {
+          if (a.room_name === b.room_name) return 0;
+          if (a.room_name === 'Room 1') return -1;
+          if (b.room_name === 'Room 1') return 1;
+          return (a.room_name || '').localeCompare(b.room_name || '');
+        });
         const timeContainer = document.createElement('div');
         timeContainer.classList.add('screening-times');
 
@@ -195,6 +183,12 @@ async function renderMovies(): Promise<void> {
             window.location.href = `/views/ticket_reservation/index.html?showing_id=${s.id}`;
           });
 
+          // Room info for this screening (no price)
+          const roomSpan = document.createElement('span');
+          roomSpan.classList.add('screening-room');
+          roomSpan.textContent = s.room_name ? s.room_name : '';
+
+          screeningItem.appendChild(roomSpan);
           screeningItem.appendChild(timeButton);
           screeningList.appendChild(screeningItem);
         }
