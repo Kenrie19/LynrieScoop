@@ -86,11 +86,17 @@ body {
     color 0.2s,
     box-shadow 0.2s;
 }
-.reservation-container button:hover,
-.reservation-container button:focus {
+
+.reservation-container button:hover:enabled,
+.reservation-container button:focus:enabled {
   background-color: var(--aqua-accent);
   color: var(--black-base);
   box-shadow: 0 0 8px var(--aqua-accent);
+}
+.reservation-container button:disabled {
+  background-color: #888 !important;
+  color: #fff !important;
+  cursor: not-allowed !important;
 }
 #reservation-message {
   text-align: center;

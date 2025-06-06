@@ -95,9 +95,7 @@ function setupMqttRealtime(showingId: string) {
       const payload = JSON.parse(msg.payloadString);
       const ticketInput = document.getElementById('num-tickets') as HTMLInputElement | null;
       if (ticketInput) ticketInput.max = payload.available_tickets.toString();
-      const availableDiv = document.getElementById('available-tickets');
-      if (availableDiv)
-        availableDiv.textContent = `Available tickets: ${payload.available_tickets}`;
+      showAvailableTicketsDiv(payload.available_tickets); // update all UI aspects
     }
   };
   client.connect({
@@ -118,7 +116,29 @@ function showAvailableTicketsDiv(count: number) {
     const form = document.getElementById('reservation-form');
     form?.parentElement?.insertBefore(availableDiv, form);
   }
-  availableDiv.textContent = `Available tickets: ${count}`;
+  if (count <= 0) {
+    availableDiv.textContent = 'Fully booked';
+    availableDiv.style.color = 'red';
+    // Disable the reserve button
+    const reserveBtn = document.querySelector(
+      '#reservation-form button[type="submit"]'
+    ) as HTMLButtonElement | null;
+    if (reserveBtn) reserveBtn.disabled = true;
+    // Also disable the ticket input
+    const ticketInput = document.getElementById('num-tickets') as HTMLInputElement | null;
+    if (ticketInput) ticketInput.disabled = true;
+  } else {
+    availableDiv.textContent = `Available tickets: ${count}`;
+    availableDiv.style.color = '';
+    // Enable the reserve button
+    const reserveBtn = document.querySelector(
+      '#reservation-form button[type="submit"]'
+    ) as HTMLButtonElement | null;
+    if (reserveBtn) reserveBtn.disabled = false;
+    // Enable the ticket input
+    const ticketInput = document.getElementById('num-tickets') as HTMLInputElement | null;
+    if (ticketInput) ticketInput.disabled = false;
+  }
 }
 
 // --- Update the reservation UI with showing details and ticket limits ---
