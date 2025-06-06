@@ -233,7 +233,7 @@ function createMovieCard(movie: MovieDetail): HTMLElement {
       ? movie.poster_path
       : `https://image.tmdb.org/t/p/w500${movie.poster_path}`;
   } else {
-    poster.src = '/resources/Images/movie_mockup.jpg'; // Fallback image
+    poster.src = '/resources/images/movie_mockup.jpg'; // Fallback image
   }
 
   poster.alt = `${movie.title} poster`;
