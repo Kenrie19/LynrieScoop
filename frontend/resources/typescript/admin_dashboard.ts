@@ -10,7 +10,7 @@ interface DashboardStats {
   upcoming_showings: number;
   total_rooms: number;
   recent_bookings: number;
-  recent_revenue: number; // wordt eruit gefilterd
+  recent_revenue: number;
   last_updated: string;
 }
 
@@ -61,9 +61,11 @@ function renderDashboardStats(stats: DashboardStats) {
   const container = document.getElementById('statsGrid');
   if (!container) return;
 
-  const { last_updated, ...filteredStats } = stats;
+  const { last_updated } = stats;
 
-  for (const [key, value] of Object.entries(filteredStats)) {
+  for (const [key, value] of Object.entries(stats)) {
+    if (key === 'last_updated' || key === 'recent_revenue') continue;
+
     const card = document.createElement('div');
     card.classList.add('dashboard-card');
 
