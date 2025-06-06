@@ -4,7 +4,12 @@ import { getCookie, decodeJwtPayload } from './cookies.js';
 interface Booking {
   id: string;
   user_id: string;
+  user_email: string;
+  user_name: string;
   showing_id: string;
+  movie_title: string;
+  room_name: string;
+  showing_time: string;
   booking_number: string;
   status: string;
   total_price: number;
@@ -37,8 +42,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       const row = document.createElement('tr');
       row.innerHTML = `
         <td>${booking.booking_number}</td>
-        <td>${booking.user_id}</td>
-        <td>${booking.showing_id}</td>
+        <td>${booking.user_name}<br/><small>${booking.user_email}</small></td>
+        <td>${booking.movie_title}</td>
+        <td>${booking.room_name}</td>
+        <td>${new Date(booking.showing_time).toLocaleString()}</td>
         <td>${booking.status}</td>
         <td>€${booking.total_price.toFixed(2)}</td>
         <td>${new Date(booking.created_at).toLocaleString()}</td>
