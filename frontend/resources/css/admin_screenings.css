@@ -43,7 +43,18 @@
   gap: 1rem;
   align-items: flex-start;
   flex-wrap: wrap;
-  box-shadow: 0 0 8px rgba(48, 213, 200, 0.3);
+  box-shadow: 0 0 8px rgba(48, 213, 200, 0.15);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+  cursor: pointer;
+}
+
+.screening-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0 14px rgba(48, 213, 200, 0.4);
+  background-color: #2c2c2c;
 }
 
 .screening-card img {
