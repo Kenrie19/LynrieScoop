@@ -165,7 +165,6 @@ async def create_showing_admin(
         end_time=end_time,
         price=price,
         status="scheduled",
-        bookings_count=0,
     )
     db.add(new_showing)
     await db.commit()

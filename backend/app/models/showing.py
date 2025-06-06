@@ -81,7 +81,12 @@ class Showing(Base):
     bookings_count = cast(
         hybrid_property,
         hybrid_property(
-            fget=lambda self: NotImplementedError("Use SQL expression version"),
+            fget=lambda self: (_ for _ in ()).throw(
+                AttributeError(
+                    "'bookings_count' is a read-only computed property. "
+                    "Use the SQL expression version."
+                )
+            ),
             expr=lambda cls: (
                 select(func.count(Booking.id))
                 .where(Booking.showing_id == cls.id)

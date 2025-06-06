@@ -138,6 +138,10 @@ function updateReservationUI(showing: ShowingTicketInfo): void {
   const cinemaNameEl = document.getElementById('cinema-name');
   if (cinemaNameEl) cinemaNameEl.textContent = showing.room_name;
 
+  // Show price
+  const priceEl = document.getElementById('showing-price');
+  if (priceEl) priceEl.textContent = `€${showing.price.toFixed(2)}`;
+
   const dateEl = document.getElementById('showing-date');
   if (dateEl) dateEl.textContent = formatDate(showing.start_time);
 
