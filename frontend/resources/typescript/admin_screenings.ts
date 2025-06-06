@@ -217,7 +217,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       const cinemas = await cinemasRes.json();
       if (!Array.isArray(cinemas) || cinemas.length === 0) {
-        feedback.textContent = '❌ No cinemas found.';
+        feedback.textContent = 'No cinemas found.';
         return;
       }
       const cinemaId = cinemas[0].id;
@@ -240,7 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await res.json();
       console.log('Fetched showings:', data);
       if (!Array.isArray(data)) {
-        feedback.textContent = '❌ Unexpected response from server.';
+        feedback.textContent = 'Unexpected response from server.';
         return;
       }
 
