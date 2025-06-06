@@ -2,35 +2,20 @@ import { getCookie } from './cookies.js';
 import { buildApiUrl } from './config.js';
 
 interface MovieDetail {
-  /** UUID of the movie in the database */
   id: string;
-  /** TMDB ID of the movie */
   tmdb_id: number;
-  /** Title of the movie */
   title: string;
-  /** Plot summary or description */
   overview: string | null;
-  /** URL or path to the poster */
   poster_path: string | null;
-  /** URL or path to the backdrop (optional) */
   backdrop_path?: string | null;
-  /** Release date in ISO format (optional) */
   release_date?: string | null;
-  /** Duration in minutes (optional) */
   runtime?: number | null;
-  /** Genres as a list of strings (optional) */
   genres?: string[] | null;
-  /** Average rating (optional) */
   vote_average?: number | null;
-  /** Number of votes (optional) */
   vote_count?: number | null;
-  /** Director (optional) */
   director?: string | null;
-  /** Cast as a list of strings (optional) */
   cast?: string[] | null;
-  /** Trailer URL (optional) */
   trailer_url?: string | null;
-  /** Status of the movie (optional) */
   status?: string | null;
 }
 
@@ -62,7 +47,6 @@ const dayOptions: DayOption[] = [
     d.setDate(d.getDate() + 2 + i);
     return { label: formatDate(d), value: formatDate(d) };
   }),
-  { label: 'Coming Soon', value: 'coming_soon' },
 ];
 
 let selectedDay = 'today';
@@ -102,7 +86,7 @@ async function renderMovies(): Promise<void> {
   moviesList.innerHTML = '';
   try {
     const nowPlaying: MovieDetail[] = await fetchNowPlaying();
-    // Sort movies by the earliest screening time
+
     const moviesWithFirstScreening = await Promise.all(
       nowPlaying.map(async (movie) => {
         const screenings = await fetchScreenings(movie.tmdb_id);
@@ -111,20 +95,21 @@ async function renderMovies(): Promise<void> {
         return { movie, screenings, filtered, firstScreening };
       })
     );
-    // Sort by the earliest screening time (nulls last)
+
     moviesWithFirstScreening.sort((a, b) => {
       if (!a.firstScreening && !b.firstScreening) return 0;
       if (!a.firstScreening) return 1;
       if (!b.firstScreening) return -1;
       return new Date(a.firstScreening).getTime() - new Date(b.firstScreening).getTime();
     });
+
     for (const { movie, filtered } of moviesWithFirstScreening) {
       if (filtered.length === 0) continue;
+
       const grouped = groupAndSortByDate(filtered);
       const movieSection = document.createElement('div');
       movieSection.classList.add('movie-card');
 
-      // Poster
       if (movie.poster_path) {
         const posterButton = document.createElement('button');
         posterButton.classList.add('poster-btn');
@@ -140,20 +125,18 @@ async function renderMovies(): Promise<void> {
         movieSection.appendChild(posterButton);
       }
 
-      // Title
       const title = document.createElement('h2');
       title.textContent = movie.title;
       movieSection.appendChild(title);
 
-      // Screenings per date
       for (const [, screeningsOnDate] of Object.entries(grouped)) {
-        // Sort screenings by room name, with 'Room 1' first
         screeningsOnDate.sort((a, b) => {
           if (a.room_name === b.room_name) return 0;
           if (a.room_name === 'Room 1') return -1;
           if (b.room_name === 'Room 1') return 1;
           return (a.room_name || '').localeCompare(b.room_name || '');
         });
+
         const timeContainer = document.createElement('div');
         timeContainer.classList.add('screening-times');
 
@@ -164,6 +147,7 @@ async function renderMovies(): Promise<void> {
         for (const s of screeningsOnDate) {
           const screeningItem = document.createElement('li');
           screeningItem.classList.add('screening-time-item-unique');
+
           const timeButton = document.createElement('button');
           const time = new Date(s.start_time).toLocaleTimeString([], {
             hour: '2-digit',
@@ -183,7 +167,6 @@ async function renderMovies(): Promise<void> {
             window.location.href = `/views/ticket_reservation/index.html?showing_id=${s.id}`;
           });
 
-          // Room info for this screening (no price)
           const roomSpan = document.createElement('span');
           roomSpan.classList.add('screening-room');
           roomSpan.textContent = s.room_name ? s.room_name : '';
@@ -205,10 +188,6 @@ async function renderMovies(): Promise<void> {
 }
 
 function filterScreeningsBySelectedDay(screenings: Showing[]): Showing[] {
-  if (selectedDay === 'coming_soon') {
-    const lastDay = dayOptions[dayOptions.length - 2].value;
-    return screenings.filter((s) => s.start_time.split('T')[0] > lastDay);
-  }
   let targetDate: string | null = null;
   if (selectedDay === 'today') targetDate = formatDate(today);
   else if (selectedDay === 'tomorrow') {
@@ -218,6 +197,7 @@ function filterScreeningsBySelectedDay(screenings: Showing[]): Showing[] {
   } else {
     targetDate = selectedDay;
   }
+
   return screenings.filter((s) => s.start_time.split('T')[0] === targetDate);
 }
 
@@ -228,6 +208,7 @@ function groupAndSortByDate(screenings: Showing[]): GroupedScreenings {
     if (!grouped[date]) grouped[date] = [];
     grouped[date].push(screening);
   }
+
   const sortedGrouped: GroupedScreenings = {};
   const sortedDates = Object.keys(grouped).sort().slice(0, 5);
   for (const date of sortedDates) {
@@ -235,6 +216,7 @@ function groupAndSortByDate(screenings: Showing[]): GroupedScreenings {
       (a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime()
     );
   }
+
   return sortedGrouped;
 }
 
