@@ -155,17 +155,26 @@ async function renderMovies(): Promise<void> {
           });
           timeButton.textContent = time;
           timeButton.classList.add('screening-time-btn');
-          timeButton.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const token = getCookie('token');
-            const isLoggedIn = Boolean(token);
-            if (!isLoggedIn) {
-              alert('You have to be logged in to reserve tickets.');
-              window.location.href = '/views/login/index.html';
-              return;
-            }
-            window.location.href = `/views/ticket_reservation/index.html?showing_id=${s.id}`;
-          });
+
+          // Disable button if screening is today and already passed
+          const isToday = selectedDay === 'today';
+          const screeningDate = new Date(s.start_time);
+          const now = new Date();
+          if (isToday && screeningDate < now) {
+            timeButton.disabled = true;
+          } else {
+            timeButton.addEventListener('click', (e) => {
+              e.stopPropagation();
+              const token = getCookie('token');
+              const isLoggedIn = Boolean(token);
+              if (!isLoggedIn) {
+                alert('You have to be logged in to reserve tickets.');
+                window.location.href = '/views/login/index.html';
+                return;
+              }
+              window.location.href = `/views/ticket_reservation/index.html?showing_id=${s.id}`;
+            });
+          }
 
           const roomSpan = document.createElement('span');
           roomSpan.classList.add('screening-room');
