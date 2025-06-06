@@ -261,18 +261,18 @@ document.addEventListener('DOMContentLoaded', () => {
         grouped[date].push(s);
       });
 
-      Object.entries(grouped).forEach(([day, screenings]) => {
+      for (const [day, screenings] of Object.entries(grouped)) {
         const dayTitle = document.createElement('h3');
         dayTitle.textContent = day;
         screeningsList.appendChild(dayTitle);
 
-        screenings.forEach((screening) => {
+        for (const screening of screenings) {
           const card = document.createElement('div');
           card.className = 'screening-card';
 
           const img = document.createElement('img');
           const movie = movieMapByUUID.get(screening.movie_id);
-          if (movie && movie.poster_path) {
+          if (movie?.poster_path) {
             img.src = `https://image.tmdb.org/t/p/w92${movie.poster_path}`;
             img.alt = movie.title;
           } else {
@@ -294,16 +294,37 @@ document.addEventListener('DOMContentLoaded', () => {
           const room = document.createElement('p');
           room.textContent = roomMap.get(screening.room_id) ?? screening.room_id;
 
+          const price = document.createElement('p');
+          price.textContent = `Price: €${screening.price.toFixed(2)}`;
+
+          const ticketsInfo = document.createElement('p');
+          ticketsInfo.textContent = 'Loading ticket info...';
+
+          try {
+            const ticketRes = await fetch(
+              buildApiUrl(`/showings/showings/${screening.id}/tickets`),
+              {
+                headers: { Authorization: `Bearer ${token}` },
+              }
+            );
+
+            if (ticketRes.ok) {
+              const ticketData = await ticketRes.json();
+              ticketsInfo.textContent = `Available Tickets: ${ticketData.available_tickets} / ${ticketData.total_capacity}`;
+            } else {
+              ticketsInfo.textContent = 'Tickets unavailable';
+            }
+          } catch {
+            ticketsInfo.textContent = 'Error loading tickets';
+          }
+
           rightContainer.appendChild(movieTitle);
           rightContainer.appendChild(time);
           rightContainer.appendChild(room);
-
-          // Price display
-          const price = document.createElement('p');
-          price.textContent = `Price: €${screening.price.toFixed(2)}`;
           rightContainer.appendChild(price);
+          rightContainer.appendChild(ticketsInfo);
 
-          // Edit form container (hidden by default)
+          // Edit form container
           const editContainer = document.createElement('div');
           editContainer.className = 'form-section';
           editContainer.style.display = 'none';
@@ -312,6 +333,7 @@ document.addEventListener('DOMContentLoaded', () => {
           errorMsg.className = 'feedback error';
           editContainer.appendChild(errorMsg);
 
+          // Date input
           const dateLabel = document.createElement('label');
           dateLabel.textContent = 'Date:';
           const dateInputEdit = document.createElement('input');
@@ -320,6 +342,7 @@ document.addEventListener('DOMContentLoaded', () => {
           editContainer.appendChild(dateLabel);
           editContainer.appendChild(dateInputEdit);
 
+          // Time input
           const timeLabel = document.createElement('label');
           timeLabel.textContent = 'Time:';
           const timeInputEdit = document.createElement('input');
@@ -328,22 +351,21 @@ document.addEventListener('DOMContentLoaded', () => {
           editContainer.appendChild(timeLabel);
           editContainer.appendChild(timeInputEdit);
 
+          // Room select
           const roomLabel = document.createElement('label');
           roomLabel.textContent = 'Room:';
           const roomInputEdit = document.createElement('select');
-
-          (rooms as Room[]).forEach((r: Room) => {
+          rooms.forEach((r: Room) => {
             const option = document.createElement('option');
             option.value = r.id;
             option.textContent = r.name || 'Unknown room';
             if (r.id === screening.room_id) option.selected = true;
             roomInputEdit.appendChild(option);
           });
-
           editContainer.appendChild(roomLabel);
           editContainer.appendChild(roomInputEdit);
 
-          // Add movie select for edit form
+          // Movie select
           const movieLabelEdit = document.createElement('label');
           movieLabelEdit.textContent = 'Movie:';
           const movieInputEdit = document.createElement('select');
@@ -357,6 +379,7 @@ document.addEventListener('DOMContentLoaded', () => {
           editContainer.appendChild(movieLabelEdit);
           editContainer.appendChild(movieInputEdit);
 
+          // Price input
           const priceLabel = document.createElement('label');
           priceLabel.textContent = 'Price:';
           const priceInputEdit = document.createElement('input');
@@ -367,6 +390,7 @@ document.addEventListener('DOMContentLoaded', () => {
           editContainer.appendChild(priceLabel);
           editContainer.appendChild(priceInputEdit);
 
+          // Buttons
           const btnContainer = document.createElement('div');
           btnContainer.style.display = 'flex';
           btnContainer.style.gap = '0.5rem';
@@ -386,22 +410,16 @@ document.addEventListener('DOMContentLoaded', () => {
               errorMsg.textContent = 'Please fill all fields';
               return;
             }
-            const newDatetime = `${newDate}T${newTime}:00`;
 
-            // Lookup movie runtime for edit
+            const newDatetime = `${newDate}T${newTime}:00`;
             const selectedMovie = moviesWithRuntime.find((m) => m.id === newMovieId);
-            if (
-              !selectedMovie ||
-              typeof selectedMovie.runtime !== 'number' ||
-              isNaN(selectedMovie.runtime)
-            ) {
+            if (!selectedMovie || typeof selectedMovie.runtime !== 'number') {
               errorMsg.textContent = 'Selected movie does not have a valid runtime.';
               return;
             }
+
             const startDateObj = new Date(newDatetime);
-            const endDateObj = new Date(
-              startDateObj.getTime() + Math.abs(selectedMovie.runtime) * 60000
-            ); // Ensure runtime is positive
+            const endDateObj = new Date(startDateObj.getTime() + selectedMovie.runtime * 60000);
             const endTime = endDateObj.toISOString().slice(0, 16) + ':00';
 
             try {
@@ -419,6 +437,7 @@ document.addEventListener('DOMContentLoaded', () => {
                   price: parseFloat(priceInputEdit.value),
                 }),
               });
+
               if (res.ok) {
                 await loadScreenings();
               } else {
@@ -442,7 +461,7 @@ document.addEventListener('DOMContentLoaded', () => {
           btnContainer.appendChild(cancelBtn);
           editContainer.appendChild(btnContainer);
 
-          // Actions container
+          // Edit/delete actions
           const actions = document.createElement('div');
           actions.className = 'screening-actions';
 
@@ -464,21 +483,22 @@ document.addEventListener('DOMContentLoaded', () => {
               headers: { Authorization: `Bearer ${token}` },
             });
 
-            if (delRes.ok) loadScreenings();
-            else alert('Failed to delete screening.');
+            if (delRes.ok) {
+              await loadScreenings();
+            } else {
+              alert('Failed to delete screening.');
+            }
           });
 
           actions.append(editBtn, deleteBtn);
-
           rightContainer.appendChild(actions);
           rightContainer.appendChild(editContainer);
 
           card.appendChild(img);
           card.appendChild(rightContainer);
-
           screeningsList.appendChild(card);
-        });
-      });
+        }
+      }
     } catch {
       feedback.textContent = 'Failed to load screenings.';
     }
