@@ -104,3 +104,10 @@ h2 {
   width: 100%;
   align-items: center;
 }
+
+.screening-time-btn:disabled {
+  background-color: #888 !important;
+  color: #fff !important;
+  cursor: not-allowed !important;
+  opacity: 1;
+}
