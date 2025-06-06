@@ -62,24 +62,61 @@ async def get_all_bookings(
     limit: int = 100,
 ) -> Any:
     """
-    Get all bookings (admin only)
+    Get all bookings with detailed information (admin only)
     """
     query = select(Booking).offset(skip).limit(limit)
     result = await db.execute(query)
     bookings = result.scalars().all()
 
-    return [
-        {
-            "id": str(booking.id),
-            "user_id": str(booking.user_id),
-            "showing_id": str(booking.showing_id),
-            "booking_number": booking.booking_number,
-            "status": booking.status,
-            "total_price": booking.total_price,
-            "created_at": booking.created_at,
-        }
-        for booking in bookings
-    ]
+    # Fetch related user, showing, movie, and room info for each booking
+    booking_details = []
+    for booking in bookings:
+        # Get user info
+        user = None
+        user_query = select(User).where(User.id == booking.user_id)
+        user_result = await db.execute(user_query)
+        user = user_result.scalar_one_or_none()
+
+        # Get showing info
+        showing = None
+        showing_query = select(Showing).where(Showing.id == booking.showing_id)
+        showing_result = await db.execute(showing_query)
+        showing = showing_result.scalar_one_or_none()
+
+        # Get movie and room info if showing exists
+        movie_title = None
+        room_name = None
+        showing_time = None
+        if showing:
+            movie_query = select(Movie).where(Movie.id == showing.movie_id)
+            movie_result = await db.execute(movie_query)
+            movie = movie_result.scalar_one_or_none()
+            if movie:
+                movie_title = movie.title
+            room_query = select(Room).where(Room.id == showing.room_id)
+            room_result = await db.execute(room_query)
+            room = room_result.scalar_one_or_none()
+            if room:
+                room_name = room.name
+            showing_time = showing.start_time
+
+        booking_details.append(
+            {
+                "id": str(booking.id),
+                "user_id": str(booking.user_id),
+                "user_email": user.email if user else None,
+                "user_name": user.name if user else None,
+                "showing_id": str(booking.showing_id),
+                "movie_title": movie_title,
+                "room_name": room_name,
+                "showing_time": showing_time,
+                "booking_number": booking.booking_number,
+                "status": booking.status,
+                "total_price": booking.total_price,
+                "created_at": booking.created_at,
+            }
+        )
+    return booking_details
 
 
 @router.get("/showings", response_model=List[dict])
