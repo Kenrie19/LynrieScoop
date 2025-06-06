@@ -20,7 +20,7 @@ export default function (eleventyConfig) {
    */
   eleventyConfig.addPassthroughCopy({
     'resources/Css': 'resources/css',
-    'resources/Images': 'resources/images',
+    'resources/images': 'resources/images',
     'resources/Javascript': 'resources/javascript',
     'resources/videos': 'resources/videos',
   });
