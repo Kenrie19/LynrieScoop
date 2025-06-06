@@ -1,3 +1,7 @@
+// This script handles the ticket reservation page logic for a movie showing.
+// It fetches showing info, updates the UI, manages ticket input, and handles real-time ticket updates via MQTT.
+// It also processes the reservation form, enforces a max of 10 tickets per user, and redirects to the user's tickets after booking.
+
 import { getCookie } from './cookies.js';
 
 declare global {
@@ -21,6 +25,7 @@ interface ShowingTicketInfo {
   movie_overview: string | null;
 }
 
+// --- Main event: On DOMContentLoaded, fetch showing info and set up the reservation form ---
 document.addEventListener('DOMContentLoaded', async () => {
   const showingId = getShowingIdFromURL();
   if (!showingId) {
@@ -44,6 +49,7 @@ function getShowingIdFromURL(): string | null {
   return url.searchParams.get('showing_id');
 }
 
+// --- Fetch showing info from the backend API ---
 async function fetchShowingInfo(id: string): Promise<ShowingTicketInfo> {
   const res = await fetch(`${API_BASE_URL}/showings/showings/${id}/tickets`);
   if (!res.ok) {
@@ -102,8 +108,7 @@ function setupMqttRealtime(showingId: string) {
   });
 }
 
-// This function creates or updates a div to show the number of available tickets
-// It checks if the div already exists, and if not, it creates it and inserts it before the reservation form.
+// --- Show or update the available tickets div above the reservation form ---
 function showAvailableTicketsDiv(count: number) {
   let availableDiv = document.getElementById('available-tickets');
   if (!availableDiv) {
@@ -116,7 +121,7 @@ function showAvailableTicketsDiv(count: number) {
   availableDiv.textContent = `Available tickets: ${count}`;
 }
 
-// --- Pas updateReservationUI aan om ook de div te vullen ---
+// --- Update the reservation UI with showing details and ticket limits ---
 function updateReservationUI(showing: ShowingTicketInfo): void {
   const posterEl = document.getElementById('movie-poster') as HTMLImageElement | null;
   if (posterEl && showing.movie_poster) {
@@ -149,7 +154,7 @@ function updateReservationUI(showing: ShowingTicketInfo): void {
   if (timeEl) timeEl.textContent = formatTime(showing.start_time);
 
   const ticketInput = document.getElementById('num-tickets') as HTMLInputElement | null;
-  if (ticketInput) ticketInput.max = showing.available_tickets.toString();
+  if (ticketInput) ticketInput.max = Math.min(10, showing.available_tickets).toString();
   showAvailableTicketsDiv(showing.available_tickets);
   setupMqttRealtime(showing.showing_id);
 }
@@ -164,6 +169,7 @@ function formatTime(dateTime: string): string {
   return date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
 }
 
+// --- Handle reservation form submission, enforce max 10 tickets, and redirect on success ---
 async function handleReservationSubmit(e: Event, showingId: string): Promise<void> {
   e.preventDefault();
 
@@ -175,7 +181,10 @@ async function handleReservationSubmit(e: Event, showingId: string): Promise<voi
   }
 
   const ticketInput = document.getElementById('num-tickets') as HTMLInputElement | null;
-  const numTickets = ticketInput ? parseInt(ticketInput.value, 10) : 0;
+  let numTickets = ticketInput ? parseInt(ticketInput.value, 10) : 0;
+  if (numTickets > 10) numTickets = 10;
+  if (numTickets < 1) numTickets = 1;
+  if (ticketInput) ticketInput.value = numTickets.toString();
   const messageEl = document.getElementById('reservation-message');
   if (messageEl) messageEl.textContent = 'Reserving...';
 
@@ -201,6 +210,9 @@ async function handleReservationSubmit(e: Event, showingId: string): Promise<voi
       messageEl.textContent = 'Reservation successful!';
       messageEl.style.color = 'green';
     }
+    setTimeout(() => {
+      window.location.href = '/views/my_movies/index.html';
+    }, 1000);
   } catch (error) {
     if (messageEl) {
       const errMsg = error instanceof Error ? error.message : String(error);
@@ -210,6 +222,7 @@ async function handleReservationSubmit(e: Event, showingId: string): Promise<voi
   }
 }
 
+// --- Show error messages in the reservation-message element ---
 function showError(message: string): void {
   const el = document.getElementById('reservation-message');
   if (el) {
