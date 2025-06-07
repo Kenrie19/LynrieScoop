@@ -16,6 +16,9 @@ psycopg2-binary
 types-python-jose
 types-passlib
 types-requests
+redis
+rq
+emails
 
 # Linting and Formatting
 black==24.3.0
