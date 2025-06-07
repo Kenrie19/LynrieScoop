@@ -19,6 +19,17 @@ async function login(email: string, password: string) {
     setCookie('token', data.access_token, 1);
 
     const user = decodeJwtPayload(data.access_token);
+
+    const storedNext = sessionStorage.getItem('next');
+    const urlParams = new URLSearchParams(window.location.search);
+    const next = urlParams.get('next') || storedNext;
+
+    if (next) {
+      sessionStorage.removeItem('next'); // Clear session storage if next is used
+      window.location.href = next;
+      return;
+    }
+
     if (user?.role === 'manager') {
       window.location.href = '/views/admin';
     } else {
@@ -45,7 +56,16 @@ async function register(name: string, email: string, password: string) {
 
     const data = await res.json();
     setCookie('token', data.access_token, 1);
-    window.location.href = '/views/my_movies';
+
+    const storedNext = sessionStorage.getItem('next');
+    const urlParams = new URLSearchParams(window.location.search);
+    const next = urlParams.get('next') || storedNext;
+
+    if (next) {
+      window.location.href = next;
+    } else {
+      window.location.href = '/views/my_movies';
+    }
   } catch {
     showError('Registration failed. Email might be already in use.');
   }
@@ -79,6 +99,29 @@ document.addEventListener('DOMContentLoaded', () => {
       const email = (document.getElementById('email') as HTMLInputElement).value;
       const password = (document.getElementById('password') as HTMLInputElement).value;
       register(name, email, password);
+    });
+  }
+  const registerLink = document.getElementById('register-link') as HTMLAnchorElement;
+  if (registerLink) {
+    registerLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      const urlParams = new URLSearchParams(window.location.search);
+      const next = urlParams.get('next');
+      const registerUrl = next
+        ? `/views/register?next=${encodeURIComponent(next)}`
+        : `/views/register`;
+      window.location.href = registerUrl;
+    });
+  }
+  const backToLogin = document.getElementById('back-to-login') as HTMLAnchorElement;
+  if (backToLogin) {
+    backToLogin.addEventListener('click', (e) => {
+      e.preventDefault();
+      const storedNext = sessionStorage.getItem('next');
+      const loginUrl = storedNext
+        ? `/views/login/index.html?next=${encodeURIComponent(storedNext)}`
+        : `/views/login/index.html`;
+      window.location.href = loginUrl;
     });
   }
 });
