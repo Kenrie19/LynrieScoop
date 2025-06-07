@@ -1,7 +1,8 @@
+/* --- Booking Table Section --- */
 .booking-table-section {
   overflow-x: auto;
   border-radius: 12px;
-  box-shadow: 0 0 20px rgba(48, 213, 200, 0.15);
+  box-shadow: 0 0 20px var(--aqua-accent);
 }
 
 .bookings-table {
@@ -13,7 +14,7 @@
 }
 
 .bookings-table thead {
-  background-color: #121212;
+  background-color: var(--black-base);
 }
 
 .bookings-table th {
@@ -22,35 +23,36 @@
   font-size: 1rem;
   font-weight: 600;
   color: var(--aqua-accent);
-  border-bottom: 1px solid #2e2e2e;
+  border-bottom: 1px solid var(--input-bg);
 }
 
 .bookings-table td {
   padding: 1rem;
   font-size: 0.95rem;
   color: var(--light-grey);
-  border-bottom: 1px solid #2a2a2a;
+  border-bottom: 1px solid var(--input-bg);
 }
 
 .bookings-table tbody tr:nth-child(odd) {
-  background-color: #1b1b1b;
+  background-color: var(--input-bg);
 }
 
 .bookings-table tbody tr:nth-child(even) {
-  background-color: #212121;
+  background-color: var(--dark-bg);
 }
 
 .bookings-table tr:hover {
-  background-color: #2a2a2a;
+  background-color: var(--btn-hover);
   transition: background-color 0.3s ease;
 }
 
 .bookings-table small {
   font-size: 0.85rem;
-  color: #bbbbbb;
+  color: var(--light-grey);
   display: block;
 }
 
+/* --- Responsive Styles --- */
 @media (max-width: 600px) {
   .bookings-table th,
   .bookings-table td {

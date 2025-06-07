@@ -161,9 +161,6 @@ function updateReservationUI(showing: ShowingTicketInfo): void {
   const movieTitleEl = document.getElementById('movie-title');
   if (movieTitleEl) movieTitleEl.textContent = showing.movie_title;
 
-  const overviewEl = document.getElementById('movie-overview');
-  if (overviewEl) overviewEl.textContent = showing.movie_overview || '';
-
   const cinemaNameEl = document.getElementById('cinema-name');
   if (cinemaNameEl) cinemaNameEl.textContent = showing.room_name;
 

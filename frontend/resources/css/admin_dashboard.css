@@ -1,19 +1,15 @@
+/* --- Dashboard Grid --- */
 .dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 2rem;
-  margin-top: 2rem;
+  grid-template-columns: 1fr;
+  gap: 1.2rem;
+  margin-top: 1rem;
 }
 
-@media (max-width: 700px) {
-  .dashboard-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
+/* --- Dashboard Card --- */
 .dashboard-card {
   background-color: #1b1b1b;
-  padding: 2rem;
+  padding: 1.2rem;
   border-radius: 1rem;
   border-left: 5px solid var(--aqua-accent);
   box-shadow: 0 4px 20px rgba(0, 255, 255, 0.1);
@@ -31,7 +27,7 @@
 }
 
 .dashboard-card h3 {
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   text-transform: uppercase;
   color: #aaa;
   margin-bottom: 0.5rem;
@@ -39,7 +35,7 @@
 }
 
 .dashboard-card p {
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: bold;
   margin: 0;
   color: var(--aqua-accent);
@@ -47,8 +43,33 @@
 
 .last-updated {
   text-align: center;
-  margin-top: 3rem;
+  margin-top: 2rem;
   font-size: 0.9rem;
   color: #888;
   font-style: italic;
+}
+
+/* --- Responsive Styles --- */
+@media (min-width: 600px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+  .dashboard-card {
+    padding: 2rem;
+  }
+  .dashboard-card p {
+    font-size: 2rem;
+  }
+}
+
+@media (min-width: 1000px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2.5rem;
+  }
+  .dashboard-card {
+    padding: 2.5rem;
+  }
 }

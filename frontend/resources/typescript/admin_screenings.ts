@@ -249,31 +249,45 @@ document.addEventListener('DOMContentLoaded', () => {
         .filter((s: Screening) => new Date(s.start_time) >= new Date())
         .sort((a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime());
 
-      // Group by date
+      // Group by date (ISO yyyy-mm-dd for sorting)
       const grouped: Record<string, Screening[]> = {};
       upcomingShowings.forEach((s) => {
-        const date = new Date(s.start_time).toLocaleDateString('en-GB', {
-          weekday: 'long',
-          day: 'numeric',
-          month: 'long',
-        });
+        const date = s.start_time.split('T')[0]; // '2025-06-07'
         if (!grouped[date]) grouped[date] = [];
         grouped[date].push(s);
       });
 
-      for (const [day, screenings] of Object.entries(grouped)) {
-        const dayTitle = document.createElement('h3');
-        dayTitle.textContent = day;
-        screeningsList.appendChild(dayTitle);
+      // Sorteer datums oplopend
+      const sortedDates = Object.keys(grouped).sort();
+      for (const date of sortedDates) {
+        // Container voor deze dag
+        const dayContainer = document.createElement('div');
+        dayContainer.className = 'screening-day-group';
 
-        for (const screening of screenings) {
+        // Datum als kop
+        const dateObj = new Date(date);
+        const dayTitle = document.createElement('h3');
+        dayTitle.textContent = dateObj.toLocaleDateString('en-GB', {
+          weekday: 'long',
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+        });
+        dayContainer.appendChild(dayTitle);
+
+        // Cards container
+        const cardsContainer = document.createElement('div');
+        cardsContainer.className = 'screening-day-group-cards';
+
+        // Voeg alle screenings voor deze dag toe
+        for (const screening of grouped[date]) {
           const card = document.createElement('div');
           card.className = 'screening-card';
 
           const img = document.createElement('img');
           const movie = movieMapByUUID.get(screening.movie_id);
           if (movie?.poster_path) {
-            img.src = `https://image.tmdb.org/t/p/w92${movie.poster_path}`;
+            img.src = `https://image.tmdb.org/t/p/w500${movie.poster_path}`;
           } else {
             img.src = '/resources/images/movie_mockup.jpg';
           }
@@ -496,8 +510,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
           card.appendChild(img);
           card.appendChild(rightContainer);
-          screeningsList.appendChild(card);
+          cardsContainer.appendChild(card);
         }
+        dayContainer.appendChild(cardsContainer);
+        screeningsList.appendChild(dayContainer);
       }
     } catch {
       feedback.textContent = 'Failed to load screenings.';
