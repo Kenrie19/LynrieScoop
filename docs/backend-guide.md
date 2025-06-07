@@ -152,3 +152,12 @@ The backend implements standardized error handling:
 - Structured error responses with detailed messages
 - Validation errors using Pydantic schemas
 - Exception handlers for common error scenarios
+
+## Email Notifications
+
+The backend supports sending email notifications for important events:
+
+- **Booking Confirmations**: Automatically sends a HTML-formatted email when a booking is successfully created
+- **Configuration**: Email settings are defined in environment variables (SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASSWORD)
+- **Implementation**: Uses Python's `smtplib` and `email.mime` packages for creating and sending emails
+- **Error Handling**: Gracefully handles email sending failures without affecting the booking process

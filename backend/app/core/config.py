@@ -100,6 +100,10 @@ settings = Settings(
     ),
     JWT_SECRET=os.getenv("JWT_SECRET", "NOT_A_SECRET"),
     TMDB_API_KEY=os.getenv("TMDB_API_KEY", "NOT_A_SECRET"),
+    SMTP_HOST=os.getenv("SMTP_HOST"),
+    SMTP_PORT=int(os.getenv("SMTP_PORT", "587")),
+    SMTP_USER=os.getenv("SMTP_USER"),
+    SMTP_PASSWORD=os.getenv("SMTP_PASSWORD"),
+    EMAILS_FROM_EMAIL=os.getenv("EMAILS_FROM_EMAIL", "noreply@lynriescoop.com"),
+    EMAILS_FROM_NAME=os.getenv("EMAILS_FROM_NAME", "LynrieScoop Cinema"),
 )
-
-print("Settings loaded:", settings.TMDB_API_KEY)  # Debugging line to check loaded settings

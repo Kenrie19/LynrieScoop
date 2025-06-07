@@ -82,6 +82,10 @@ services:
       DATABASE_URL: "postgresql://postgres:postgres@database:5432/cinema"
       MQTT_BROKER: "mqtt-broker"
       MQTT_PORT: 1883
+      SMTP_HOST: ${SMTP_HOST:-sandbox.smtp.mailtrap.io}
+      SMTP_PORT: ${SMTP_PORT:-2525}
+      EMAILS_FROM_EMAIL: noreply@lynriescoop.com
+      EMAILS_FROM_NAME: LynrieScoop Cinema
     depends_on:
       database:
         condition: service_healthy

@@ -7,8 +7,11 @@ the booking lifecycle.
 """
 
 import json
+import smtplib
 import uuid
 from datetime import datetime
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from typing import Any, List
 from uuid import UUID
 
@@ -18,6 +21,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.orm import joinedload
 
+from app.core.config import settings
 from app.core.mqtt_client import get_mqtt_client
 from app.core.security import get_current_user
 from app.db.session import get_db
@@ -181,6 +185,87 @@ async def create_booking(
             }
         ),
     )
+
+    message_html = (
+        """<html>
+        <head>
+            <style>
+                body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+                .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                .header { background-color: #222; color: white; padding: 10px; text-align: center; }
+                .ticket { border: 1px solid #ddd; padding: 15px; margin-top: 20px; }
+                .footer { font-size: 12px; text-align: center; margin-top: 30px; color: #777; }
+            </style>
+        </head>"""
+        + f"""
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h1>LynrieScoop Cinema</h1>
+                    <h2>Ticket Confirmation</h2>
+                </div>
+
+                <p>Dear {current_user.name},</p>
+
+                <p>Thank you for your booking! Here are your ticket details:</p>
+
+                <div class="ticket">
+                    <p><strong>Booking Number:</strong> {booking.booking_number}</p>
+                    <p>
+                        <strong>Movie:</strong>
+                        {screening.movie.title if screening.movie else "Unknown"}
+                    </p>
+                    <p><strong>Date & Time:</strong> {screening.start_time.isoformat()}</p>
+                    <p><strong>Room:</strong> {screening.room.name}</p>
+                    <p><strong>Total Price:</strong> ${booking.total_price}</p>
+                    <p><strong>Status:</strong> {booking.status}</p>
+                </div>
+
+                <p>Please arrive 15 minutes before the showing. Enjoy your movie!</p>
+
+                <div class="footer">
+                    <p>This is an automated message, please do not reply to this email.</p>
+                    <p>&copy; 2025 LynrieScoop Cinema. All rights reserved.</p>
+                </div>
+            </div>
+        </body>
+        </html>"""
+    )
+
+    sender = f"{settings.EMAILS_FROM_NAME} <{settings.EMAILS_FROM_EMAIL}>"
+    receiver = f"{current_user.name} <{current_user.email}>"
+
+    if (
+        not settings.SMTP_HOST
+        or not settings.SMTP_PORT
+        or not settings.SMTP_USER
+        or not settings.SMTP_PASSWORD
+    ):
+        raise HTTPException(
+            status_code=500,
+            detail="Email settings are not configured. Please contact support.",
+        )
+
+    # Create a proper MIME email
+    msg = MIMEMultipart("alternative")
+    msg["Subject"] = f"LynrieScoop - Booking Confirmation - {booking.booking_number}"
+    msg["From"] = sender
+    msg["To"] = receiver
+
+    # Attach HTML part
+    html_part = MIMEText(message_html, "html")
+    msg.attach(html_part)
+
+    try:
+        with smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT) as server:
+            server.starttls()
+            server.login(settings.SMTP_USER, settings.SMTP_PASSWORD)
+            server.sendmail(sender, receiver, msg.as_string())
+            print(f"Email sent successfully to {receiver}")
+    except Exception as e:
+        print(f"Failed to send email: {str(e)}")
+        # Don't raise exception here so booking can still be completed
+        # But log the error for monitoring
 
     return {
         "booking_id": str(booking_id),
