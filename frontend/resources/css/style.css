@@ -33,7 +33,7 @@ a:hover {
 }
 
 .navbar img {
-  height: 50px;
+  height: 70px;
 }
 
 .navbar ul {
@@ -200,4 +200,54 @@ button {
 
 button:hover {
   background-color: #a61b1b;
+}
+
+.site-footer {
+  background-color: #1e1e1e;
+  color: var(--light-grey);
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
+  border-top: 1px solid #333;
+}
+
+.footer-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: left;
+  flex-wrap: wrap;
+}
+
+.footer-column {
+  flex: 1;
+  min-width: 200px;
+  padding: 0 0.5rem;
+}
+
+.footer-logo {
+  max-width: 100px;
+  margin-bottom: 0.2rem;
+}
+
+.tagline {
+  font-style: italic;
+  color: var(--aqua-accent);
+  font-size: 0.75rem;
+  margin: 0;
+}
+
+.quote,
+.fact {
+  margin: 0.2rem 0;
+  font-style: italic;
+  font-size: 0.8rem;
+}
+
+.footer-bottom {
+  text-align: center;
+  margin-top: 0.5rem;
+  color: #aaa;
+  font-size: 0.7rem;
 }
