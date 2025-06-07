@@ -7,16 +7,6 @@ interface MovieDetail {
   title: string;
   overview: string | null;
   poster_path: string | null;
-  backdrop_path?: string | null;
-  release_date?: string | null;
-  runtime?: number | null;
-  genres?: string[] | null;
-  vote_average?: number | null;
-  vote_count?: number | null;
-  director?: string | null;
-  cast?: string[] | null;
-  trailer_url?: string | null;
-  status?: string | null;
 }
 
 interface Showing {
@@ -107,16 +97,17 @@ async function renderMovies(): Promise<void> {
     for (const { movie, filtered } of moviesWithFirstScreening) {
       if (filtered.length === 0) continue;
 
-      const grouped = groupAndSortByDate(filtered);
       const movieSection = document.createElement('div');
       movieSection.classList.add('movie-card');
 
+      // Poster
       const posterButton = document.createElement('button');
       posterButton.classList.add('poster-btn');
       posterButton.addEventListener('click', (e) => {
         e.stopPropagation();
         window.location.href = `/views/movie_details/index.html?id=${movie.tmdb_id}`;
       });
+
       const poster = document.createElement('img');
       poster.src = movie.poster_path
         ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
@@ -124,30 +115,37 @@ async function renderMovies(): Promise<void> {
       poster.alt = `${movie.title} poster`;
       poster.classList.add('movie-poster');
       posterButton.appendChild(poster);
-      movieSection.appendChild(posterButton);
+
+      // Info wrapper
+      const infoWrapper = document.createElement('div');
+      infoWrapper.classList.add('movie-info-wrapper');
 
       const title = document.createElement('h2');
+      title.classList.add('movie-title');
       title.textContent = movie.title;
-      movieSection.appendChild(title);
+      infoWrapper.appendChild(title);
 
+      // Overview
+      if (movie.overview) {
+        const overview = document.createElement('p');
+        overview.classList.add('movie-overview');
+        overview.textContent = movie.overview;
+        infoWrapper.appendChild(overview);
+      }
+
+      // Group screenings
+      const grouped = groupAndSortByDate(filtered);
       for (const [, screeningsOnDate] of Object.entries(grouped)) {
-        screeningsOnDate.sort((a, b) => {
-          if (a.room_name === b.room_name) return 0;
-          if (a.room_name === 'Room 1') return -1;
-          if (b.room_name === 'Room 1') return 1;
-          return (a.room_name || '').localeCompare(b.room_name || '');
-        });
-
         const timeContainer = document.createElement('div');
         timeContainer.classList.add('screening-times');
 
-        const screeningList = document.createElement('ul');
-        screeningList.classList.add('screening-time-list-unique');
-        timeContainer.appendChild(screeningList);
-
-        for (const s of screeningsOnDate) {
-          const screeningItem = document.createElement('li');
+        screeningsOnDate.forEach((s) => {
+          const screeningItem = document.createElement('div');
           screeningItem.classList.add('screening-time-item-unique');
+
+          const roomSpan = document.createElement('span');
+          roomSpan.classList.add('screening-room');
+          roomSpan.textContent = s.room_name || '';
 
           const timeButton = document.createElement('button');
           const time = new Date(s.start_time).toLocaleTimeString([], {
@@ -157,7 +155,6 @@ async function renderMovies(): Promise<void> {
           timeButton.textContent = time;
           timeButton.classList.add('screening-time-btn');
 
-          // Disable button if screening is today and already passed
           const isToday = selectedDay === 'today';
           const screeningDate = new Date(s.start_time);
           const now = new Date();
@@ -167,8 +164,7 @@ async function renderMovies(): Promise<void> {
             timeButton.addEventListener('click', (e) => {
               e.stopPropagation();
               const token = getCookie('token');
-              const isLoggedIn = Boolean(token);
-              if (!isLoggedIn) {
+              if (!token) {
                 sessionStorage.setItem(
                   'next',
                   `/views/ticket_reservation/index.html?showing_id=${s.id}`
@@ -180,23 +176,21 @@ async function renderMovies(): Promise<void> {
             });
           }
 
-          const roomSpan = document.createElement('span');
-          roomSpan.classList.add('screening-room');
-          roomSpan.textContent = s.room_name ? s.room_name : '';
-
           screeningItem.appendChild(roomSpan);
           screeningItem.appendChild(timeButton);
-          screeningList.appendChild(screeningItem);
-        }
+          timeContainer.appendChild(screeningItem);
+        });
 
-        movieSection.appendChild(timeContainer);
+        infoWrapper.appendChild(timeContainer);
       }
 
+      movieSection.appendChild(posterButton);
+      movieSection.appendChild(infoWrapper);
       moviesList.appendChild(movieSection);
     }
   } catch {
     moviesList.innerHTML =
-      "<p style='grid-column:1/-1; text-align:center; color:var(--light-grey);'>Failed to load screenings.</p>";
+      "<p style='text-align:center; color:var(--light-grey);'>Failed to load screenings.</p>";
   }
 }
 
@@ -236,13 +230,11 @@ function groupAndSortByDate(screenings: Showing[]): GroupedScreenings {
 async function fetchNowPlaying(): Promise<MovieDetail[]> {
   const res = await fetch(buildApiUrl('/showings/showings/now-playing'));
   if (!res.ok) throw new Error('Failed to fetch now playing movies');
-  const data = await res.json();
-  return data;
+  return res.json();
 }
 
 async function fetchScreenings(movieId: number): Promise<Showing[]> {
   const res = await fetch(buildApiUrl(`/showings/showings?movie_id=${movieId}`));
   if (!res.ok) throw new Error(`Failed to fetch screenings for movie ${movieId}`);
-  const data = await res.json();
-  return data;
+  return res.json();
 }
