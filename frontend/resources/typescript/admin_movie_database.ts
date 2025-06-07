@@ -1,6 +1,8 @@
 import { buildApiUrl } from './config.js';
 import { getCookie, decodeJwtPayload } from './cookies.js';
 
+const FALLBACK_POSTER = '/resources/images/movie_mockup.jpg';
+
 type Movie = {
   id: string;
   title: string;
@@ -48,7 +50,9 @@ document.addEventListener('DOMContentLoaded', () => {
         container.className = 'movie-result';
 
         const img = document.createElement('img');
-        img.src = movie.poster_path ? `https://image.tmdb.org/t/p/w200${movie.poster_path}` : '';
+        img.src = movie.poster_path
+          ? `https://image.tmdb.org/t/p/w200${movie.poster_path}`
+          : FALLBACK_POSTER;
         img.alt = movie.title;
 
         const titleBtnWrapper = document.createElement('div');
@@ -130,7 +134,9 @@ document.addEventListener('DOMContentLoaded', () => {
         container.className = 'movie-result';
 
         const img = document.createElement('img');
-        img.src = movie.poster_path ? `https://image.tmdb.org/t/p/w200${movie.poster_path}` : '';
+        img.src = movie.poster_path
+          ? `https://image.tmdb.org/t/p/w200${movie.poster_path}`
+          : FALLBACK_POSTER;
         img.alt = movie.title;
 
         const titleBtnWrapper = document.createElement('div');

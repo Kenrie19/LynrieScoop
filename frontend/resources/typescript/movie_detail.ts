@@ -1,5 +1,7 @@
 import { buildApiUrl } from './config.js';
 
+const FALLBACK_POSTER = '/resources/images/movie_mockup.jpg';
+
 /**
  * Represents detailed information about a movie.
  * Contains comprehensive data needed for the movie detail page.
@@ -65,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // Render movie details zonder inline styling
       container.innerHTML = `
         <div class="movie-detail-card">
-          <img class="movie-detail-poster" src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title}">
+          <img class="movie-detail-poster" src="${movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : FALLBACK_POSTER}" alt="${movie.title}">
           <div class="movie-detail-info">
             <h1>${movie.title}</h1>
             <p><strong>Release date:</strong> ${movie.release_date || 'N/A'}</p>
