@@ -8,8 +8,9 @@
     <link rel="stylesheet" href="/resources/css/ticket_reservation.css" />
     {% include "env.njk" %}
     <script src="https://unpkg.com/paho-mqtt@1.1.0/paho-mqtt-min.js"></script>
-    <script type="module" src="/resources/javascript/ticket_reservation.js"></script>
-    <script type="module" src="/resources/javascript/main.js"></script>
+    <script defer type="module" src="/resources/javascript/main.js"></script>
+    <script defer type="module" src="/resources/javascript/nav.js"></script>
+    <script defer type="module" src="/resources/javascript/ticket_reservation.js"></script>
   </head>
   <body>
     {% include "navbar.njk" %}

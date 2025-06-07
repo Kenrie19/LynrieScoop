@@ -3,14 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Lynriescoop - Movies</title>
+    <title>Lynriescoop - Now Playing Movies</title>
     <link rel="stylesheet" href="/resources/css/style.css" />
     <link rel="stylesheet" href="/resources/css/now_playing.css" />
     {% include "env.njk" %}
     <script defer type="module" src="/resources/javascript/main.js"></script>
-    <script src="/resources/javascript/now_playing.js" type="module"></script>
+    <script defer type="module" src="/resources/javascript/nav.js"></script>
+    <script defer type="module" src="/resources/javascript/now_playing.js"></script>
   </head>
-
   <body>
     {% include "navbar.njk" %}
 
