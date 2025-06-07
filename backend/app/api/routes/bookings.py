@@ -205,7 +205,7 @@ async def create_booking(
                     <h2>Ticket Confirmation</h2>
                 </div>
 
-                <p>Dear Customer,</p>
+                <p>Dear {current_user.name},</p>
 
                 <p>Thank you for your booking! Here are your ticket details:</p>
 
@@ -248,7 +248,7 @@ async def create_booking(
 
     # Create a proper MIME email
     msg = MIMEMultipart("alternative")
-    msg["Subject"] = f"Booking Confirmation - {booking.booking_number}"
+    msg["Subject"] = f"LynrieScoop - Booking Confirmation - {booking.booking_number}"
     msg["From"] = sender
     msg["To"] = receiver
 
