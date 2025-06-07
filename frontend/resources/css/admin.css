@@ -1,16 +1,4 @@
-:root {
-  --black-base: #121212;
-  --dark-bg: #1e1e1e;
-  --light-grey: #f1f1f1;
-  --aqua-accent: #30d5c8;
-  --error-red: #c62828;
-  --input-bg: #2a2a2a;
-  --btn-hover: #28b6a8;
-  --delete-red: #c62828;
-  --delete-hover: #b71c1c;
-  --success-green: #4caf50;
-}
-
+/* --- Base Body Styles --- */
 body {
   margin: 0;
   font-family: 'Segoe UI', sans-serif;
@@ -18,25 +6,27 @@ body {
   color: var(--light-grey);
 }
 
+/* --- Admin Header --- */
 .admin-header {
   background-color: var(--dark-bg);
-  padding: 1.5rem 0;
+  padding: 1rem 0;
   text-align: center;
   box-shadow: 0 2px 6px rgba(48, 213, 200, 0.15);
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
 }
 
 .admin-header h1 {
   color: var(--aqua-accent);
-  font-size: 1.75rem;
+  font-size: 1.3rem;
   font-weight: bold;
   margin: 0;
 }
 
+/* --- Admin Container --- */
 .admin-container {
-  max-width: 1000px;
-  margin: 2rem auto;
-  padding: 2rem;
+  max-width: 100vw;
+  margin: 1rem auto;
+  padding: 1rem;
   background-color: var(--dark-bg);
   border-radius: 1rem;
   box-shadow: 0 0 20px rgba(48, 213, 200, 0.2);
@@ -93,25 +83,25 @@ button.btn-delete:hover {
   background-color: var(--delete-hover);
 }
 
-/* === Admin Overview Page Buttons === */
+/* --- Admin Overview Page Buttons --- */
 .admin-overview-grid {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
   align-items: center;
-  padding-top: 1rem;
+  padding-top: 0.5rem;
 }
 
 .admin-btn {
   width: 100%;
-  max-width: 500px;
-  padding: 1.25rem 2rem;
+  max-width: 340px;
+  padding: 1rem 1.2rem;
   background-color: var(--input-bg);
   color: var(--light-grey);
   text-decoration: none;
   font-weight: bold;
   border-radius: 0.75rem;
-  font-size: 1.2rem;
+  font-size: 1rem;
   text-align: center;
   transition: all 0.3s ease;
   box-shadow: 0 3px 10px rgba(48, 213, 200, 0.1);
@@ -126,11 +116,43 @@ button.btn-delete:hover {
 }
 
 .admin-description {
-  max-width: 500px;
+  max-width: 340px;
   margin-top: -1rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   font-size: 0.95rem;
   color: #bbb;
   text-align: center;
   line-height: 1.4;
+}
+
+/* --- Responsive Styles --- */
+@media (min-width: 600px) {
+  .admin-header {
+    padding: 1.5rem 0;
+    margin-bottom: 2rem;
+  }
+  .admin-header h1 {
+    font-size: 1.75rem;
+  }
+  .admin-container {
+    max-width: 700px;
+    padding: 2rem;
+  }
+  .admin-overview-grid {
+    gap: 1.5rem;
+  }
+  .admin-btn {
+    max-width: 500px;
+    font-size: 1.2rem;
+    padding: 1.25rem 2rem;
+  }
+  .admin-description {
+    max-width: 500px;
+  }
+}
+
+@media (min-width: 1000px) {
+  .admin-container {
+    max-width: 1000px;
+  }
 }

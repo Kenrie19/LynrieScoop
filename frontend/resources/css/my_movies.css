@@ -1,38 +1,45 @@
+/* --- My Movies: Section Wrappers --- */
 .upcoming-movies,
 .watched-movies {
-  padding: 2rem;
+  padding: 1rem;
 }
 
+/* --- Section Titles --- */
 .upcoming-movies h2,
 .watched-movies h2 {
-  font-size: 2rem;
-  margin-bottom: 1.5rem;
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
   color: var(--aqua-accent);
   border-bottom: 2px solid var(--aqua-accent);
   padding-bottom: 0.5rem;
 }
 
+/* --- Movie Ticket List --- */
 .movie-ticket-list {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.2rem;
 }
 
-/* Spacing tussen kaarten */
 #upcoming-list .movie-ticket,
 #watched-list .movie-ticket {
-  margin-bottom: 2rem;
+  margin-bottom: 1.2rem;
 }
 
-/* Horizontale kaartstijl */
+/* --- Movie Ticket Card --- */
 .movie-ticket {
   display: flex;
+  flex-direction: column;
+  align-items: center;
   background-color: #1e1e1e;
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
   transition: transform 0.3s ease;
-  box-shadow: 0.3s;
+  max-width: 340px;
+  width: 95%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .movie-ticket:hover {
@@ -40,22 +47,26 @@
   box-shadow: 0 0 15px var(--aqua-accent);
 }
 
+/* --- Movie Poster Image --- */
 .movie-ticket img {
-  width: 180px;
-  height: 100%;
+  width: 100%;
+  height: auto;
   object-fit: cover;
 }
 
+/* --- Movie Info Wrapper --- */
 .movie-info {
   flex-grow: 1;
-  padding: 1.5rem;
+  padding: 1rem;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  text-align: center;
   justify-content: space-between;
 }
 
 .movie-info h3 {
-  font-size: 1.6rem;
+  font-size: 1.2rem;
   margin-bottom: 0.5rem;
   color: var(--light-grey);
 }
@@ -70,8 +81,9 @@
   color: var(--aqua-accent);
 }
 
+/* --- Barcode Button --- */
 .barcode-button {
-  align-self: flex-start;
+  align-self: center;
   margin-top: 1rem;
   background-color: var(--red-accent);
   color: white;
@@ -87,28 +99,47 @@
   background-color: #a61b1b;
 }
 
-@media screen and (max-width: 768px) {
+/* --- Responsive Styles --- */
+@media screen and (min-width: 600px) {
+  .upcoming-movies,
+  .watched-movies {
+    padding: 2rem;
+  }
+  .upcoming-movies h2,
+  .watched-movies h2 {
+    font-size: 1.7rem;
+  }
   .movie-ticket {
-    flex-direction: column;
-    align-items: center;
+    max-width: 500px;
   }
-
-  .movie-ticket img {
-    width: 100%;
-    height: auto;
-  }
-
-  .movie-info {
-    align-items: center;
-    text-align: center;
-  }
-
-  .barcode-button {
-    align-self: center;
+  .movie-info h3 {
+    font-size: 1.5rem;
   }
 }
 
-/* QR/Barcode Popup Styling */
+@media screen and (min-width: 768px) {
+  .movie-ticket {
+    flex-direction: row;
+    align-items: stretch;
+    max-width: 700px;
+    width: 100%;
+  }
+  .movie-ticket img {
+    width: 180px;
+    height: 100%;
+    max-width: none;
+  }
+  .movie-info {
+    align-items: flex-start;
+    text-align: left;
+    padding: 1.5rem;
+  }
+  .barcode-button {
+    align-self: flex-start;
+  }
+}
+
+/* --- Barcode/QR Popup Overlay --- */
 .barcode-overlay {
   position: fixed;
   top: 0;
@@ -122,6 +153,7 @@
   z-index: 9999;
 }
 
+/* --- Barcode/QR Popup Box --- */
 .barcode-popup {
   background: #1e1e1e;
   padding: 2rem;
@@ -133,14 +165,14 @@
 }
 
 .barcode-popup h3 {
-  font-size: 1.8rem;
+  font-size: 1.3rem;
   color: var(--aqua-accent);
   margin-bottom: 1rem;
 }
 
 .barcode-popup img {
-  width: 200px;
-  height: 200px;
+  width: 160px;
+  height: 160px;
   margin-bottom: 1.5rem;
   border: 6px solid white;
   border-radius: 8px;

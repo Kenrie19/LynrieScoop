@@ -1,4 +1,4 @@
-/* All Movies Page Styles */
+/* --- All Movies Page Styles: Mobile First --- */
 .all-movies-container {
   width: 100%;
   max-width: 1280px;
@@ -6,6 +6,7 @@
   padding: 2rem 1rem;
 }
 
+/* --- Page Header --- */
 .page-header {
   display: flex;
   flex-direction: column;
@@ -20,7 +21,7 @@
   text-align: center;
 }
 
-/* Search bar styling */
+/* --- Search Bar --- */
 .search-container {
   width: 100%;
   max-width: 600px;
@@ -31,7 +32,7 @@
   width: 100%;
   padding: 0.8rem 1.2rem;
   border: 2px solid var(--aqua-accent);
-  background-color: rgba(30, 30, 30, 0.7);
+  background-color: var(--input-bg);
   color: var(--light-grey);
   border-radius: 30px;
   font-size: 1.1rem;
@@ -44,10 +45,11 @@
 }
 
 #movie-search::placeholder {
-  color: #999;
+  color: var(--light-grey);
+  opacity: 0.7;
 }
 
-/* Filters container - holds both search and select */
+/* --- Filters Container --- */
 .filters-container {
   width: 100%;
   max-width: 600px;
@@ -55,11 +57,6 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
-}
-
-.search-container {
-  width: 100%;
-  margin: 0;
 }
 
 .source-filter-container {
@@ -71,7 +68,7 @@
 #movie-source {
   padding: 0.6rem 1rem;
   border: 2px solid var(--aqua-accent);
-  background-color: rgba(30, 30, 30, 0.7);
+  background-color: var(--input-bg);
   color: var(--light-grey);
   border-radius: 20px;
   font-size: 1rem;
@@ -82,10 +79,7 @@
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
-  background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2330D5C8%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
-  background-repeat: no-repeat;
-  background-position: right 0.7rem top 50%;
-  background-size: 0.65rem auto;
+  background-image: none;
   text-align: center;
   padding-right: 1.5rem;
 }
@@ -95,9 +89,9 @@
   box-shadow: 0 0 8px var(--aqua-accent);
 }
 
-/* Movie card specific styles */
+/* --- Movie Card --- */
 .movie-card {
-  background-color: #1e1e1e;
+  background-color: var(--dark-bg);
   color: var(--light-grey);
   border-radius: 8px;
   overflow: hidden;
@@ -146,7 +140,7 @@
 
 .movie-overview {
   font-size: 0.9rem;
-  color: #bdbdbd;
+  color: var(--light-grey);
   margin: 0 0 0.8rem 0;
   padding: 0 0.8rem;
   text-align: center;
@@ -161,7 +155,7 @@
 .movie-rating {
   text-align: center;
   font-size: 1.2rem;
-  color: gold;
+  color: var(--aqua-accent);
   margin-bottom: 1rem;
 }
 
@@ -169,13 +163,13 @@
   margin: 0 1px;
 }
 
-/* TMDB badge styling */
+/* --- TMDB Badge --- */
 .tmdb-badge {
   position: absolute;
   top: 10px;
   right: 10px;
   background-color: var(--red-accent);
-  color: white;
+  color: var(--light-grey);
   padding: 4px 8px;
   border-radius: 12px;
   font-size: 0.7rem;
@@ -183,7 +177,7 @@
   z-index: 10;
 }
 
-/* Loading indicator */
+/* --- Loading Indicator --- */
 .loading-indicator {
   display: none;
   justify-content: center;
@@ -194,7 +188,7 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  border: 4px solid rgba(48, 213, 200, 0.3);
+  border: 4px solid var(--aqua-accent);
   border-top-color: var(--aqua-accent);
   animation: spin 1s infinite linear;
 }
@@ -213,21 +207,18 @@
   padding: 2rem;
 }
 
-/* Responsive adjustments */
+/* --- Responsive Styles --- */
 @media (max-width: 768px) {
   .page-header h1 {
     font-size: 2rem;
   }
-
   .movies-grid {
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     gap: 1.5rem;
   }
-
   .movie-card h2 {
     font-size: 1.1rem;
   }
-
   .filters-container {
     gap: 0.8rem;
   }

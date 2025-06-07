@@ -1,8 +1,21 @@
+/* --- Root Variables --- */
 :root {
   --red-accent: #c62828;
   --black-base: #121212;
+  --dark-bg: #1e1e1e;
   --aqua-accent: #30d5c8;
-  --light-grey: #e0e0e0;
+  --light-grey: #f1f1f1;
+  --error-red: #c62828;
+  --input-bg: #2a2a2a;
+  --btn-hover: #28b6a8;
+  --delete-red: #c62828;
+  --delete-hover: #b71c1c;
+  --success-green: #4caf50;
+}
+
+html,
+body {
+  height: 100%;
 }
 
 body {
@@ -10,6 +23,9 @@ body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: var(--black-base);
   color: var(--light-grey);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 a {
@@ -22,7 +38,7 @@ a:hover {
   color: var(--aqua-accent);
 }
 
-/* Mobile-first styling */
+/* --- Navbar --- */
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -55,7 +71,7 @@ a:hover {
   right: 0;
   background-color: #1f1f1f;
   padding: 1rem;
-  border-radius: 8px;
+  border-radius: 0.5rem;
   width: max-content;
   z-index: 999;
   list-style: none;
@@ -69,14 +85,10 @@ a:hover {
   font-weight: bold;
 }
 
-/* Desktop view */
+/* --- Responsive Styles --- */
 @media (min-width: 768px) {
   .hamburger {
     display: none;
-  }
-
-  .navbar {
-    flex-direction: row;
   }
 
   .navbar img {
@@ -97,7 +109,7 @@ a:hover {
   }
 }
 
-/* Hero section */
+/* --- Hero --- */
 .hero {
   position: relative;
   width: 100%;
@@ -129,8 +141,6 @@ a:hover {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: var(--light-grey);
-  text-shadow: 0 0 10px black;
   text-align: center;
 }
 
@@ -141,7 +151,7 @@ a:hover {
   }
 }
 
-/* Movies section */
+/* --- Movies Section --- */
 .movies-section {
   width: 100%;
 }
@@ -149,13 +159,10 @@ a:hover {
 .movies-title {
   padding: 2rem 2rem 0 2rem;
   margin: 0;
-  color: var(--light-grey);
   font-size: 2rem;
   font-weight: bold;
-  text-align: left;
 }
 
-/* Movies grid */
 .movies-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -171,8 +178,7 @@ a:hover {
 
 .movie-card {
   background-color: #1e1e1e;
-  color: var(--light-grey);
-  border-radius: 8px;
+  border-radius: 0.5rem;
   overflow: hidden;
   transition:
     transform 0.3s,
@@ -198,24 +204,19 @@ a:hover {
 .movie-overview {
   font-size: 0.95rem;
   color: #bdbdbd;
-  margin: 0 0 0.5rem 0;
   padding: 0 0.5rem;
-  text-align: center;
   min-height: 48px;
+  text-align: center;
 }
 
 .movie-rating {
   text-align: center;
   font-size: 1.2rem;
-  color: gold;
+  color: var(--aqua-accent);
   margin-bottom: 0.5rem;
 }
 
-.movie-rating span {
-  margin: 0 1px;
-}
-
-/* Filter bar */
+/* --- Filter Bar --- */
 .filter-bar {
   display: flex;
   flex-wrap: wrap;
@@ -224,7 +225,7 @@ a:hover {
   justify-content: center;
   background-color: #1f1f1f;
   margin-bottom: 2rem;
-  border-radius: 8px;
+  border-radius: 0.5rem;
 }
 
 .filter-bar button {
@@ -232,7 +233,7 @@ a:hover {
   color: white;
   border: none;
   padding: 0.5rem 1.2rem;
-  border-radius: 20px;
+  border-radius: 1.25rem;
   font-weight: bold;
   cursor: pointer;
   transition: background-color 0.3s;
@@ -249,13 +250,13 @@ a:hover {
   box-shadow: 0 0 10px var(--aqua-accent);
 }
 
-/* Buttons */
+/* --- Buttons --- */
 button {
   background-color: var(--red-accent);
   color: white;
   border: none;
   padding: 0.75rem 1.5rem;
-  border-radius: 4px;
+  border-radius: 0.25rem;
   cursor: pointer;
   font-weight: bold;
   transition: background-color 0.3s;
@@ -265,32 +266,41 @@ button:hover {
   background-color: #a61b1b;
 }
 
+/* --- Site Footer --- */
 .site-footer {
   background-color: #1e1e1e;
   color: var(--light-grey);
-  padding: 0.5rem 1rem;
+  padding: 1rem;
   font-size: 0.8rem;
   border-top: 1px solid #333;
+  margin-top: auto;
+  width: 100%;
 }
 
 .footer-container {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: flex-start;
   max-width: 1200px;
   margin: 0 auto;
+  padding: 1rem;
   text-align: left;
-  flex-wrap: wrap;
 }
 
-.footer-column {
-  flex: 1;
-  min-width: 200px;
-  padding: 0 0.5rem;
+.footer-column:nth-child(3) {
+  flex: 1 1 100%;
+  display: block;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1.5rem;
+  text-align: center;
 }
 
 .footer-logo {
   max-width: 100px;
+  width: 100px;
+  height: auto;
   margin-bottom: 0.2rem;
 }
 
@@ -313,4 +323,38 @@ button:hover {
   margin-top: 0.5rem;
   color: #aaa;
   font-size: 0.7rem;
+}
+
+.footer-bottom p {
+  word-break: break-word;
+  white-space: normal;
+  max-width: 100%;
+}
+
+/* --- Responsive Styles --- */
+@media (max-width: 480px) {
+  .footer-bottom p {
+    font-size: 0.65rem;
+    line-height: 1.2;
+  }
+}
+
+@media (min-width: 768px) {
+  .footer-container {
+    flex-wrap: nowrap;
+    align-items: flex-start;
+  }
+
+  .footer-column {
+    flex: 1;
+    padding: 0 1rem;
+  }
+
+  .footer-column:nth-child(3) {
+    flex: 1;
+    margin-top: 0;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
 }

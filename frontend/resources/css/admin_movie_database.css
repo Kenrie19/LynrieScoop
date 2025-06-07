@@ -1,3 +1,4 @@
+/* --- Admin Movie Database --- */
 .form-section {
   margin-bottom: 2rem;
 }
@@ -42,7 +43,7 @@
 }
 
 .movie-result:hover {
-  background-color: #393939;
+  background-color: var(--btn-hover);
 }
 
 .movie-result img {
@@ -76,8 +77,10 @@
   margin-top: 0.5rem;
   font-size: 0.9rem;
   text-align: center;
+  color: var(--error-red);
 }
 
+/* --- Responsive Styles --- */
 @media (max-width: 600px) {
   .admin-container {
     margin: 1rem;
@@ -86,10 +89,5 @@
 
   .movie-result {
     width: 45%;
-    height: auto;
-  }
-
-  .movie-result img {
-    height: auto;
   }
 }
