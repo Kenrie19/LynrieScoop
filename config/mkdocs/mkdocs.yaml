@@ -48,6 +48,7 @@ nav:
       - API Reference: api-reference.md
       - Authentication System: authentication.md
       - MQTT Integration: mqtt-integration.md
+      - Email Notifications: email-notifications.md
   - Implementation:
       - Frontend Guide: frontend-guide.md
       - Backend Guide: backend-guide.md

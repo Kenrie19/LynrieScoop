@@ -63,4 +63,5 @@ The project is organized into two main directories:
 - [Backend Guide](./backend-guide.md) - Backend services and data models
 - [Authentication](./authentication.md) - Authentication and authorization
 - [MQTT Integration](./mqtt-integration.md) - Real-time messaging system
+- [Email Notifications](./email-notifications.md) - Automated email system
 - [Deployment Guide](./deployment-guide.md) - Deployment instructions

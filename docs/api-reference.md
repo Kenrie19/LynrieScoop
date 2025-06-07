@@ -138,18 +138,18 @@ Deletes a specific showing (requires manager role).
 
 Returns a list of bookings for the current user.
 
-#### POST /bookings/
+#### POST /bookings/create
 
-Creates a new booking.
+Creates a new booking for a specific showing.
 
-**Request Body**:
+**Query Parameters**:
 
-```json
-{
-  "showing_id": "uuid-string",
-  "seat_ids": ["uuid-string", "uuid-string"]
-}
-```
+- `screening_id` (required): UUID of the screening/showing to book
+
+**Notes**:
+- Requires authentication
+- Automatically sends booking confirmation email to the user's registered email address
+- Returns booking details including booking ID and reference number
 
 #### GET /bookings/{booking_id}
 

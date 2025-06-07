@@ -128,6 +128,7 @@ When a booking is confirmed:
 1. The database is updated with the booking details
 2. An MQTT message is published to `booking/confirm/{booking_id}`
 3. The user's UI updates with a confirmation message
+4. A confirmation email is sent to the user's registered email address
 
 ### Showing Updates
 
