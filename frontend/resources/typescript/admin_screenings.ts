@@ -274,10 +274,10 @@ document.addEventListener('DOMContentLoaded', () => {
           const movie = movieMapByUUID.get(screening.movie_id);
           if (movie?.poster_path) {
             img.src = `https://image.tmdb.org/t/p/w92${movie.poster_path}`;
-            img.alt = movie.title;
           } else {
-            img.alt = 'No poster';
+            img.src = '/resources/images/movie_mockup.jpg';
           }
+          img.alt = movie?.title ?? 'No poster';
 
           const rightContainer = document.createElement('div');
           rightContainer.className = 'screening-info';

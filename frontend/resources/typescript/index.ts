@@ -1,5 +1,7 @@
 import { buildApiUrl } from './config.js';
 
+const FALLBACK_POSTER = '/resources/images/movie_mockup.jpg';
+
 /**
  * Represents detailed information about a movie.
  * Contains comprehensive data needed for the movie detail page.
@@ -76,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ? movie.poster_path
             : movie.poster_path
               ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-              : 'path/to/default/poster.jpg'; // Provide a default image path if poster_path is undefined
+              : FALLBACK_POSTER;
         img.alt = movie.title;
 
         const title = document.createElement('h3');
@@ -125,7 +127,7 @@ if (nowPlayingGrid) {
           ? movie.poster_path.startsWith('http')
             ? movie.poster_path
             : `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-          : 'path/to/default/poster.jpg';
+          : FALLBACK_POSTER;
         img.alt = movie.title;
 
         const title = document.createElement('h3');

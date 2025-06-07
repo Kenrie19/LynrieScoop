@@ -1,6 +1,8 @@
 import { getCookie } from './cookies.js';
 import { buildApiUrl } from './config.js';
 
+const FALLBACK_POSTER = '/resources/images/movie_mockup.jpg';
+
 interface Booking {
   id: string;
   movie_title: string;
@@ -42,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const poster = document.createElement('img');
         poster.src = booking.poster_path
           ? `https://image.tmdb.org/t/p/w500${booking.poster_path}`
-          : '/resources/images/placeholder.jpg';
+          : FALLBACK_POSTER;
         poster.alt = booking.movie_title;
         card.appendChild(poster);
 

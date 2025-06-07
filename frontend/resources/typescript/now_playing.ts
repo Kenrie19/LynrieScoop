@@ -37,6 +37,7 @@ type DayOption = { label: string; value: string };
 
 const filterBar = document.getElementById('filter-bar') as HTMLElement;
 const moviesList = document.getElementById('movies-list') as HTMLElement;
+const FALLBACK_POSTER = '/resources/images/movie_mockup.jpg';
 const today = new Date();
 
 const dayOptions: DayOption[] = [
@@ -110,20 +111,20 @@ async function renderMovies(): Promise<void> {
       const movieSection = document.createElement('div');
       movieSection.classList.add('movie-card');
 
-      if (movie.poster_path) {
-        const posterButton = document.createElement('button');
-        posterButton.classList.add('poster-btn');
-        posterButton.addEventListener('click', (e) => {
-          e.stopPropagation();
-          window.location.href = `/views/movie_details/index.html?id=${movie.tmdb_id}`;
-        });
-        const poster = document.createElement('img');
-        poster.src = `https://image.tmdb.org/t/p/w500${movie.poster_path}`;
-        poster.alt = `${movie.title} poster`;
-        poster.classList.add('movie-poster');
-        posterButton.appendChild(poster);
-        movieSection.appendChild(posterButton);
-      }
+      const posterButton = document.createElement('button');
+      posterButton.classList.add('poster-btn');
+      posterButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        window.location.href = `/views/movie_details/index.html?id=${movie.tmdb_id}`;
+      });
+      const poster = document.createElement('img');
+      poster.src = movie.poster_path
+        ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+        : FALLBACK_POSTER;
+      poster.alt = `${movie.title} poster`;
+      poster.classList.add('movie-poster');
+      posterButton.appendChild(poster);
+      movieSection.appendChild(posterButton);
 
       const title = document.createElement('h2');
       title.textContent = movie.title;

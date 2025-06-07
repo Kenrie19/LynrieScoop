@@ -144,14 +144,18 @@ function showAvailableTicketsDiv(count: number) {
 // --- Update the reservation UI with showing details and ticket limits ---
 function updateReservationUI(showing: ShowingTicketInfo): void {
   const posterEl = document.getElementById('movie-poster') as HTMLImageElement | null;
-  if (posterEl && showing.movie_poster) {
-    posterEl.src = showing.movie_poster.startsWith('http')
-      ? showing.movie_poster
-      : `https://image.tmdb.org/t/p/w500${showing.movie_poster}`;
+  const FALLBACK_POSTER = '/resources/images/movie_mockup.jpg';
+
+  if (posterEl) {
+    if (showing.movie_poster) {
+      posterEl.src = showing.movie_poster.startsWith('http')
+        ? showing.movie_poster
+        : `https://image.tmdb.org/t/p/w500${showing.movie_poster}`;
+    } else {
+      posterEl.src = FALLBACK_POSTER;
+    }
     posterEl.alt = showing.movie_title;
     posterEl.style.display = '';
-  } else if (posterEl) {
-    posterEl.style.display = 'none';
   }
 
   const movieTitleEl = document.getElementById('movie-title');
