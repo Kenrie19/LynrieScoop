@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LynrieScoop - Admin Dashboard</title>
+    <link rel="stylesheet" href="/resources/css/style.css" />
+    <link rel="stylesheet" href="/resources/css/admin.css" />
+    <link rel="stylesheet" href="/resources/css/admin_dashboard.css" />
+    {% include "env.njk" %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script defer type="module" src="/resources/javascript/main.js"></script>
+    <script defer type="module" src="/resources/javascript/nav.js"></script>
+    <script defer type="module" src="/resources/javascript/admin_dashboard.js"></script>
+  </head>
+
+  <body>
+    {% include "navbar.njk" %}
+
+    <header class="admin-header">
+      <h1>Dashboard</h1>
+    </header>
+
+    <main class="admin-container">
+      <section id="statsGrid" class="dashboard-grid">
+        <!-- Dynamic content via JS -->
+      </section>
+
+      <div class="chart-header">
+        <h2 class="chart-title">Ticket Sales</h2>
+        <div class="chart-controls">
+          <label for="timeGrouping">Group by:</label>
+          <select id="timeGrouping">
+            <option value="day">Day</option>
+            <option value="week">Week</option>
+            <option value="month">Month</option>
+            <option value="year">Year</option>
+          </select>
+        </div>
+      </div>
+      <div class="chart-container">
+        <canvas id="ticketsChart" width="400" height="200"></canvas>
+      </div>
+      <div id="lastUpdated" class="last-updated"></div>
+
+      <div class="feedback error" id="errorMessage"></div>
+    </main>
+
+    {% include "footer.njk" %}
+  </body>
+</html>

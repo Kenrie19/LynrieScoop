@@ -1,0 +1,195 @@
+/* --- My Movies: Section Wrappers --- */
+.upcoming-movies,
+.watched-movies {
+  padding: 1rem;
+}
+
+/* --- Section Titles --- */
+.upcoming-movies h2,
+.watched-movies h2 {
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  color: var(--aqua-accent);
+  border-bottom: 2px solid var(--aqua-accent);
+  padding-bottom: 0.5rem;
+}
+
+/* --- Movie Ticket List --- */
+.movie-ticket-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+#upcoming-list .movie-ticket,
+#watched-list .movie-ticket {
+  margin-bottom: 1.2rem;
+}
+
+/* --- Movie Ticket Card --- */
+.movie-ticket {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #1e1e1e;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  transition: transform 0.3s ease;
+  max-width: 340px;
+  width: 95%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.movie-ticket:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0 15px var(--aqua-accent);
+}
+
+/* --- Movie Poster Image --- */
+.movie-ticket img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+/* --- Movie Info Wrapper --- */
+.movie-info {
+  flex-grow: 1;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  justify-content: space-between;
+}
+
+.movie-info h3 {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  color: var(--light-grey);
+}
+
+.movie-info p {
+  margin: 0.3rem 0;
+  color: var(--light-grey);
+  font-size: 1rem;
+}
+
+.movie-info p strong {
+  color: var(--aqua-accent);
+}
+
+/* --- Barcode Button --- */
+.barcode-button {
+  align-self: center;
+  margin-top: 1rem;
+  background-color: var(--red-accent);
+  color: white;
+  border: none;
+  padding: 0.6rem 1.4rem;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.barcode-button:hover {
+  background-color: #a61b1b;
+}
+
+/* --- Responsive Styles --- */
+@media screen and (min-width: 600px) {
+  .upcoming-movies,
+  .watched-movies {
+    padding: 2rem;
+  }
+  .upcoming-movies h2,
+  .watched-movies h2 {
+    font-size: 1.7rem;
+  }
+  .movie-ticket {
+    max-width: 500px;
+  }
+  .movie-info h3 {
+    font-size: 1.5rem;
+  }
+}
+
+@media screen and (min-width: 768px) {
+  .movie-ticket {
+    flex-direction: row;
+    align-items: stretch;
+    max-width: 700px;
+    width: 100%;
+  }
+  .movie-ticket img {
+    width: 180px;
+    height: 100%;
+    max-width: none;
+  }
+  .movie-info {
+    align-items: flex-start;
+    text-align: left;
+    padding: 1.5rem;
+  }
+  .barcode-button {
+    align-self: flex-start;
+  }
+}
+
+/* --- Barcode/QR Popup Overlay --- */
+.barcode-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+/* --- Barcode/QR Popup Box --- */
+.barcode-popup {
+  background: #1e1e1e;
+  padding: 2rem;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
+  max-width: 320px;
+  width: 90%;
+}
+
+.barcode-popup h3 {
+  font-size: 1.3rem;
+  color: var(--aqua-accent);
+  margin-bottom: 1rem;
+}
+
+.barcode-popup img {
+  width: 160px;
+  height: 160px;
+  margin-bottom: 1.5rem;
+  border: 6px solid white;
+  border-radius: 8px;
+}
+
+.barcode-popup button {
+  width: 100%;
+  padding: 0.75rem;
+  font-weight: bold;
+  background-color: var(--red-accent);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.barcode-popup button:hover {
+  background-color: #a61b1b;
+}

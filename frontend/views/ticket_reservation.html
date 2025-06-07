@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lynriescoop - Reserve Ticket</title>
+    <link rel="stylesheet" href="/resources/css/style.css" />
+    <link rel="stylesheet" href="/resources/css/ticket_reservation.css" />
+    {% include "env.njk" %}
+    <script src="https://unpkg.com/paho-mqtt@1.1.0/paho-mqtt-min.js"></script>
+    <script defer type="module" src="/resources/javascript/main.js"></script>
+    <script defer type="module" src="/resources/javascript/nav.js"></script>
+    <script defer type="module" src="/resources/javascript/ticket_reservation.js"></script>
+  </head>
+  <body>
+    {% include "navbar.njk" %}
+    <main class="main-content">
+      <div class="reservation-container">
+        <h1 class="page-title">Reserve Ticket</h1>
+        <div class="movie-info">
+          <img id="movie-poster" src="" alt="Poster" class="movie-poster" style="display: none" />
+          <h2 id="movie-title" class="movie-title">...</h2>
+        </div>
+        <div class="reservation-info">
+          <div><strong>Room:</strong> <span id="cinema-name">...</span></div>
+          <div><strong>Date:</strong> <span id="showing-date">...</span></div>
+          <div><strong>Start Time:</strong> <span id="showing-time">...</span></div>
+          <div><strong>Price:</strong> <span id="showing-price">...</span></div>
+        </div>
+        <form id="reservation-form">
+          <label for="num-tickets">Number of tickets:</label>
+          <input
+            type="number"
+            id="num-tickets"
+            name="num-tickets"
+            min="1"
+            max="10"
+            value="1"
+            required
+          />
+          <button type="submit" class="btn-primary">Reserve</button>
+        </form>
+        <div id="reservation-message"></div>
+      </div>
+    </main>
+    {% include "footer.njk" %}
+  </body>
+</html>

@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LynrieScoop - Admin Bookings</title>
+    <link rel="stylesheet" href="/resources/css/style.css" />
+    <link rel="stylesheet" href="/resources/css/admin.css" />
+    <link rel="stylesheet" href="/resources/css/admin_bookings.css" />
+    {% include "env.njk" %}
+    <script type="module" defer src="/resources/javascript/main.js"></script>
+    <script type="module" defer src="/resources/javascript/nav.js"></script>
+    <script type="module" defer src="/resources/javascript/admin_bookings.js"></script>
+  </head>
+  <body>
+    {% include "navbar.njk" %}
+
+    <header class="admin-header">
+      <h1>Manage Bookings</h1>
+    </header>
+
+    <main class="admin-container">
+      <section>
+        <h2>Overview of All Bookings</h2>
+        <div class="booking-table-section">
+          <table class="bookings-table" id="bookingsTable">
+            <thead>
+              <tr>
+                <th>Booking #</th>
+                <th>User</th>
+                <th>Movie</th>
+                <th>Room</th>
+                <th>Showing Time</th>
+                <th>Status</th>
+                <th>Total Price</th>
+                <th>Booked At</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <!-- Data injected by TypeScript -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+    {% include "footer.njk" %}
+  </body>
+</html>

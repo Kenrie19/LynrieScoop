@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lynriescoop - Login</title>
+    <link rel="stylesheet" href="/resources/css/style.css" />
+    <link rel="stylesheet" href="/resources/css/login.css" />
+    {% include "env.njk" %}
+    <script defer type="module" src="/resources/javascript/main.js"></script>
+    <script defer type="module" src="/resources/javascript/nav.js"></script>
+    <script defer type="module" src="/resources/javascript/auth.js"></script>
+  </head>
+  <body>
+    {% include "navbar.njk" %}
+
+    <section class="login-container">
+      <form id="loginForm" class="login-box">
+        <h2>Login</h2>
+        <div class="input-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" placeholder="you@example.com" required />
+        </div>
+        <div class="input-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="Your password" required />
+        </div>
+        <button type="submit">Login</button>
+        <p id="error" class="error-message" style="display: none"></p>
+        <div class="register-link">
+          <p>No account yet? <a id="register-link" href="#">Register here</a></p>
+        </div>
+      </form>
+    </section>
+    {% include "footer.njk" %}
+  </body>
+</html>

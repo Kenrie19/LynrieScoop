@@ -1,0 +1,156 @@
+/* --- Movies Grid --- */
+.movies-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  align-items: center;
+}
+
+/* --- Movie Card --- */
+.movie-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #1f1f1f;
+  border-radius: 16px;
+  padding: 0.5rem;
+  width: 100%;
+  box-shadow: 0 0 15px rgba(0, 255, 234, 0.08);
+  gap: 1.5rem;
+  max-width: 100%;
+  overflow: hidden;
+  text-align: center;
+}
+
+/* --- Poster Button --- */
+.poster-btn {
+  padding: 0;
+  border: none;
+  background: none !important;
+  display: block;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+/* --- Movie Poster --- */
+.movie-poster {
+  width: 100%;
+  max-width: 300px;
+  height: auto;
+  object-fit: cover;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 255, 234, 0.1);
+  display: block;
+}
+
+/* --- Info Wrapper --- */
+.movie-info-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+/* --- Movie Title --- */
+.movie-title {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--light-grey);
+  margin-bottom: 1rem;
+}
+
+/* --- Screening Times --- */
+.screening-times {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: 0.95rem;
+  margin-top: 0.5rem;
+}
+
+.screening-time-item-unique {
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+}
+
+.screening-room {
+  font-weight: 500;
+  color: var(--light-grey);
+}
+
+.screening-time-btn {
+  background-color: var(--red-accent);
+  color: white;
+  border: none;
+  padding: 0.3em 0.9em;
+  border-radius: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s;
+}
+
+.screening-time-btn:disabled {
+  background-color: #555;
+  cursor: not-allowed;
+}
+
+/* --- Responsive Styles --- */
+@media (min-width: 600px) {
+  .movie-card {
+    max-width: 600px;
+    padding: 1rem;
+  }
+  .movie-poster {
+    max-width: 220px;
+  }
+  .movie-title {
+    font-size: 1.5rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .movies-grid {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2rem 2.5rem;
+  }
+  .movie-card {
+    flex-direction: row;
+    text-align: left;
+    max-width: 900px;
+    padding: 1.5rem;
+  }
+  .movie-poster {
+    width: 180px;
+    height: 270px;
+    max-width: none;
+  }
+  .movie-info-wrapper {
+    align-items: flex-start;
+    margin-top: 0;
+  }
+  .movie-title {
+    font-size: 1.8rem;
+    text-align: center;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .screening-times {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    font-size: 1rem;
+    gap: 0.75rem 2rem;
+    width: 100%;
+  }
+  .screening-time-btn {
+    font-size: 0.95rem;
+    padding: 0.35em 1em;
+  }
+}

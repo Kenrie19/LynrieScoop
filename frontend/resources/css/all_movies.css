@@ -1,0 +1,225 @@
+/* --- All Movies Page Styles: Mobile First --- */
+.all-movies-container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+/* --- Page Header --- */
+.page-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.page-header h1 {
+  color: var(--aqua-accent);
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+/* --- Search Bar --- */
+.search-container {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+#movie-search {
+  width: 100%;
+  padding: 0.8rem 1.2rem;
+  border: 2px solid var(--aqua-accent);
+  background-color: var(--input-bg);
+  color: var(--light-grey);
+  border-radius: 30px;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+}
+
+#movie-search:focus {
+  outline: none;
+  box-shadow: 0 0 8px var(--aqua-accent);
+}
+
+#movie-search::placeholder {
+  color: var(--light-grey);
+  opacity: 0.7;
+}
+
+/* --- Filters Container --- */
+.filters-container {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.source-filter-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+#movie-source {
+  padding: 0.6rem 1rem;
+  border: 2px solid var(--aqua-accent);
+  background-color: var(--input-bg);
+  color: var(--light-grey);
+  border-radius: 20px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  width: 100%;
+  max-width: 250px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: none;
+  text-align: center;
+  padding-right: 1.5rem;
+}
+
+#movie-source:focus {
+  outline: none;
+  box-shadow: 0 0 8px var(--aqua-accent);
+}
+
+/* --- Movie Card --- */
+.movie-card {
+  background-color: var(--dark-bg);
+  color: var(--light-grey);
+  border-radius: 8px;
+  overflow: hidden;
+  transition:
+    transform 0.3s,
+    box-shadow 0.3s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  position: relative;
+}
+
+.movie-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0 15px var(--aqua-accent);
+}
+
+.poster-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: block;
+  width: 100%;
+}
+
+.movie-poster {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.movie-card h2 {
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin: 0.8rem 0;
+  text-align: center;
+  color: var(--light-grey);
+  padding: 0 0.5rem;
+  min-height: 2.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.movie-overview {
+  font-size: 0.9rem;
+  color: var(--light-grey);
+  margin: 0 0 0.8rem 0;
+  padding: 0 0.8rem;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+.movie-rating {
+  text-align: center;
+  font-size: 1.2rem;
+  color: var(--aqua-accent);
+  margin-bottom: 1rem;
+}
+
+.movie-rating span {
+  margin: 0 1px;
+}
+
+/* --- TMDB Badge --- */
+.tmdb-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: var(--red-accent);
+  color: var(--light-grey);
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: bold;
+  z-index: 10;
+}
+
+/* --- Loading Indicator --- */
+.loading-indicator {
+  display: none;
+  justify-content: center;
+  margin: 2rem 0;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 4px solid var(--aqua-accent);
+  border-top-color: var(--aqua-accent);
+  animation: spin 1s infinite linear;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.no-results {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: var(--light-grey);
+  font-size: 1.2rem;
+  padding: 2rem;
+}
+
+/* --- Responsive Styles --- */
+@media (max-width: 768px) {
+  .page-header h1 {
+    font-size: 2rem;
+  }
+  .movies-grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1.5rem;
+  }
+  .movie-card h2 {
+    font-size: 1.1rem;
+  }
+  .filters-container {
+    gap: 0.8rem;
+  }
+}

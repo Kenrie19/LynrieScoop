@@ -1,0 +1,41 @@
+{
+  "scripts": {
+    "prepare": "husky",
+    "backend:black": "cd backend && python -m black .",
+    "backend:black:check": "cd backend && python -m black --check .",
+    "backend:flake8": "cd backend && python -m flake8",
+    "backend:isort": "cd backend && python -m isort .",
+    "backend:isort:check": "cd backend && python -m isort --check .",
+    "backend:mypy": "cd backend && python -m mypy .",
+    "format:backend": "npm run backend:black",
+    "format:frontend": "cd frontend && npm run format",
+    "format": "npm run format:backend && npm run format:frontend",
+    "lint:backend": "npm run backend:flake8 && npm run backend:isort:check",
+    "lint:frontend": "cd frontend && npm run lint",
+    "lint": "npm run lint:backend && npm run lint:frontend",
+    "type:frontend": "cd frontend && npm run type-check",
+    "type:backend": "npm run backend:mypy",
+    "type-check": "npm run type:backend && npm run type:frontend",
+    "check:frontend": "cd frontend && npm run lint && npm run format:check && npm run type-check",
+    "check:backend": "npm run backend:black:check && npm run backend:flake8 && npm run backend:isort:check && npm run backend:mypy",
+    "check": "npm run check:frontend && npm run check:backend",
+    "fix:frontend": "cd frontend && npm run format && npm run lint:fix",
+    "fix:backend": "npm run backend:black && npm run backend:isort",
+    "fix": "npm run fix:frontend && npm run fix:backend"
+  },
+  "lint-staged": {
+    "{frontend,Frontend}/**/*.{js,ts,jsx,tsx,json,css,html}": "prettier --write",
+    "{backend,Backend}/**/*.py": "python -m black"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^16.0.0",
+    "prettier": "^3.5.3",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "chart.js": "^4.4.9",
+    "dotenv": "^16.5.0",
+    "mqtt": "^5.13.1"
+  }
+}

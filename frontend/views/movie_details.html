@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lynriescoop - Movie Details</title>
+    <link rel="stylesheet" href="/resources/css/style.css" />
+    <link rel="stylesheet" href="/resources/css/movie_detail.css" />
+    {% include "env.njk" %}
+    <script defer type="module" src="/resources/javascript/main.js"></script>
+    <script defer type="module" src="/resources/javascript/nav.js"></script>
+    <script defer type="module" src="/resources/javascript/movie_detail.js"></script>
+  </head>
+  <body>
+    {% include "navbar.njk" %}
+
+    <div id="movieDetailContainer" class="movie-detail-container">
+      <!-- Movie details will be rendered here by movie_detail.ts -->
+    </div>
+    {% include "footer.njk" %}
+  </body>
+</html>

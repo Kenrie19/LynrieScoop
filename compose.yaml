@@ -1,0 +1,111 @@
+services:
+  database:
+    container_name: postgresDB
+    image: postgres:17.4
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: cinema
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  adminer:
+    container_name: adminer
+    image: adminer:latest
+    restart: unless-stopped
+    ports:
+      - "8083:8080"
+    environment:
+      - ADMINER_DEFAULT_SERVER=database
+      - ADMINER_DEFAULT_DRIVER=pgsql
+    depends_on:
+      - database
+
+  mqtt-broker:
+    container_name: mqtt-broker
+    image: eclipse-mosquitto:2.0
+    restart: unless-stopped
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+  jsdoc:
+    container_name: frontend-docs
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.docs
+    ports:
+      - "8081:80"
+    restart: unless-stopped
+
+  backend-docs:
+    container_name: backend-docs
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.docs
+    ports:
+      - "8082:80"
+    restart: unless-stopped
+
+  docs:
+    container_name: docs
+    build:
+      context: .
+      dockerfile: config/mkdocs/Dockerfile
+    restart: unless-stopped
+    volumes:
+      - ./config/mkdocs:/config/mkdocs:ro
+    user: "${UID:-1000}:${GID:-1000}"
+    ports:
+      - "8080:8000"
+    environment:
+      - ENABLE_LIVE_RELOAD=true
+
+  backend:
+    container_name: backend-api
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: "postgresql://postgres:postgres@database:5432/cinema"
+      MQTT_BROKER: "mqtt-broker"
+      MQTT_PORT: 1883
+      SMTP_HOST: ${SMTP_HOST:-sandbox.smtp.mailtrap.io}
+      SMTP_PORT: ${SMTP_PORT:-2525}
+      EMAILS_FROM_EMAIL: noreply@lynriescoop.com
+      EMAILS_FROM_NAME: LynrieScoop Cinema
+    depends_on:
+      database:
+        condition: service_healthy
+      mqtt-broker:
+        condition: service_started
+
+  frontend:
+    container_name: frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    env_file:
+      - ./frontend/.env
+    environment:
+      - API_BASE_URL=API_BASE_URL
+    depends_on:
+      - backend
+
+volumes:
+  db_data:

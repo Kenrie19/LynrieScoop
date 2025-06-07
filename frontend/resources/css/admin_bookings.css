@@ -1,0 +1,67 @@
+/* --- Booking Table Section --- */
+.booking-table-section {
+  overflow-x: auto;
+  border-radius: 12px;
+  box-shadow: 0 0 20px var(--aqua-accent);
+}
+
+.bookings-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: var(--dark-bg);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.bookings-table thead {
+  background-color: var(--black-base);
+}
+
+.bookings-table th {
+  padding: 1rem;
+  text-align: left;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--aqua-accent);
+  border-bottom: 1px solid var(--input-bg);
+}
+
+.bookings-table td {
+  padding: 1rem;
+  font-size: 0.95rem;
+  color: var(--light-grey);
+  border-bottom: 1px solid var(--input-bg);
+}
+
+.bookings-table tbody tr:nth-child(odd) {
+  background-color: var(--input-bg);
+}
+
+.bookings-table tbody tr:nth-child(even) {
+  background-color: var(--dark-bg);
+}
+
+.bookings-table tr:hover {
+  background-color: var(--btn-hover);
+  transition: background-color 0.3s ease;
+}
+
+.bookings-table small {
+  font-size: 0.85rem;
+  color: var(--light-grey);
+  display: block;
+}
+
+/* --- Responsive Styles --- */
+@media (max-width: 600px) {
+  .bookings-table th,
+  .bookings-table td {
+    padding: 0.75rem;
+    font-size: 0.85rem;
+  }
+
+  .admin-container {
+    margin: 1rem;
+    padding: 1rem;
+  }
+}
