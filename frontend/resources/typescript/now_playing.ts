@@ -169,8 +169,11 @@ async function renderMovies(): Promise<void> {
               const token = getCookie('token');
               const isLoggedIn = Boolean(token);
               if (!isLoggedIn) {
-                alert('You have to be logged in to reserve tickets.');
-                window.location.href = '/views/login/index.html';
+                sessionStorage.setItem(
+                  'next',
+                  `/views/ticket_reservation/index.html?showing_id=${s.id}`
+                );
+                window.location.href = `/views/login/index.html`;
                 return;
               }
               window.location.href = `/views/ticket_reservation/index.html?showing_id=${s.id}`;
