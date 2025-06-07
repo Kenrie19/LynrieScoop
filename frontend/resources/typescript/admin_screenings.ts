@@ -252,26 +252,22 @@ document.addEventListener('DOMContentLoaded', () => {
       // Group by date (ISO yyyy-mm-dd for sorting)
       const grouped: Record<string, Screening[]> = {};
       upcomingShowings.forEach((s) => {
-        const date = s.start_time.split('T')[0]; // '2025-06-07'
-        if (!grouped[date]) grouped[date] = [];
-        grouped[date].push(s);
+        const data = s.start_time.split('T')[0]; // Get date part only
+        if (!grouped[data]) grouped[data] = [];
+        grouped[data].push(s);
       });
 
-      // Sorteer datums oplopend
       const sortedDates = Object.keys(grouped).sort();
-      for (const date of sortedDates) {
-        // Container voor deze dag
+      for (const data of sortedDates) {
         const dayContainer = document.createElement('div');
         dayContainer.className = 'screening-day-group';
-
-        // Datum als kop
-        const dateObj = new Date(date);
+        const dateObj = new Date(data);
         const dayTitle = document.createElement('h3');
         dayTitle.textContent = dateObj.toLocaleDateString('en-GB', {
           weekday: 'long',
-          day: 'numeric',
-          month: 'long',
           year: 'numeric',
+          month: 'long',
+          day: 'numeric',
         });
         dayContainer.appendChild(dayTitle);
 
@@ -280,7 +276,7 @@ document.addEventListener('DOMContentLoaded', () => {
         cardsContainer.className = 'screening-day-group-cards';
 
         // Voeg alle screenings voor deze dag toe
-        for (const screening of grouped[date]) {
+        for (const screening of grouped[data]) {
           const card = document.createElement('div');
           card.className = 'screening-card';
 
@@ -516,14 +512,12 @@ document.addEventListener('DOMContentLoaded', () => {
         screeningsList.appendChild(dayContainer);
       }
     } catch {
-      feedback.textContent = 'Failed to load screenings.';
+      feedback.textContent = 'Error loading screenings.';
     }
   }
-
   function redirectToLogin() {
-    window.location.href = '/views/login';
+    window.location.href = 'views/login.html';
   }
-
   loadMovies();
   loadRooms();
   loadScreenings();
