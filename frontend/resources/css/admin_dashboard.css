@@ -5,6 +5,31 @@
   margin-top: 2rem;
 }
 
+#ticketsChart {
+  margin-top: 3rem;
+  background-color: #1b1b1b;
+  padding: 1rem;
+  border-radius: 1rem;
+}
+
+.chart-controls {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  color: var(--light-grey);
+  font-size: 0.9rem;
+}
+
+.chart-controls select {
+  background-color: #2a2a2a;
+  color: var(--light-grey);
+  border: 1px solid var(--aqua-accent);
+  border-radius: 4px;
+  padding: 0.4rem;
+}
+
 @media (max-width: 700px) {
   .dashboard-grid {
     grid-template-columns: 1fr;
@@ -51,4 +76,11 @@
   font-size: 0.9rem;
   color: #888;
   font-style: italic;
+}
+
+.chart-title {
+  text-align: center;
+  font-size: 1.4rem;
+  color: var(--aqua-accent);
+  margin: 6rem 0 1.5rem 0; /* top, right, bottom, left */
 }
