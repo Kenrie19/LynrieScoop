@@ -11,7 +11,7 @@ RUN npm install
 COPY . .
 
 # Build the site with 11ty
-RUN npx @11ty/eleventy
+RUN npm run build
 
 # Production stage with Nginx
 FROM nginx:stable-alpine
