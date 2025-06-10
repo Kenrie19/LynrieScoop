@@ -32,6 +32,9 @@ from app.models.seat_reservation import SeatReservation
 from app.models.showing import Showing
 from app.models.user import User
 
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
+
 router = APIRouter(prefix="/bookings", tags=["bookings"])
 
 
@@ -232,7 +235,7 @@ async def create_booking(
         </html>"""
     )
 
-    sender = f"{settings.EMAILS_FROM_NAME} <{settings.EMAILS_FROM_EMAIL}>"
+    sender = f"{settings.EMAILS_FROM_NAME} <simon.stijnen@student.vives.be>"
     receiver = f"{current_user.name} <{current_user.email}>"
 
     if (
@@ -256,16 +259,31 @@ async def create_booking(
     html_part = MIMEText(message_html, "html")
     msg.attach(html_part)
 
+    message = Mail(
+        from_email="simon.stijnen@student.vives.be",
+        to_emails=current_user.email,
+        subject=f"LynrieScoop - Booking Confirmation - {booking.booking_number}",
+        html_content=message_html,
+    )
     try:
-        with smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT) as server:
-            server.starttls()
-            server.login(settings.SMTP_USER, settings.SMTP_PASSWORD)
-            server.sendmail(sender, receiver, msg.as_string())
-            print(f"Email sent successfully to {receiver}")
-    except Exception as e:
-        print(f"Failed to send email: {str(e)}")
-        # Don't raise exception here so booking can still be completed
-        # But log the error for monitoring
+        sg = SendGridAPIClient(settings.SMTP_PASSWORD)
+        response = sg.send(message)
+    except:
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to send confirmation email. Please try again later.",
+        )
+
+    # try:
+    #     with smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT) as server:
+    #         server.starttls()
+    #         server.login(settings.SMTP_USER, settings.SMTP_PASSWORD)
+    #         server.sendmail("simon.stijnen@student.vives.be", receiver, msg.as_string())
+    #         print(f"Email sent successfully to {receiver}")
+    # except Exception as e:
+    #     print(f"Failed to send email: {str(e)}")
+    #     # Don't raise exception here so booking can still be completed
+    #     # But log the error for monitoring
 
     return {
         "booking_id": str(booking_id),

@@ -104,6 +104,6 @@ settings = Settings(
     SMTP_PORT=int(os.getenv("SMTP_PORT", "587")),
     SMTP_USER=os.getenv("SMTP_USER"),
     SMTP_PASSWORD=os.getenv("SMTP_PASSWORD"),
-    EMAILS_FROM_EMAIL=os.getenv("EMAILS_FROM_EMAIL", "noreply@lynriescoop.com"),
-    EMAILS_FROM_NAME=os.getenv("EMAILS_FROM_NAME", "LynrieScoop Cinema"),
+    EMAILS_FROM_EMAIL=os.getenv("EMAILS_FROM_EMAIL", "simon.stijnen@student.vives.be"),
+    EMAILS_FROM_NAME=os.getenv("EMAILS_FROM_NAME", "LynrieScoop"),
 )

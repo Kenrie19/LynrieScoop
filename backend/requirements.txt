@@ -19,6 +19,7 @@ types-requests
 redis
 rq
 emails
+sendgrid
 
 # Linting and Formatting
 black==24.3.0
