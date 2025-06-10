@@ -19,6 +19,8 @@ types-requests
 redis
 rq
 emails
+websockets
+
 
 # Linting and Formatting
 black==24.3.0

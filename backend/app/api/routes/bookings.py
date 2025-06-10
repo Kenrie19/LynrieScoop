@@ -22,7 +22,7 @@ from sqlalchemy.future import select
 from sqlalchemy.orm import joinedload
 
 from app.core.config import settings
-from app.core.mqtt_client import get_mqtt_client
+from app.core.websocket_manager import broadcast_json
 from app.core.security import get_current_user
 from app.db.session import get_db
 from app.models.booking import Booking
@@ -173,17 +173,13 @@ async def create_booking(
 
     await db.commit()
 
-    mqtt_client = get_mqtt_client()
     remaining = screening.room.capacity - (bookings_count + 1)  # +1 want net geboekt
-    mqtt_client.publish(
-        f"screenings/{screening_id}/update",
-        json.dumps(
-            {
-                "screening_id": str(screening_id),
-                "available_tickets": remaining,
-                "total_capacity": screening.room.capacity,
-            }
-        ),
+    await broadcast_json(
+        {
+            "screening_id": str(screening_id),
+            "available_tickets": remaining,
+            "total_capacity": screening.room.capacity,
+        }
     )
 
     message_html = (

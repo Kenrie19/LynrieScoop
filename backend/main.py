@@ -14,8 +14,10 @@ from app.api.routes import (
     users_router,
 )
 from app.core.config import settings
-from app.core.mqtt_client import setup_mqtt_for_app
 from app.db.init_db import init_db
+
+from app.api.routes.websocket_route import router as websocket_router
+
 
 app = FastAPI(
     title="Cinema API",
@@ -38,9 +40,6 @@ if settings.ENVIRONMENT != "development":
         allowed_hosts=settings.ALLOWED_HOSTS,
     )
 
-# Set up MQTT client
-setup_mqtt_for_app(app)
-
 
 # Add startup event to initialize database
 @app.on_event("startup")
@@ -49,6 +48,7 @@ async def startup_db_client() -> None:
 
 
 # Include API routers
+app.include_router(websocket_router)
 app.include_router(auth_router, prefix="/auth", tags=["auth"])
 app.include_router(movies_router, prefix="/movies", tags=["movies"])
 app.include_router(showings_router, prefix="/showings", tags=["showings"])

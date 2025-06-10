@@ -63,47 +63,18 @@ async function fetchShowingInfo(id: string): Promise<ShowingTicketInfo> {
 // MQTT setup for real-time updates
 // This function sets up the MQTT client to listen for updates on ticket availability
 // It uses the global Paho client from the window object, which is expected to be loaded from a CDN.
-function setupMqttRealtime(showingId: string) {
-  // Use the global Paho client from the window object
-  type PahoClientType = {
-    onConnectionLost: (() => void) | null;
-    onMessageArrived: ((msg: { destinationName: string; payloadString: string }) => void) | null;
-    connect: (options: { onSuccess: () => void; useSSL: boolean }) => void;
-    subscribe: (topic: string) => void;
-  };
-  // Paho from CDN has the Client property directly
-  const PahoNS = window.Paho as {
-    Client: new (host: string, port: number, path: string, clientId: string) => PahoClientType;
-  };
-  if (!PahoNS || !PahoNS.Client) {
-    console.warn('MQTT client not loaded.');
-    return;
-  }
-  const host = 'localhost';
-  const port = 9001;
-  const path = '/';
-  const clientId = 'web-' + Math.random();
-  const client = new PahoNS.Client(host, port, path, clientId);
-  client.onConnectionLost = () => {
-    const ticketInput = document.getElementById('num-tickets') as HTMLInputElement | null;
-    if (ticketInput) ticketInput.disabled = true;
-    const msg = document.getElementById('reservation-message');
-    if (msg) msg.textContent = 'Connection to server lost.';
-  };
-  client.onMessageArrived = (msg: { destinationName: string; payloadString: string }) => {
-    if (msg.destinationName === `screenings/${showingId}/update`) {
-      const payload = JSON.parse(msg.payloadString);
+function setupWebSocketRealtime(showingId: string) {
+  const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+  const socket = new WebSocket(`${protocol}://${window.location.host}/ws/seats`);
+
+  socket.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+    if (data.screening_id === showingId) {
       const ticketInput = document.getElementById('num-tickets') as HTMLInputElement | null;
-      if (ticketInput) ticketInput.max = payload.available_tickets.toString();
-      showAvailableTicketsDiv(payload.available_tickets); // update all UI aspects
+      if (ticketInput) ticketInput.max = data.available_tickets.toString();
+      showAvailableTicketsDiv(data.available_tickets);
     }
   };
-  client.connect({
-    onSuccess: () => {
-      client.subscribe(`screenings/${showingId}/update`);
-    },
-    useSSL: false,
-  });
 }
 
 // --- Show or update the available tickets div above the reservation form ---
@@ -177,7 +148,7 @@ function updateReservationUI(showing: ShowingTicketInfo): void {
   const ticketInput = document.getElementById('num-tickets') as HTMLInputElement | null;
   if (ticketInput) ticketInput.max = Math.min(10, showing.available_tickets).toString();
   showAvailableTicketsDiv(showing.available_tickets);
-  setupMqttRealtime(showing.showing_id);
+  setupWebSocketRealtime(showing.showing_id);
 }
 
 function formatDate(dateTime: string): string {
