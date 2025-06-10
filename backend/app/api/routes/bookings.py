@@ -22,7 +22,7 @@ from sqlalchemy.future import select
 from sqlalchemy.orm import joinedload
 
 from app.core.config import settings
-from app.core.mqtt_client import get_mqtt_client
+from app.core.websocket_manager import get_websocket_manager
 from app.core.security import get_current_user
 from app.db.session import get_db
 from app.models.booking import Booking
@@ -176,28 +176,27 @@ async def create_booking(
 
     await db.commit()
 
-    mqtt_client = get_mqtt_client()
+    websocket_manager = get_websocket_manager()
     remaining = screening.room.capacity - (bookings_count + 1)  # +1 want net geboekt
-    mqtt_client.publish(
+    await websocket_manager.broadcast(
         f"screenings/{screening_id}/update",
-        json.dumps(
-            {
-                "screening_id": str(screening_id),
-                "available_tickets": remaining,
-                "total_capacity": screening.room.capacity,
-            }
-        ),
+        {
+            "screening_id": str(screening_id),
+            "available_tickets": remaining,
+            "total_capacity": screening.room.capacity,
+        },
     )
 
     message_html = (
         """<html>
         <head>
-            <style>
-                body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            <style>                body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
                 .container { max-width: 600px; margin: 0 auto; padding: 20px; }
                 .header { background-color: #222; color: white; padding: 10px; text-align: center; }
                 .ticket { border: 1px solid #ddd; padding: 15px; margin-top: 20px; }
                 .footer { font-size: 12px; text-align: center; margin-top: 30px; color: #777; }
+                .qr-code { text-align: center; margin: 20px 0; padding: 15px; background-color: #f9f9f9; }
+                .qr-code img { width: 180px; height: 180px; border: 1px solid #ddd; padding: 5px; background-color: white; }
             </style>
         </head>"""
         + f"""
@@ -222,6 +221,11 @@ async def create_booking(
                     <p><strong>Room:</strong> {screening.room.name}</p>
                     <p><strong>Total Price:</strong> ${booking.total_price}</p>
                     <p><strong>Status:</strong> {booking.status}</p>
+                      <div class="qr-code">
+                        <p><strong>Your Ticket QR Code:</strong></p>
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={booking_id}" alt="Booking QR Code" width="180" height="180" style="width: 180px; height: 180px; display: inline-block; border: 1px solid #ddd; padding: 5px; background-color: white;" />
+                        <p><small>Booking ID: {booking_id}<br>Present this QR code at the cinema entrance for quick access</small></p>
+                    </div>
                 </div>
 
                 <p>Please arrive 15 minutes before the showing. Enjoy your movie!</p>
@@ -265,10 +269,21 @@ async def create_booking(
         subject=f"LynrieScoop - Booking Confirmation - {booking.booking_number}",
         html_content=message_html,
     )
+
     try:
+        # Initialize SendGrid client with API key
         sg = SendGridAPIClient(settings.SMTP_PASSWORD)
+
+        # Send the email with improved error handling
         response = sg.send(message)
-    except:
+
+        if response.status_code not in [200, 201, 202]:
+            # Log the error for monitoring but continue execution
+            print(f"Warning: SendGrid returned status code {response.status_code}")
+
+    except Exception as e:
+        # Log the specific exception for better debugging
+        print(f"SendGrid email error: {str(e)}")
         raise HTTPException(
             status_code=500,
             detail="Failed to send confirmation email. Please try again later.",
@@ -307,7 +322,7 @@ async def reserve_seats(
 
     This endpoint allows authenticated users to reserve specific seats for a showing.
     The system verifies seat availability and creates the necessary seat reservation
-    records. MQTT messages are published to notify other users about seat status changes.
+    records. WebSocket messages are broadcast to notify other users about seat status changes.
 
     Args:
         reservation_data: Dictionary containing showing ID and selected seats
@@ -320,9 +335,9 @@ async def reserve_seats(
     Raises:
         HTTPException: If seats are unavailable or invalid, or authentication fails
     """
-    # Get MQTT client to publish seat updates
-    # mqtt_client = get_mqtt_client()
+    # Get WebSocket manager to broadcast seat updates
+    # websocket_manager = get_websocket_manager()
 
     # Placeholder implementation - would need proper implementation
-    # This would typically publish seat status changes via MQTT
+    # This would typically broadcast seat status changes via WebSockets
     return {"message": "Seats reserved successfully"}

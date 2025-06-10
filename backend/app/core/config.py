@@ -49,10 +49,6 @@ class Settings(BaseSettings):
     # Database configuration
     DATABASE_URL: Optional[PostgresDsn] = Field(None)
 
-    # MQTT configuration
-    MQTT_BROKER: str = "localhost"
-    MQTT_PORT: int = 1883
-
     # TMDB configuration
     TMDB_API_KEY: str = Field("NOT_A_SECRET")
     TMDB_API_BASE_URL: str = "https://api.themoviedb.org/3"

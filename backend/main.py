@@ -13,8 +13,8 @@ from app.api.routes import (
     showings_router,
     users_router,
 )
+from app.api.routes.websocket import router as websocket_router
 from app.core.config import settings
-from app.core.mqtt_client import setup_mqtt_for_app
 from app.db.init_db import init_db
 
 app = FastAPI(
@@ -38,8 +38,8 @@ if settings.ENVIRONMENT != "development":
         allowed_hosts=settings.ALLOWED_HOSTS,
     )
 
-# Set up MQTT client
-setup_mqtt_for_app(app)
+# Include WebSocket router for real-time updates
+app.include_router(websocket_router)
 
 
 # Add startup event to initialize database

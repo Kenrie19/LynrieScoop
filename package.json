@@ -35,7 +35,6 @@
   },
   "dependencies": {
     "chart.js": "^4.4.9",
-    "dotenv": "^16.5.0",
-    "mqtt": "^5.13.1"
+    "dotenv": "^16.5.0"
   }
 }

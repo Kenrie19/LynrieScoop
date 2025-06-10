@@ -6,7 +6,7 @@ LynrieScoop is a school project for building a cinema web application. The syste
 
 - Integration with [The Movie Database](https://www.themoviedb.org/) for movie data
 - Management of showings and availability
-- Real-time updates via MQTT
+- Real-time updates via WebSockets
 - Authentication and authorization with JWT (users and managers)
 - Extensive REST API with OpenAPI (Swagger) documentation
 
@@ -14,12 +14,12 @@ LynrieScoop is a school project for building a cinema web application. The syste
 
 - **Backend**: [FastAPI](https://fastapi.tiangolo.com/) (Python), SQLAlchemy, Pydantic, PostgreSQL
 - **Frontend**: HTML, CSS, and TypeScript (built with [Eleventy](https://www.11ty.dev/))
-- **Messaging**: Mosquitto MQTT broker
+- **Messaging**: WebSocket for real-time communication
 - **Docker** and **Docker Compose** for development and deployment
 
 ## Repository Overview
 
-- `backend/` – FastAPI backend with database models, API routes, and MQTT client
+- `backend/` – FastAPI backend with database models, API routes, and WebSocket support
 - `frontend/` – Website source files (templates, TypeScript, styles)
 - `docs/` – Extensive documentation on architecture, API, and deployment
 - `compose.yaml` – Docker Compose configuration to start all services locally
@@ -31,11 +31,11 @@ LynrieScoop is a school project for building a cinema web application. The syste
 - Python 3.10+
 - Node.js 16+
 - PostgreSQL
-- MQTT broker (Mosquitto)
+- WebSockets (built into FastAPI)
 
 ### Manual Startup
 
-1. Start the MQTT broker:
+1. No separate message broker needed (WebSockets integrated):
    ```bash
    docker-compose up mosquitto
    ```
@@ -59,7 +59,7 @@ All services can be started at once with:
 ```bash
 docker compose up --build
 ```
-This will start the database, MQTT broker, backend, and frontend in containers.
+This will start the database, backend (with WebSocket support), and frontend in containers.
 
 ## Documentation
 

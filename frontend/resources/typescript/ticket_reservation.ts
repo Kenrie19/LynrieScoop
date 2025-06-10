@@ -1,5 +1,5 @@
 // This script handles the ticket reservation page logic for a movie showing.
-// It fetches showing info, updates the UI, manages ticket input, and handles real-time ticket updates via MQTT.
+// It fetches showing info, updates the UI, manages ticket input, and handles real-time ticket updates via WebSockets.
 // It also processes the reservation form, enforces a max of 10 tickets per user, and redirects to the user's tickets after booking.
 
 import { getCookie } from './cookies.js';
@@ -7,7 +7,6 @@ import { getCookie } from './cookies.js';
 declare global {
   interface Window {
     API_BASE_URL: string;
-    Paho: unknown;
   }
 }
 const API_BASE_URL = window.API_BASE_URL || 'http://localhost:8000';
@@ -60,49 +59,47 @@ async function fetchShowingInfo(id: string): Promise<ShowingTicketInfo> {
   return data;
 }
 
-// MQTT setup for real-time updates
-// This function sets up the MQTT client to listen for updates on ticket availability
-// It uses the global Paho client from the window object, which is expected to be loaded from a CDN.
-function setupMqttRealtime(showingId: string) {
-  // Use the global Paho client from the window object
-  type PahoClientType = {
-    onConnectionLost: (() => void) | null;
-    onMessageArrived: ((msg: { destinationName: string; payloadString: string }) => void) | null;
-    connect: (options: { onSuccess: () => void; useSSL: boolean }) => void;
-    subscribe: (topic: string) => void;
-  };
-  // Paho from CDN has the Client property directly
-  const PahoNS = window.Paho as {
-    Client: new (host: string, port: number, path: string, clientId: string) => PahoClientType;
-  };
-  if (!PahoNS || !PahoNS.Client) {
-    console.warn('MQTT client not loaded.');
-    return;
-  }
-  const host = 'localhost';
-  const port = 9001;
-  const path = '/';
-  const clientId = 'web-' + Math.random();
-  const client = new PahoNS.Client(host, port, path, clientId);
-  client.onConnectionLost = () => {
+// WebSocket setup for real-time updates
+// This function sets up a WebSocket connection to listen for updates on ticket availability
+function setupWebSocketRealtime(showingId: string) {
+  // Determine WebSocket URL (ws or wss based on http/https)
+  const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  const host = window.location.hostname || 'localhost';
+  const port = '8000'; // FastAPI WebSocket port
+  const wsUrl = `${protocol}//${host}:${port}/ws/screenings/${showingId}/update`;
+
+  // Create WebSocket connection
+  const socket = new WebSocket(wsUrl);
+
+  // Connection opened
+  socket.addEventListener('open', () => {
+    console.log('WebSocket connection established');
+  });
+
+  // Connection closed
+  socket.addEventListener('close', () => {
     const ticketInput = document.getElementById('num-tickets') as HTMLInputElement | null;
     if (ticketInput) ticketInput.disabled = true;
     const msg = document.getElementById('reservation-message');
     if (msg) msg.textContent = 'Connection to server lost.';
-  };
-  client.onMessageArrived = (msg: { destinationName: string; payloadString: string }) => {
-    if (msg.destinationName === `screenings/${showingId}/update`) {
-      const payload = JSON.parse(msg.payloadString);
+  });
+
+  // Listen for messages
+  socket.addEventListener('message', (event) => {
+    try {
+      const payload = JSON.parse(event.data);
       const ticketInput = document.getElementById('num-tickets') as HTMLInputElement | null;
-      if (ticketInput) ticketInput.max = payload.available_tickets.toString();
+      if (!ticketInput) return;
+      ticketInput.max = payload.available_tickets.toString();
       showAvailableTicketsDiv(payload.available_tickets); // update all UI aspects
+    } catch (error) {
+      console.error('Error processing WebSocket message:', error);
     }
-  };
-  client.connect({
-    onSuccess: () => {
-      client.subscribe(`screenings/${showingId}/update`);
-    },
-    useSSL: false,
+  });
+
+  // Handle errors
+  socket.addEventListener('error', (error) => {
+    console.error('WebSocket error:', error);
   });
 }
 
@@ -177,7 +174,7 @@ function updateReservationUI(showing: ShowingTicketInfo): void {
   const ticketInput = document.getElementById('num-tickets') as HTMLInputElement | null;
   if (ticketInput) ticketInput.max = Math.min(10, showing.available_tickets).toString();
   showAvailableTicketsDiv(showing.available_tickets);
-  setupMqttRealtime(showing.showing_id);
+  setupWebSocketRealtime(showing.showing_id);
 }
 
 function formatDate(dateTime: string): string {
